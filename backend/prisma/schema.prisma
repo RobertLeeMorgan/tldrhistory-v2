@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// Enums
+
+enum Continent {
+  Africa
+  Antarctica
+  Asia
+  Europe
+  MiddleEast
+  NorthAmerica
+  Oceania
+  SouthAmerica
+  Global
+}
+
+enum PostType {
+  person
+  landmark
+  event
+  period
+}
+
+enum PeriodType {
+  millennia
+  century
+  decade
+  year
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+  BOT
+}
+
+/// Models
+
+model User {
+  id        Int     @id @default(autoincrement())
+  username  String  @unique @db.VarChar(20)
+  email     String  @unique @db.VarChar(80)
+  password  String  @db.VarChar(100)
+  role      UserRole @default(USER)
+
+  likes     Like[]
+  posts     Post[]
+
+  suggestedEdits EditSuggestion[] @relation("SuggestedEdits")
+  moderatedEdits EditSuggestion[] @relation("ModeratedEdits")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Country {
+  name      String    @id
+  continent Continent
+
+  posts     Post[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id           Int       @id @default(autoincrement())
+  type         PostType
+  name         String    @unique @db.VarChar(50)
+  startDescription  String    @db.VarChar(250)
+  endDescription    String?   @db.VarChar(200)
+
+  startYear    Int
+  startMonth   Int       @default(0)
+  startDay     Int       @default(0)
+  endYear      Int       @default(0)
+  endMonth     Int       @default(0)
+  endDay       Int       @default(0)
+  effectiveDate  Int     @default(0)
+
+  imageUrl     String?        @db.Text
+  imageCredit  String?
+  sourceUrl    String?
+  startSignificance Float     @default(0)
+  endSignificance   Float     @default(0)
+
+  countryId    String
+  userId       Int
+
+  country      Country   @relation(fields: [countryId], references: [name])
+  user         User      @relation(fields: [userId], references: [id])
+  subjects     Subject[] @relation("PostSubjects")
+  likes        Like[]
+  editSuggestions EditSuggestion[]
+
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([startYear, endYear])
+  @@index([startSignificance, endSignificance])
+}
+
+model Subject {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique @db.VarChar(50)
+
+  posts   Post[] @relation("PostSubjects")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Like {
+  userId Int
+  postId Int
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@id([userId, postId])
+}
+
+model Summary {
+  id          Int        @id @default(autoincrement())
+  startYear   Int
+  endYear     Int
+  headline    String
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@unique([startYear, endYear])
+}
+
+model Population {
+  yearStart  Int
+  yearEnd    Int
+  population Int
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@id([yearStart, yearEnd])
+}
+
+model EditSuggestion {
+  id             Int      @id @default(autoincrement())
+  postId         Int
+  suggestedById  Int
+  moderatorId    Int?     // set when approved/rejected
+  data           Json
+  status         String   @default("pending") // pending, approved, rejected
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  post Post @relation(fields: [postId], references: [id])
+  suggestedBy User @relation("SuggestedEdits", fields: [suggestedById], references: [id])
+  moderator User? @relation("ModeratedEdits", fields: [moderatorId], references: [id])
+}
