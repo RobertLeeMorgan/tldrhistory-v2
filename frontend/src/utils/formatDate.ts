@@ -7,7 +7,7 @@ export function formatDate(year: number, month?: number, day?: number) {
 
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-  if (m === 0 && d === 0) return y;
+  if (m === 0) return y;
   if (d === 0) return `${months[m - 1]} ${y}`;
 
   return `${d} ${months[m - 1]} ${y}`;

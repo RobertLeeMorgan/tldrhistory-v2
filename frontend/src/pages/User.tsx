@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import ArticleCard from "../components/ArticleCard";
+import ArticleCard from "../components/cards/ArticleCard";
 import type { Post, GetUserQueryVariables } from "../generated/graphql";
 import { graphqlRequest } from "../lib/graphql";
 import { GET_USER } from "../graphql/queries";
@@ -24,21 +24,41 @@ export default function User() {
 
   const { data, isLoading, isError } = useQuery<UserData>({
     queryKey: ["user", userId],
-    queryFn: async () => graphqlRequest<UserData, GetUserQueryVariables>(GET_USER, { id: userId }),
+    queryFn: async () =>
+      graphqlRequest<UserData, GetUserQueryVariables>(GET_USER, { id: userId }),
     enabled: !isNaN(userId),
     staleTime: 1000 * 60 * 5,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading user</div>;
-  if (!data?.getUser) return <div>User not found</div>;
+  if (isLoading)
+    return (
+      <div className="min-h-screen bg-base-200 w-full justify-center flex items-center">
+        <span className="loading loading-spinner loading-md justify-center m-auto"></span>
+      </div>
+    );
+  if (isError)
+    return (
+      <div className="min-h-screen bg-base-200 w-full">
+        <span className="text-base text-lg justify-center m-auto">
+          Failed to load user
+        </span>
+      </div>
+    );
+  if (!data?.getUser)
+    return (
+      <div className="min-h-screen bg-base-200 w-full">
+        <span className="text-base text-lg justify-center m-auto">
+          User not found
+        </span>
+      </div>
+    );
 
   const user = data.getUser;
   const createdPosts = user.posts;
   const likedPosts = user.likes.map((like) => like.post);
 
   return (
-    <main className="min-h-screen bg-base-200 w-full p-20">
+    <main className="min-h-screen bg-base-200 w-full p-4 pt-16 lg:p-20">
       <h1 className="text-4xl font-bold mb-8 text-center">{user.username}</h1>
 
       <section className="mb-12">

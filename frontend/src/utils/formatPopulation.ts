@@ -1,19 +1,20 @@
-export function formatPopulation(population: number ) {
-  const suffixes = ["", " thousand", " million", " billion", " trillion", " quatrillion"];
-  let suffixNum = Math.floor(("" + population).length / 3);
-  let shortValue: number | string = parseFloat(
-    (suffixNum !== 0 ? population / Math.pow(1000, suffixNum) : population).toPrecision(
-      2
-    )
-  );
+export function formatPopulation(population: number) {
+  const suffixes = ["", " thousand", " million", " billion", " trillion", " quadrillion"];
 
-  if (shortValue < 1 && shortValue >= 0.1) {
-    shortValue *= 1000;
-    suffixNum--;
+  if (population < 1000) return population.toString();
+
+  let suffixNum = 0;
+  let value = population;
+
+  // Reduce value by thousands until < 1000
+  while (value >= 1000 && suffixNum < suffixes.length - 1) {
+    value /= 1000;
+    suffixNum++;
   }
 
-  if (shortValue % 1 !== 0) {
-    shortValue = shortValue.toFixed(1);
-  }
-  return shortValue + suffixes[suffixNum];
+  // Round to 1 decimal if needed
+  const rounded =
+    value % 1 === 0 ? value.toString() : value.toFixed(1);
+
+  return rounded + suffixes[suffixNum];
 }

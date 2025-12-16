@@ -19,11 +19,11 @@ export async function getUser(
     where: { id },
     include: {
       posts: {
-        include: { country: true, subjects: true, likes: true },
+        include: { country: true, subjects: true, likes: true, group: true },
       },
       likes: {
         include: {
-          post: { include: { country: true, subjects: true, likes: true } },
+          post: { include: { country: true, subjects: true, likes: true, group: true } },
         },
       },
     },

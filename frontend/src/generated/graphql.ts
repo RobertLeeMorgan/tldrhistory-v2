@@ -12,6 +12,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  BigInt: { input: any; output: any; }
   JSON: { input: any; output: any; }
 };
 
@@ -21,17 +22,16 @@ export type AuthPayload = {
   user: User;
 };
 
-export enum Continent {
-  Africa = 'Africa',
-  Antarctica = 'Antarctica',
-  Asia = 'Asia',
-  Europe = 'Europe',
-  Global = 'Global',
-  MiddleEast = 'MiddleEast',
-  NorthAmerica = 'NorthAmerica',
-  Oceania = 'Oceania',
-  SouthAmerica = 'SouthAmerica'
-}
+export type Continent =
+  | 'Africa'
+  | 'Antarctica'
+  | 'Asia'
+  | 'Europe'
+  | 'Global'
+  | 'MiddleEast'
+  | 'NorthAmerica'
+  | 'Oceania'
+  | 'SouthAmerica';
 
 export type Country = {
   __typename?: 'Country';
@@ -60,12 +60,21 @@ export type EditSuggestion = {
 
 export type FilterInput = {
   continent?: InputMaybe<Array<Scalars['String']['input']>>;
+  group?: InputMaybe<Scalars['Int']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
-  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['Boolean']['input']>;
   subject?: InputMaybe<Array<Scalars['String']['input']>>;
   type?: InputMaybe<Array<Scalars['String']['input']>>;
   yearEnd?: InputMaybe<Scalars['Int']['input']>;
   yearStart?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type Group = {
+  __typename?: 'Group';
+  description: Scalars['String']['output'];
+  icon: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type Like = {
@@ -138,21 +147,22 @@ export type MutationSuggestEditArgs = {
 
 export type Population = {
   __typename?: 'Population';
-  population: Scalars['Int']['output'];
+  population: Scalars['BigInt']['output'];
   yearEnd: Scalars['Int']['output'];
   yearStart: Scalars['Int']['output'];
 };
 
 export type Post = {
   __typename?: 'Post';
+  civilisation?: Maybe<Scalars['Boolean']['output']>;
   country: CountrySummary;
   editSuggestions: Array<EditSuggestion>;
-  effectiveDate: Scalars['Int']['output'];
   endDay: Scalars['Int']['output'];
   endDescription?: Maybe<Scalars['String']['output']>;
   endMonth: Scalars['Int']['output'];
   endSignificance: Scalars['Float']['output'];
   endYear: Scalars['Int']['output'];
+  group?: Maybe<Group>;
   id: Scalars['ID']['output'];
   imageCredit?: Maybe<Scalars['String']['output']>;
   imageUrl?: Maybe<Scalars['String']['output']>;
@@ -177,6 +187,7 @@ export type PostInput = {
   endMonth?: InputMaybe<Scalars['Int']['input']>;
   endSignificance?: InputMaybe<Scalars['Float']['input']>;
   endYear?: InputMaybe<Scalars['Int']['input']>;
+  groupId?: InputMaybe<Scalars['Int']['input']>;
   imageCredit?: InputMaybe<Scalars['String']['input']>;
   imageUrl?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -190,16 +201,16 @@ export type PostInput = {
   type: Scalars['String']['input'];
 };
 
-export enum PostType {
-  Event = 'event',
-  Landmark = 'landmark',
-  Period = 'period',
-  Person = 'person'
-}
+export type PostType =
+  | 'event'
+  | 'landmark'
+  | 'period'
+  | 'person';
 
 export type PostWithLists = {
   __typename?: 'PostWithLists';
   allCountries: Array<CountrySummary>;
+  allGroups: Array<Group>;
   allSubjects: Array<Subject>;
   post: Post;
 };
@@ -208,7 +219,7 @@ export type Query = {
   __typename?: 'Query';
   getCivilisation: Array<Post>;
   getHeadline?: Maybe<Scalars['String']['output']>;
-  getPopulation: Scalars['Int']['output'];
+  getPopulation: Scalars['BigInt']['output'];
   getPost: PostWithLists;
   getSignificant?: Maybe<SignificantPost>;
   getUser?: Maybe<User>;
@@ -219,6 +230,7 @@ export type Query = {
 
 export type QueryGetCivilisationArgs = {
   endYear: Scalars['Int']['input'];
+  filter?: InputMaybe<FilterInput>;
   startYear: Scalars['Int']['input'];
 };
 
@@ -241,6 +253,7 @@ export type QueryGetPostArgs = {
 
 export type QueryGetSignificantArgs = {
   endYear: Scalars['Int']['input'];
+  filter?: InputMaybe<FilterInput>;
   startYear: Scalars['Int']['input'];
 };
 
@@ -251,8 +264,8 @@ export type QueryGetUserArgs = {
 
 
 export type QueryTimelineArgs = {
+  cursor?: InputMaybe<Scalars['ID']['input']>;
   filter?: InputMaybe<FilterInput>;
-  page?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type SignificantPost = {
@@ -281,6 +294,7 @@ export type Summary = {
 
 export type TimelineResponse = {
   __typename?: 'TimelineResponse';
+  nextCursor?: Maybe<Scalars['ID']['output']>;
   posts: Array<Post>;
 };
 
@@ -296,12 +310,11 @@ export type User = {
   username: Scalars['String']['output'];
 };
 
-export enum UserRole {
-  Admin = 'ADMIN',
-  Bot = 'BOT',
-  Moderator = 'MODERATOR',
-  User = 'USER'
-}
+export type UserRole =
+  | 'ADMIN'
+  | 'BOT'
+  | 'MODERATOR'
+  | 'USER';
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -335,24 +348,24 @@ export type DeletePostMutationVariables = Exact<{
 export type DeletePostMutation = { __typename?: 'Mutation', deletePost: boolean };
 
 export type TimelineQueryVariables = Exact<{
-  startYear: Scalars['Int']['input'];
-  endYear: Scalars['Int']['input'];
-  page?: InputMaybe<Scalars['Int']['input']>;
+  cursor?: InputMaybe<Scalars['ID']['input']>;
+  filter?: InputMaybe<FilterInput>;
 }>;
 
 
-export type TimelineQuery = { __typename?: 'Query', timeline: { __typename?: 'TimelineResponse', posts: Array<{ __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }> }> } };
+export type TimelineQuery = { __typename?: 'Query', timeline: { __typename?: 'TimelineResponse', nextCursor?: string | null, posts: Array<{ __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', name: string, icon: string } | null, user: { __typename?: 'User', username: string, id: string } }> } };
 
 export type GetPopulationQueryVariables = Exact<{
   start: Scalars['Int']['input'];
 }>;
 
 
-export type GetPopulationQuery = { __typename?: 'Query', getPopulation: number };
+export type GetPopulationQuery = { __typename?: 'Query', getPopulation: any };
 
 export type GetSignificantQueryVariables = Exact<{
   start: Scalars['Int']['input'];
   end: Scalars['Int']['input'];
+  filter?: InputMaybe<FilterInput>;
 }>;
 
 
@@ -361,6 +374,7 @@ export type GetSignificantQuery = { __typename?: 'Query', getSignificant?: { __t
 export type GetCivilisationQueryVariables = Exact<{
   start: Scalars['Int']['input'];
   end: Scalars['Int']['input'];
+  filter?: InputMaybe<FilterInput>;
 }>;
 
 
@@ -371,7 +385,7 @@ export type GetPostQueryVariables = Exact<{
 }>;
 
 
-export type GetPostQuery = { __typename?: 'Query', getPost: { __typename?: 'PostWithLists', post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }> }, allCountries: Array<{ __typename?: 'CountrySummary', name: string, continent: Continent }>, allSubjects: Array<{ __typename?: 'Subject', id: string, name: string }> } };
+export type GetPostQuery = { __typename?: 'Query', getPost: { __typename?: 'PostWithLists', post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', name: string, icon: string, id: number } | null }, allCountries: Array<{ __typename?: 'CountrySummary', name: string, continent: Continent }>, allSubjects: Array<{ __typename?: 'Subject', id: string, name: string }>, allGroups: Array<{ __typename?: 'Group', id: number, name: string }> } };
 
 export type GetHeadlineQueryVariables = Exact<{
   startYear: Scalars['Int']['input'];
@@ -386,9 +400,9 @@ export type GetUserQueryVariables = Exact<{
 }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', getUser?: { __typename?: 'User', id: string, username: string, posts: Array<{ __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, imageUrl?: string | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }> }>, likes: Array<{ __typename?: 'Like', post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, imageUrl?: string | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }> } }> } | null };
+export type GetUserQuery = { __typename?: 'Query', getUser?: { __typename?: 'User', id: string, username: string, posts: Array<{ __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, imageUrl?: string | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', icon: string } | null }>, likes: Array<{ __typename?: 'Like', post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, imageUrl?: string | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', icon: string } | null } }> } | null };
 
 export type PendingEditsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PendingEditsQuery = { __typename?: 'Query', pendingEdits: Array<{ __typename?: 'EditSuggestion', id: number, status: string, data: any, createdAt: string, suggestedBy: { __typename?: 'User', id: string, username: string }, post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, imageUrl?: string | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }> } }> };
+export type PendingEditsQuery = { __typename?: 'Query', pendingEdits: Array<{ __typename?: 'EditSuggestion', id: number, status: string, data: any, createdAt: string, suggestedBy: { __typename?: 'User', id: string, username: string }, post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, sourceUrl?: string | null, imageCredit?: string | null, imageUrl?: string | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', name: string, icon: string, id: number } | null } }> };

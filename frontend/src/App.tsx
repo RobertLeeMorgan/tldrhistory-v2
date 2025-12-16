@@ -4,7 +4,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./queryClient";
+import { queryClient } from "./lib/queryClient";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { EraProvider } from "./context/EraContext";
 
@@ -23,15 +23,15 @@ interface ProtectedRouteProps {
 }
 
 function ProtectedRoute({ element, roles }: ProtectedRouteProps) {
-  const { isAuth } = useAuth();
+  const { isAuth, loading } = useAuth();
 
-  if (isAuth.token === null) return null; 
+  if (loading) return null;
 
   if (!isAuth.token) return <Navigate to="/login" />;
 
   if (roles) {
     if (!isAuth.role || !roles.includes(isAuth.role)) {
-      return <Navigate to="/unauthorized" />;
+      return <Navigate to="/login" />;
     }
   }
 

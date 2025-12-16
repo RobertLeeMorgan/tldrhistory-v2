@@ -1,21 +1,26 @@
 import {
   GiStoneAxe,
   GiWheat,
-  GiScrollQuill,
+  GiScrollUnfurled,
   GiAxeSword,
   GiGreekSphinx,
-  GiRomanShield,
   GiTempleGate,
   GiCastle,
   GiCompass,
   GiFactory,
   GiFallingBomb,
   GiSubmarineMissile,
-  GiCircuitry,
+  GiCaveman,
+  GiAnvil,
+  GiEgyptianPyramids,
+  GiLaurelCrown,
+  GiVisoredHelm,
+  GiQuillInk,
+  GiPalette,
+  GiPalmTree,
+  GiCaveEntrance,
+  GiWireframeGlobe,
 } from "react-icons/gi";
-
-import { FaGlobeAmericas } from "react-icons/fa";
-import { MdScience } from "react-icons/md";
 
 import type { IconType } from "react-icons";
 
@@ -23,47 +28,88 @@ export interface HistoricalRange {
   label: string;
   start: number;
   end: number;
-  density: "extreme" | "very-high" | "high" | "medium" | "low";
   icon: IconType;
 }
 
 export const HISTORICAL_RANGES: HistoricalRange[] = [
   // Prehistory & Early Civilizations
-  { label: "Neolithic Revolution", start: -10000, end: -6001, density: "low", icon: GiStoneAxe },
-  { label: "Early Farming Societies", start: -6000, end: -4001, density: "medium", icon: GiWheat },
-  { label: "Urbanization & Proto-Writing", start: -4000, end: -3001, density: "medium", icon: GiScrollQuill },
+  {
+    label: "Early Prehistory",
+    start: -3000000,
+    end: -20001,
+    icon: GiCaveEntrance,
+  },
+  { label: "Late Prehistory", start: -20000, end: -10001, icon: GiCaveman },
+  {
+    label: "Neolithic Revolution",
+    start: -10000,
+    end: -6001,
+    icon: GiStoneAxe,
+  },
+  { label: "Early Farming Societies", start: -6000, end: -4001, icon: GiWheat },
+  {
+    label: "Urbanization & Proto-Writing",
+    start: -4000,
+    end: -3001,
+    icon: GiScrollUnfurled,
+  },
 
   // Bronze Age
-  { label: "Early Bronze Age", start: -3000, end: -2201, density: "high", icon: GiAxeSword },
-  { label: "Middle Bronze Age", start: -2200, end: -1601, density: "high", icon: GiAxeSword },
-  { label: "Late Bronze Age Collapse Era", start: -1600, end: -1101, density: "very-high", icon: GiFallingBomb },
+  { label: "Early Bronze Age", start: -3000, end: -2001, icon: GiAnvil },
+  {
+    label: "Middle Bronze Age",
+    start: -2000,
+    end: -1501,
+    icon: GiEgyptianPyramids,
+  },
+  {
+    label: "Late Bronze Age Collapse Era",
+    start: -1500,
+    end: -1201,
+    icon: GiFallingBomb,
+  },
 
   // Iron Age & Classical
-  { label: "Early Iron Age", start: -1100, end: -801, density: "medium", icon: GiAxeSword },
-  { label: "Archaic Mediterranean Age", start: -800, end: -501, density: "high", icon: GiGreekSphinx },
-  { label: "Classical Golden Age", start: -500, end: -324, density: "very-high", icon: GiTempleGate },
-  { label: "Hellenistic Age", start: -323, end: -31, density: "high", icon: GiGreekSphinx },
-
-  // Rome
-  { label: "Early Roman Empire", start: -30, end: 199, density: "very-high", icon: GiRomanShield },
-  { label: "Crisis & Late Empire", start: 200, end: 499, density: "very-high", icon: GiRomanShield },
+  { label: "Iron Age", start: -1200, end: -501, icon: GiAxeSword },
+  {
+    label: "Archaic Mediterranean Age",
+    start: -500,
+    end: -301,
+    icon: GiGreekSphinx,
+  },
+  { label: "Classical Antiquity", start: -300, end: 199, icon: GiLaurelCrown },
+  { label: "Late Antiquity", start: 200, end: 499, icon: GiTempleGate },
 
   // Medieval
-  { label: "Early Middle Ages", start: 500, end: 749, density: "medium", icon: GiCastle },
-  { label: "Carolingian & Islamic Golden Age", start: 750, end: 999, density: "high", icon: GiTempleGate },
-  { label: "High Middle Ages I", start: 1000, end: 1149, density: "very-high", icon: GiCastle },
-  { label: "High Middle Ages II", start: 1150, end: 1299, density: "very-high", icon: GiCastle },
-  { label: "Late Middle Ages", start: 1300, end: 1449, density: "high", icon: GiCastle },
+  { label: "Early Middle Ages", start: 500, end: 749, icon: GiVisoredHelm },
+  { label: "Islamic Golden Age", start: 750, end: 999, icon: GiTempleGate },
+  { label: "High Middle Ages", start: 1000, end: 1299, icon: GiCastle },
+  { label: "Late Middle Ages", start: 1300, end: 1499, icon: GiCastle },
 
   // Renaissance → Early Modern
-  { label: "Renaissance & Age of Discovery", start: 1450, end: 1599, density: "very-high", icon: GiCompass },
-  { label: "Scientific Revolution", start: 1600, end: 1699, density: "high", icon: MdScience },
-  { label: "Enlightenment & Imperial Expansion", start: 1700, end: 1799, density: "very-high", icon: FaGlobeAmericas },
+  {
+    label: "Renaissance & Age of Discovery",
+    start: 1500,
+    end: 1599,
+    icon: GiPalette,
+  },
+  { label: "Scientific Revolution", start: 1600, end: 1699, icon: GiCompass },
+  {
+    label: "Enlightenment & Imperial Expansion",
+    start: 1700,
+    end: 1799,
+    icon: GiQuillInk,
+  },
 
   // Industrial → Modern
-  { label: "Industrial Revolution", start: 1800, end: 1879, density: "very-high", icon: GiFactory },
-  { label: "Age of Empire & Globalization", start: 1880, end: 1913, density: "very-high", icon: FaGlobeAmericas },
-  { label: "World War Era", start: 1914, end: 1945, density: "extreme", icon: GiFallingBomb },
-  { label: "Cold War", start: 1946, end: 1990, density: "extreme", icon: GiSubmarineMissile },
-  { label: "Information Age", start: 1991, end: 2025, density: "extreme", icon: GiCircuitry }
+  { label: "Industrial Revolution", start: 1800, end: 1869, icon: GiFactory },
+  {
+    label: "Age of Empire & Globalization",
+    start: 1870,
+    end: 1913,
+    icon: GiPalmTree,
+  },
+  { label: "World War Era", start: 1914, end: 1945, icon: GiFallingBomb },
+  { label: "Cold War", start: 1946, end: 1990, icon: GiSubmarineMissile },
+  { label: "Information Age", start: 1991, end: 2025, icon: GiWireframeGlobe },
 ];

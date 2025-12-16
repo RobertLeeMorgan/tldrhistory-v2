@@ -19,6 +19,7 @@ export function useApproveEdit() {
       graphqlRequest(APPROVE_EDIT_MUTATION, { id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingEdits"] });
+      queryClient.invalidateQueries({ queryKey: ["timeline"] });
     },
   });
 }

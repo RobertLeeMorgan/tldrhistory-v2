@@ -13,35 +13,55 @@ export async function pendingEdits(_: any, __: any, ctx: Context) {
         include: {
           country: true,
           subjects: true,
+          group: true,
         },
       },
     },
   });
 
-  const allSubjects = edits.flatMap((edit) => edit.post.subjects);
-  const subjectMap = Object.fromEntries(allSubjects.map((s) => [s.id, s.name]));
+  const mappedEdits = await Promise.all(
+    edits.map(async (edit) => {
+      if (!edit.data || typeof edit.data !== "object") {
+        return edit;
+      }
 
-  const mappedEdits = edits.map((edit) => {
-    if (!edit.data || typeof edit.data !== "object") {
-      return edit;
-    }
-    const data = { ...edit.data } as any;
+      const data = { ...edit.data } as any;
 
-    if (Array.isArray(data.subjects)) {
-      data.subjects = data.subjects.map((id: number) => ({
-        id: String(id),
-        name: subjectMap[id] ?? "Unknown",
-      }));
-    }
+      if (Array.isArray(data.subjects)) {
+        data.subjects = await Promise.all(
+          data.subjects.map(async (id: number | string) => {
+            const subject = await prisma.subject.findUnique({
+              where: { id: Number(id) },
+            });
+            return {
+              id: String(id),
+              name: subject?.name ?? "Unknown",
+            };
+          })
+        );
+      }
 
-    return {
-      ...edit,
-      data,
-    };
-  });
+      if (data.groupId) {
+        const group = await prisma.group.findUnique({
+          where: { id: data.groupId },
+        });
+
+        data.group = {
+          id: data.groupId,
+          name: group?.name ?? "Unknown",
+        };
+      }
+
+      return {
+        ...edit,
+        data,
+      };
+    })
+  );
 
   return mappedEdits;
 }
+
 
 export async function getPost(_: any, { id }: { id: number }, ctx: Context) {
   requireRole(ctx, ["USER", "MODERATOR", "ADMIN"]);
@@ -51,16 +71,20 @@ export async function getPost(_: any, { id }: { id: number }, ctx: Context) {
     include: {
       country: true,
       subjects: true,
+      group: true,
     },
   });
 
   if (!post) throw new Error("Post not found");
 
-  const [allCountries, allSubjects] = await Promise.all([
+  const [allCountries, allSubjects, allGroups] = await Promise.all([
     prisma.country.findMany({
       orderBy: { name: "asc" },
     }),
     prisma.subject.findMany({
+      orderBy: { name: "asc" },
+    }),
+    prisma.group.findMany({
       orderBy: { name: "asc" },
     }),
   ]);
@@ -69,6 +93,7 @@ export async function getPost(_: any, { id }: { id: number }, ctx: Context) {
     post,
     allCountries,
     allSubjects,
+    allGroups
   };
 }
 

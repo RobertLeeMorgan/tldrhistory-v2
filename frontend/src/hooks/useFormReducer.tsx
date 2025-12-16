@@ -13,9 +13,11 @@ type State = {
   endMonth: number;
   endDay: number;
   imageUrl: string;
+  imageCredit: string;
   sourceUrl: string;
   countryId: string;
   subjects: string[];
+  groupId: number
 };
 
 type Action =
@@ -46,9 +48,11 @@ export function useFormReducer(postData?: PostWithLists["post"]) {
     endMonth: 0,
     endDay: 0,
     imageUrl: "",
+    imageCredit: "",
     sourceUrl: "",
     countryId: "",
     subjects: [],
+    groupId: 0
   });
 
   useEffect(() => {
@@ -67,9 +71,11 @@ export function useFormReducer(postData?: PostWithLists["post"]) {
           endMonth: postData.endMonth ?? 0,
           endDay: postData.endDay ?? 0,
           imageUrl: postData.imageUrl ?? "",
+          imageCredit: postData.imageCredit ?? "",
           sourceUrl: postData.sourceUrl ?? "",
           countryId: postData.country?.name ?? "",
           subjects: postData.subjects.map((s) => s.id),
+          groupId: postData.group?.id ?? 0
         },
       });
     }

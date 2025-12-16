@@ -84,21 +84,23 @@ model Post {
   endYear      Int       @default(0)
   endMonth     Int       @default(0)
   endDay       Int       @default(0)
-  effectiveDate  Int     @default(0)
 
   imageUrl     String?        @db.Text
   imageCredit  String?
-  sourceUrl    String?
+  sourceUrl    String?        @db.Text
   startSignificance Float     @default(0)
   endSignificance   Float     @default(0)
 
   countryId    String
   userId       Int
+  groupId      Int?
+  civilisation  Boolean  @default(false)
 
   country      Country   @relation(fields: [countryId], references: [name])
   user         User      @relation(fields: [userId], references: [id])
   subjects     Subject[] @relation("PostSubjects")
   likes        Like[]
+  group        Group?     @relation(fields: [groupId], references: [id])
   editSuggestions EditSuggestion[]
 
 
@@ -129,6 +131,15 @@ model Like {
   @@id([userId, postId])
 }
 
+model Group {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique @db.VarChar(50)
+  description  String    @db.VarChar(150)
+  icon         String
+
+  posts        Post[]
+}
+
 model Summary {
   id          Int        @id @default(autoincrement())
   startYear   Int
@@ -144,7 +155,7 @@ model Summary {
 model Population {
   yearStart  Int
   yearEnd    Int
-  population Int
+  population BigInt
 
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt

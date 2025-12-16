@@ -18,8 +18,8 @@ export const EraProvider = ({ children }: { children: ReactNode }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const current = HISTORICAL_RANGES[currentIndex];
 
-  const setEra = (rangeIndex: number) => {
-    setCurrentIndex(rangeIndex);
+ const setEra = (rangeIndex: number) => {
+    setCurrentIndex((prevIndex) => (prevIndex !== rangeIndex ? rangeIndex : prevIndex));
   };
 
   return (

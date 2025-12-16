@@ -1,5 +1,4 @@
 import prisma from "../../../server/client";
-import { computeEffectiveDate } from "../../../utils/effectiveDate";
 import { requireRole } from "../../../utils/requireRole";
 import { postSchema } from "../../../validators/postSchema";
 import { Context } from "../query/user";
@@ -47,35 +46,31 @@ export async function approveEdit(_: any, { id }: any, ctx: Context) {
   if (suggestion.status !== "pending")
     throw new Error("Suggestion already processed");
 
-  const data = suggestion.data as {
-    startYear: number;
-    startMonth: number;
-    startDay: number;
-    endYear: number;
-    endMonth: number;
-    endDay: number;
-    startSignificance: number;
-    endSignificance: number;
-    subjectIds?: number[];
-    [key: string]: any;
-  };
+  const data = suggestion.data as any;
 
-  const effectiveDate = computeEffectiveDate(data);
+  let subjectIds: number[] = [];
+
+  if (Array.isArray(data.subjects)) {
+    subjectIds = data.subjects.map((s: any) =>
+      typeof s === "object" ? Number(s.id) : Number(s)
+    );
+  }
 
   const updatedPost = await prisma.post.update({
     where: { id: suggestion.postId },
     data: {
       ...data,
+      groupId: data.groupId < 1 ? null : data.groupId,
       userId: suggestion.suggestedById,
-      effectiveDate,
       subjects: {
-        set: (data.subjectIds || []).map((id: number) => ({ id })),
+        set: subjectIds.map((id: number) => ({ id })),
       },
     },
     include: {
       user: true,
       country: true,
       subjects: true,
+      group: true
     },
   });
 
@@ -95,6 +90,7 @@ export async function approveEdit(_: any, { id }: any, ctx: Context) {
 
   return { ...updatedPost, likes: likeCount, liked };
 }
+
 
 export async function rejectEdit(_: any, { id }: any, ctx: Context) {
   requireRole(ctx, ["MODERATOR", "ADMIN"]);

@@ -1,11 +1,8 @@
 import { gql } from "graphql-request";
 
 export const TIMELINE_QUERY = gql`
-  query Timeline($startYear: Int!, $endYear: Int!, $page: Int) {
-    timeline(
-      page: $page
-      filter: { yearStart: $startYear, yearEnd: $endYear }
-    ) {
+  query Timeline($cursor: ID, $filter: FilterInput) {
+    timeline(cursor: $cursor, filter: $filter) {
       posts {
         id
         name
@@ -31,9 +28,18 @@ export const TIMELINE_QUERY = gql`
           id
           name
         }
+        group {
+          name
+          icon
+        }
+        user {
+          username
+          id
+        }
         likes
         liked
       }
+      nextCursor
     }
   }
 `;
@@ -45,8 +51,8 @@ export const POPULATION_QUERY = gql`
 `;
 
 export const SIGNIFICANT_QUERY = gql`
-  query GetSignificant($start: Int!, $end: Int!) {
-    getSignificant(startYear: $start, endYear: $end) {
+  query GetSignificant($start: Int!, $end: Int!, $filter: FilterInput) {
+    getSignificant(startYear: $start, endYear: $end, filter: $filter) {
       id
       name
       imageUrl
@@ -55,8 +61,8 @@ export const SIGNIFICANT_QUERY = gql`
 `;
 
 export const CIVILISATION_QUERY = gql`
-  query GetCivilisation($start: Int!, $end: Int!) {
-    getCivilisation(startYear: $start, endYear: $end) {
+  query GetCivilisation($start: Int!, $end: Int!, $filter: FilterInput) {
+    getCivilisation(startYear: $start, endYear: $end, filter: $filter) {
       id
       name
     }
@@ -91,12 +97,21 @@ export const GET_POST = gql`
           id
           name
         }
+        group {
+          name
+          icon
+          id
+        }
       }
       allCountries {
         name
         continent
       }
       allSubjects {
+        id
+        name
+      }
+      allGroups {
         id
         name
       }
@@ -135,6 +150,9 @@ export const GET_USER = gql`
           id
           name
         }
+        group {
+          icon
+        }
         imageUrl
         likes
         liked
@@ -160,6 +178,9 @@ export const GET_USER = gql`
             id
             name
           }
+          group {
+            icon
+          }
           imageUrl
           likes
           liked
@@ -180,7 +201,7 @@ export const PENDING_EDITS_QUERY = gql`
         username
       }
       post {
-          id
+        id
         name
         type
         startDescription
@@ -192,6 +213,7 @@ export const PENDING_EDITS_QUERY = gql`
         endMonth
         endDay
         sourceUrl
+        imageCredit
         country {
           name
           continent
@@ -199,6 +221,11 @@ export const PENDING_EDITS_QUERY = gql`
         subjects {
           id
           name
+        }
+        group {
+          name
+          icon
+          id
         }
         imageUrl
       }

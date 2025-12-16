@@ -49,7 +49,7 @@ export const postSchema = z
         },
         { message: "Invalid URL" }
       ),
-    imageCredit: z.string().optional(),
+    imageCredit: z.string().nullable().optional(),
     countryId: z
       .string()
       .trim()
@@ -62,6 +62,7 @@ export const postSchema = z
         },
         { message: "Location not recognised" }
       ),
+    groupId: z.number().nullable().optional(),
     subjects: z.array(z.number().int()).refine(
       async (val) => {
         const subjects = await prisma.subject.findMany({

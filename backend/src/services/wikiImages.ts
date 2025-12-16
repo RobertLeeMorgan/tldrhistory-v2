@@ -1,19 +1,19 @@
 import axios from "axios";
 import NodeCache from "node-cache";
 import PQueue from "p-queue";
-import * as cheerio from "cheerio";
 
 const imageCache = new NodeCache({ stdTTL: 60 * 60 * 24 });
 const restQueue = new PQueue({ concurrency: 5 });
 
 export interface WikiImage {
   url: string;
-  credit?: string;
+  credit: string;
 }
 
 const http = axios.create({
   headers: {
-    "User-Agent": "TLDRHistoryDev/0.1 (https://tldrhistory.dev; robleemorgan@gmail.com)",
+    "User-Agent":
+      "TLDRHistoryDev/0.1 (https://tldrhistory.dev; robleemorgan@gmail.com)",
   },
 });
 
@@ -32,12 +32,15 @@ export async function wikiImages(sourceUrl: string): Promise<WikiImage | null> {
     if (!title) return null;
 
     try {
-      const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+      const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(
+        title
+      )}`;
       const res = await http.get(summaryUrl);
       const data = res.data;
 
-      const imageUrl = data.thumbnail?.source;
-      if (!imageUrl) return null;
+      const imageUrl =
+        data.thumbnail?.source ??
+        "";
 
       const imageCredit = data.title
         ? `Image: ${data.title} / Wikimedia Commons`
@@ -52,4 +55,3 @@ export async function wikiImages(sourceUrl: string): Promise<WikiImage | null> {
     }
   });
 }
-

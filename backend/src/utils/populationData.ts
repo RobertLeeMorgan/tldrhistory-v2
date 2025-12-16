@@ -1,14 +1,14 @@
 export function interpolatePopulation(
-  current: { yearStart: number; yearEnd: number; population: number },
-  next?: { yearStart: number; yearEnd: number; population: number },
+  current: { yearStart: number; yearEnd: number; population: bigint },
+  next?: { yearStart: number; yearEnd: number; population: bigint },
   year?: number
-): number {
+): bigint {
+  if (!next || year === undefined) return current.population;
 
-  if (!next || !year) return current.population;
-
-  const windowLength = current.yearEnd - current.yearStart;
-  const progress = (year - current.yearStart) / windowLength;
+  const windowLength = BigInt(current.yearEnd - current.yearStart);
+  const progress = BigInt(year - current.yearStart);
 
   const delta = next.population - current.population;
-  return Math.round(current.population + delta * progress);
+
+  return current.population + (delta * progress) / windowLength;
 }

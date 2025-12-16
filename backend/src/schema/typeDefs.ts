@@ -2,6 +2,7 @@ import { gql } from "graphql-tag";
 
 export const typeDefs = gql`
   scalar JSON
+  scalar BigInt
 
   enum Continent {
     Africa
@@ -73,7 +74,6 @@ export const typeDefs = gql`
     endYear: Int!
     endMonth: Int!
     endDay: Int!
-    effectiveDate: Int!
     startSignificance: Float!
     endSignificance: Float!
     imageUrl: String
@@ -84,6 +84,8 @@ export const typeDefs = gql`
     subjects: [Subject!]!
     likes: Int!
     liked: Boolean
+    civilisation: Boolean
+    group: Group
     editSuggestions: [EditSuggestion!]!
   }
 
@@ -91,6 +93,7 @@ export const typeDefs = gql`
     post: Post!
     allCountries: [CountrySummary!]!
     allSubjects: [Subject!]!
+    allGroups: [Group!]!
   }
 
   type EditSuggestion {
@@ -116,12 +119,19 @@ export const typeDefs = gql`
   type Population {
     yearStart: Int!
     yearEnd: Int!
-    population: Int!
+    population: BigInt!
   }
 
   type AuthPayload {
     token: String!
     user: User!
+  }
+
+  type Group {
+    id: Int!
+    name: String!
+    description: String!
+    icon: String!
   }
 
   input FilterInput {
@@ -131,7 +141,8 @@ export const typeDefs = gql`
     yearEnd: Int
     continent: [String!]
     search: String
-    sortBy: String
+    sortBy: Boolean
+    group: Int
   }
 
   input PostInput {
@@ -152,6 +163,7 @@ export const typeDefs = gql`
     sourceUrl: String
     countryId: String!
     subjects: [ID!]!
+    groupId: Int
   }
 
   type SignificantPost {
@@ -162,14 +174,23 @@ export const typeDefs = gql`
 
   type TimelineResponse {
     posts: [Post!]!
+    nextCursor: ID
   }
 
   type Query {
-    timeline(page: Int, filter: FilterInput): TimelineResponse!
+    timeline(cursor: ID, filter: FilterInput): TimelineResponse!
     getUser(id: Int!): User
-    getPopulation(start: Int!): Int!
-    getSignificant(startYear: Int!, endYear: Int!): SignificantPost
-    getCivilisation(startYear: Int!, endYear: Int!): [Post!]!
+    getPopulation(start: Int!): BigInt!
+    getSignificant(
+      startYear: Int!
+      endYear: Int!
+      filter: FilterInput
+    ): SignificantPost
+    getCivilisation(
+      startYear: Int!
+      endYear: Int!
+      filter: FilterInput
+    ): [Post!]!
     pendingEdits: [EditSuggestion!]!
     getPost(id: Int!): PostWithLists!
     getHeadline(startYear: Int!, endYear: Int!): String

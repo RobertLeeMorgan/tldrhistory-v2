@@ -1,7 +1,9 @@
+import { PostType } from "@prisma/client";
+
 export type AIOutput = {
   name: string;
 
-  type: "event" | "period" | "landmark" | "person";
+  type: PostType;
 
   startYear: number;
   startMonth: number;
@@ -21,11 +23,11 @@ export type AIOutput = {
 
   country: string;
   subjects: string[];
+
+  groupId?: number
 }[];
 
 export interface AIInput {
-  start: number;
-  end: number;
   count: number;
   subjectOptions: string[];
   existingNames: string[];

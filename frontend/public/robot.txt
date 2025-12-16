@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /login
+Disallow: /register
+Disallow: /edit-suggestion
+Disallow: /review-suggestions
+Disallow: /user
+Allow: /

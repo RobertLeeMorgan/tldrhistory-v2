@@ -13,6 +13,7 @@ import {
 import { typeDefs } from "./schema/typeDefs";
 import { resolvers } from "./schema/resolvers/index";
 import GraphQLJSON from "graphql-type-json";
+import { GraphQLBigInt } from "graphql-scalars";
 import { AuthUser } from "./schema/resolvers/query/user";
 
 dotenv.config();
@@ -20,7 +21,18 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https://upload.wikimedia.org"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'"],
+      },
+    },
+  })
+);
 app.use(compression());
 app.use(
   cors({
@@ -34,25 +46,26 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "dist")));
 
-// Static files
-app.use(
-  "/images",
-  express.static(path.join(__dirname, "..", "images"), {
-    maxAge: "1d",
-  })
-);
+app.get(/.*/, (_req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
 
 // Apollo GraphQL
 const server = new ApolloServer({
   typeDefs,
   resolvers: {
     JSON: GraphQLJSON,
+    BigInt: GraphQLBigInt,
     ...resolvers,
   },
   formatError: (err) => {
     console.error("GraphQL ERROR:", err);
-    return err;
+    return {
+      message: err.message,
+      extensions: { code: err.extensions?.code || "INTERNAL_SERVER_ERROR" },
+    };
   },
 });
 
@@ -78,6 +91,7 @@ const server = new ApolloServer({
 
           return { user: decoded };
         } catch (e) {
+          console.warn("Invalid or expired JWT token");
           return { user: null };
         }
       },

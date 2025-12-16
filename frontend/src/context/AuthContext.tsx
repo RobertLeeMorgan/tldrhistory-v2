@@ -14,6 +14,7 @@ interface AuthContextType {
     user: { id: string; username: string; role: string }
   ) => void;
   logout: () => void;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,33 +26,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     username: null,
     role: null,
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const id = localStorage.getItem("id");
     const username = localStorage.getItem("username");
     const role = localStorage.getItem("role");
+    const expiresAt = localStorage.getItem("expiresAt");
 
-    if (token && id && username && role) {
-      setIsAuth({ token, id, username, role });
+    if (token && id && username && role && expiresAt) {
+      if (Date.now() > Number(expiresAt)) {
+        logout();
+      } else {
+        setIsAuth({ token, id, username, role });
+      }
     }
+
+    setLoading(false);
   }, []);
 
   function login(
     token: string,
     user: { id: string; username: string; role: string }
   ) {
+    const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24h expiry
     localStorage.setItem("token", token);
     localStorage.setItem("id", user.id);
     localStorage.setItem("username", user.username);
     localStorage.setItem("role", user.role);
+    localStorage.setItem("expiresAt", expiresAt.toString());
 
-    setIsAuth({
-      token,
-      id: user.id,
-      username: user.username,
-      role: user.role,
-    });
+    setIsAuth({ token, id: user.id, username: user.username, role: user.role });
   }
 
   function logout() {
@@ -69,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuth, login, logout }}>
+    <AuthContext.Provider value={{ isAuth, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

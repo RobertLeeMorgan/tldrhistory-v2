@@ -4,8 +4,8 @@ export const SUBJECT_LIST = [
   "politics",
   "religion",
   "culture",
-  "economics",
+  "economic",
   "environment",
   "art",
-  "maritime"
+  "maritime",
 ];

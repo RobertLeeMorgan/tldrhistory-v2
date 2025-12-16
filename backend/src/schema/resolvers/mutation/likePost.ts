@@ -24,7 +24,7 @@ export async function likePost(_: any, { postId }: any, ctx: Context) {
 
   const updated = await prisma.post.findUnique({
     where: { id: postId },
-    include: { user: true, country: true, subjects: true, likes: true },
+    include: { user: true, country: true, subjects: true, group: true, likes: true },
   });
   if (!updated) throw new Error("Post not found");
 
