@@ -46,10 +46,10 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.static(path.join(__dirname, "public/dist")));
 
 app.get(/.*/, (_req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+  res.sendFile(path.join(__dirname, "public/dist", "index.html"));
 });
 
 // Apollo GraphQL
