@@ -22,7 +22,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
       if (hasNextPage && !isFetchingNextPage) fetchNextPage();
     },
     {
-      isItemLoaded: (index, items) => !!items[index],
+       isItemLoaded: (index, items) => index < items.length && !!items[index],
       threshold: 4,
     }
   );
@@ -44,6 +44,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
 
       {posts.length > 0 && (
         <Masonry
+          key={JSON.stringify(filter)}
           items={posts}
           itemKey={(post: Post) => post.id}
           columnGutter={12}

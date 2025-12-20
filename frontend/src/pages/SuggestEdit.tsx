@@ -2,15 +2,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import { usePostQuery } from "../hooks/useQueries";
 import { useFormReducer } from "../hooks/useFormReducer";
 import { useSuggestEditMutation } from "../hooks/useEdit";
-import { toast } from "react-toastify";
 import TextInput from "../components/form/TextInput";
 import NumberInput from "../components/form/NumberInput";
 import UrlInput from "../components/form/UrlInput";
+import { useToast } from "../context/ToastContext";
 import { postSchemaClient } from "../schemas/postSchema.client";
 
 export default function SuggestEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
   const { data, isLoading } = usePostQuery({ id: Number(id) });
   const { state, dispatch } = useFormReducer(data?.getPost?.post);
@@ -37,7 +38,7 @@ export default function SuggestEdit() {
 
     if (!parsed.success) {
       parsed.error.issues.forEach((err) => {
-        toast.error(err.message);
+        addToast({ message: err.message, type: "error" });
       });
       return;
     }
@@ -54,7 +55,10 @@ export default function SuggestEdit() {
       {
         onSuccess: () => {
           navigate("/");
-          toast.success("Your suggestion is pending review");
+          addToast({
+            message: "Your suggestion is pending review",
+            type: "success",
+          });
         },
       }
     );

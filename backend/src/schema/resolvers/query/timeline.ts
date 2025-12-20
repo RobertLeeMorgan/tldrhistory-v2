@@ -70,22 +70,22 @@ export async function timeline(
   //   dbPosts = await fetchPosts();
   // }
 
-  dbPosts.sort((a, b) => {
-    if (filter.sortBy) {
-      return (
-        a.startYear - b.startYear ||
-        a.startMonth - b.startMonth ||
-        a.startDay - b.startDay ||
-        a.id - b.id
-      );
-    }
-    return (
-      b.startYear - a.startYear ||
-      b.startMonth - a.startMonth ||
-      b.startDay - a.startDay ||
-      b.id - a.id
-    );
-  });
+  // dbPosts.sort((a, b) => {
+  //   if (filter.sortBy) {
+  //     return (
+  //       a.startYear - b.startYear ||
+  //       a.startMonth - b.startMonth ||
+  //       a.startDay - b.startDay ||
+  //       a.id - b.id
+  //     );
+  //   }
+  //   return (
+  //     b.startYear - a.startYear ||
+  //     b.startMonth - a.startMonth ||
+  //     b.startDay - a.startDay ||
+  //     b.id - a.id
+  //   );
+  // });
 
   // Likes
   const userLikes = ctx.user

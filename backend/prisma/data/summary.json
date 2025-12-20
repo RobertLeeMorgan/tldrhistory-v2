@@ -1,0 +1,194 @@
+[
+	{
+		"id" : 4,
+		"createdAt" : "2025-11-19 08:20:37.869",
+		"updatedAt" : "2025-11-19 08:20:40.559",
+		"endYear" : -3001,
+		"headline" : "The Rise of Cities: Writing Sparks Civilization’s First Records",
+		"startYear" : -4000
+	},
+	{
+		"id" : 6,
+		"createdAt" : "2025-11-19 08:22:47.299",
+		"updatedAt" : "2025-11-19 08:22:47.299",
+		"endYear" : 499,
+		"headline" : "The Twilight of Empires: Decline, Migration, and Transformation",
+		"startYear" : 200
+	},
+	{
+		"id" : 12,
+		"createdAt" : "2025-11-19 10:09:31.553",
+		"updatedAt" : "2025-11-19 11:17:48.577",
+		"endYear" : 1299,
+		"headline" : "Empires Expand: Cities Thrive and Civilizations Interact",
+		"startYear" : 1000
+	},
+	{
+		"id" : 14,
+		"createdAt" : "2025-11-19 13:13:13.742",
+		"updatedAt" : "2025-11-19 14:15:51.236",
+		"endYear" : -6001,
+		"headline" : "The Dawn of Farming: A New Era of Food and Settlement",
+		"startYear" : -10000
+	},
+	{
+		"id" : 15,
+		"createdAt" : "2025-11-19 14:46:27.647",
+		"updatedAt" : "2025-11-19 14:47:11.821",
+		"endYear" : -4001,
+		"headline" : "Seeds of Civilization: Agriculture Fuels Growth and Trade",
+		"startYear" : -6000
+	},
+	{
+		"id" : 16,
+		"createdAt" : "2025-11-21 05:10:49.893",
+		"updatedAt" : "2025-11-21 07:44:25.203",
+		"endYear" : -2001,
+		"headline" : "Metalwork and Monarchy: Kingdoms Take Shape Across Continents",
+		"startYear" : -3000
+	},
+	{
+		"id" : 18,
+		"createdAt" : "2025-11-21 07:32:54.387",
+		"updatedAt" : "2025-11-21 07:33:21.908",
+		"endYear" : -1201,
+		"headline" : "Civilizations in Turmoil: Trade Routes Disrupted and Kingdoms Fall",
+		"startYear" : -1500
+	},
+	{
+		"id" : 21,
+		"createdAt" : "2025-11-21 07:39:13.999",
+		"updatedAt" : "2025-11-21 07:39:13.999",
+		"endYear" : -301,
+		"headline" : "City-States Rise: Philosophy, Warriors, and Maritime Trade",
+		"startYear" : -500
+	},
+	{
+		"id" : 24,
+		"createdAt" : "2025-11-21 07:39:25.429",
+		"updatedAt" : "2025-11-21 07:44:43.742",
+		"endYear" : 199,
+		"headline" : "Rise of the Roman Empire: A Legacy of Politics and Culture",
+		"startYear" : -300
+	},
+	{
+		"id" : 25,
+		"createdAt" : "2025-11-21 07:39:30.711",
+		"updatedAt" : "2025-11-21 07:39:30.711",
+		"endYear" : 749,
+		"headline" : "Kingdoms Rise: Trade, Faith, and Cultural Flourishing",
+		"startYear" : 500
+	},
+	{
+		"id" : 26,
+		"createdAt" : "2025-11-21 07:39:34.062",
+		"updatedAt" : "2025-11-21 07:39:34.062",
+		"endYear" : 999,
+		"headline" : "Knowledge Flourishes: Scholars Illuminate Science",
+		"startYear" : 750
+	},
+	{
+		"id" : 27,
+		"createdAt" : "2025-11-21 07:40:10.387",
+		"updatedAt" : "2025-11-21 07:40:10.387",
+		"endYear" : 1499,
+		"headline" : "Conflict and Innovation: Plagues, Networks, and Exchange",
+		"startYear" : 1300
+	},
+	{
+		"id" : 28,
+		"createdAt" : "2025-11-21 07:40:13.507",
+		"updatedAt" : "2025-11-21 07:40:13.507",
+		"endYear" : 1599,
+		"headline" : "Exploration and Enlightenment: Art, Science, and New Worlds Collide",
+		"startYear" : 1500
+	},
+	{
+		"id" : 29,
+		"createdAt" : "2025-11-21 07:40:29.813",
+		"updatedAt" : "2025-11-21 07:40:29.813",
+		"endYear" : 1699,
+		"headline" : "Reason Reigns: Discoveries Challenge the Old World Order",
+		"startYear" : 1600
+	},
+	{
+		"id" : 30,
+		"createdAt" : "2025-11-21 07:40:39.027",
+		"updatedAt" : "2025-11-21 08:22:08.293",
+		"endYear" : 1799,
+		"headline" : "Ideas and Empires: Revolutions Reshape Societies",
+		"startYear" : 1700
+	},
+	{
+		"id" : 31,
+		"createdAt" : "2025-11-21 07:40:45.259",
+		"updatedAt" : "2025-11-21 09:06:04.761",
+		"endYear" : 1869,
+		"headline" : "Machines Transform Lives: Cities, Factories, and Steam Power Rise",
+		"startYear" : 1800
+	},
+	{
+		"id" : 33,
+		"createdAt" : "2025-11-21 08:32:11.218",
+		"updatedAt" : "2025-11-21 10:48:25.635",
+		"endYear" : 1945,
+		"headline" : "Global Conflict Engulfs Nations: Devastation and Resilience Define an Era",
+		"startYear" : 1914
+	},
+	{
+		"id" : 34,
+		"createdAt" : "2025-11-21 08:32:11.313",
+		"updatedAt" : "2025-11-21 12:44:48.825",
+		"endYear" : 1990,
+		"headline" : "Ideologies Clash: Nuclear Tensions and Space Race",
+		"startYear" : 1946
+	},
+	{
+		"id" : 35,
+		"createdAt" : "2025-11-21 08:32:17.920",
+		"updatedAt" : "2025-11-21 08:32:43.651",
+		"endYear" : 2025,
+		"headline" : "Digital Revolution: Technology Redefines Society",
+		"startYear" : 1991
+	},
+	{
+		"id" : 36,
+		"createdAt" : "2025-11-21 10:50:17.564",
+		"updatedAt" : "2025-11-21 10:56:40.291",
+		"endYear" : -1501,
+		"headline" : "Empires Forge Ahead: Trade and Monumental Architecture",
+		"startYear" : -2000
+	},
+	{
+		"id" : 38,
+		"createdAt" : "2025-11-21 11:12:05.293",
+		"updatedAt" : "2025-11-21 11:16:07.021",
+		"endYear" : -501,
+		"headline" : "Tools of Power: Iron Transforms Society",
+		"startYear" : -1200
+	},
+	{
+		"id" : 40,
+		"createdAt" : "2025-11-21 11:15:25.487",
+		"updatedAt" : "2025-11-21 11:15:54.006",
+		"endYear" : 1913,
+		"headline" : "The World Connects: Colonies and Commerce",
+		"startYear" : 1870
+	},
+	{
+		"id" : 41,
+		"createdAt" : "2025-11-21 11:15:25.487",
+		"updatedAt" : "2025-11-21 11:15:54.006",
+		"endYear" : -20001,
+		"headline" : "Origins of Humanity: The First Steps on an Uncharted Earth",
+		"startYear" : -3000000
+	},
+	{
+		"id" : 42,
+		"createdAt" : "2025-11-21 11:15:25.487",
+		"updatedAt" : "2025-11-21 11:15:54.006",
+		"endYear" : -10001,
+		"headline" : "The Stone Age Frontier: Humans Master Fire and Survival",
+		"startYear" : -20000
+	}
+]

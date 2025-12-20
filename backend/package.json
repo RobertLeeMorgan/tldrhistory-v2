@@ -7,7 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.ts",
     "build": "tsc -b && cp -r public dist",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:seed": "ts-node prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +35,6 @@
     "graphql-type-json": "^0.3.2",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.15.3",
     "node-cache": "^5.1.2",
     "openai": "^6.9.0",
     "p-queue": "^9.0.0",

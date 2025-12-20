@@ -57,9 +57,9 @@ export function queryFilters(filter: any = {}, overrides: any = {}) {
     if (filter.search?.length) {
       const search = filter.search;
       orConditions.push(
-        { name: { contains: search } },
-        { startDescription: { contains: search } },
-        { endDescription: { contains: search } }
+        { name: { contains: search, mode: "insensitive" } },
+        { startDescription: { contains: search, mode: "insensitive" } },
+        { endDescription: { contains: search, mode: "insensitive" } }
       );
     }
 

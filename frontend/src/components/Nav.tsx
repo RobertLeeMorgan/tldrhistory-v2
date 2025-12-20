@@ -1,11 +1,12 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
 import { RomanHelmet, UserIcon } from "../icons/icons";
 import { motion } from "framer-motion";
 
 export default function Nav() {
   const { isAuth, logout } = useAuth();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -17,7 +18,10 @@ export default function Nav() {
   async function handleLogout() {
     try {
       logout();
-      toast("You are logged out, bye for now!");
+      addToast({
+        message: "You are logged out, bye for now!",
+        type: "info",
+      });
       navigate("/");
     } catch (error) {
       console.error(error);

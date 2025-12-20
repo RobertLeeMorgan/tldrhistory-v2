@@ -2,6 +2,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+import fs from "fs";
+import path from "path";
+
+function loadJson<T>(file: string): T[] {
+  const fullPath = path.join(__dirname, "data", file);
+  return JSON.parse(fs.readFileSync(fullPath, "utf-8"));
+}
+
 async function main() {
   const countriesData = [
     { name: "Antarctica", continent: "Antarctica" as const },
@@ -280,6 +288,91 @@ async function main() {
     data: subjectsData,
     skipDuplicates: true,
   });
+
+  console.log("Seed finished!");
+
+  // ---- COUNTRIES ----
+  await prisma.country.createMany({
+    data: countriesData,
+    skipDuplicates: true,
+  });
+
+  // ---- POPULATION ----
+  await prisma.population.createMany({
+    data: populationData,
+    skipDuplicates: true,
+  });
+
+  // ---- SUBJECTS ----
+  await prisma.subject.createMany({
+    data: subjectsData,
+    skipDuplicates: true,
+  });
+
+  // ---- GROUPS ----
+  const groupsData = loadJson<any>("groups.json");
+  await prisma.group.createMany({
+    data: groupsData,
+    skipDuplicates: true,
+  });
+
+  // ---- USERS ----
+  const usersDataRaw = loadJson<any>("users.json");
+
+  const usersData = usersDataRaw.map(
+    ({ createdAt, updatedAt, ...rest }) => rest
+  );
+
+  await prisma.user.createMany({
+    data: usersData,
+    skipDuplicates: true,
+  });
+
+  // ---- SUMMARY ----
+  const summaryDataRaw = loadJson<any>("summary.json");
+
+  const summaryData = summaryDataRaw.map(
+    ({ createdAt, updatedAt, ...rest }) => rest
+  );
+
+  await prisma.summary.createMany({
+    data: summaryData,
+    skipDuplicates: true,
+  });
+
+  // ---- POSTS ----
+  const postsDataRaw = loadJson<any>("posts.json");
+
+  const postsData = postsDataRaw.map(
+    ({ createdAt, updatedAt, civilisation, ...rest }) => ({
+      ...rest,
+      civilisation: Boolean(civilisation),
+    })
+  );
+
+  await prisma.post.createMany({
+    data: postsData,
+    skipDuplicates: true,
+  });
+
+  // ---- POST SUBJECTS (JOIN TABLE) ----
+  const postSubjectsData = loadJson<any>("postsubjects.json");
+
+  for (const { A, B } of postSubjectsData) {
+    const postId = Number(A);
+    const subjectId = Number(B);
+
+    if (!postId || !subjectId) continue;
+
+    await prisma.post.update({
+      where: { id: postId },
+      data: {
+        subjects: {
+          connect: [{ id: subjectId }],
+        },
+      },
+    });
+  }
 
   console.log("Seed finished!");
 }

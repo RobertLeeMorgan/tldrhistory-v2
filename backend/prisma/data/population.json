@@ -1,0 +1,261 @@
+[
+	{
+		"yearStart" : -300000,
+		"yearEnd" : -200001,
+		"population" : 10000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -200000,
+		"yearEnd" : -100001,
+		"population" : 50000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -100000,
+		"yearEnd" : -50001,
+		"population" : 100000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -50000,
+		"yearEnd" : -10001,
+		"population" : 500000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -10000,
+		"yearEnd" : -9001,
+		"population" : 2000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -9000,
+		"yearEnd" : -5001,
+		"population" : 4000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -5000,
+		"yearEnd" : -4001,
+		"population" : 5000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -4000,
+		"yearEnd" : -3001,
+		"population" : 7000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -3000,
+		"yearEnd" : -2001,
+		"population" : 14000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -2000,
+		"yearEnd" : -1001,
+		"population" : 27000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -1000,
+		"yearEnd" : -501,
+		"population" : 50000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -500,
+		"yearEnd" : -201,
+		"population" : 100000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : -200,
+		"yearEnd" : 300,
+		"population" : 150000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 201,
+		"yearEnd" : 600,
+		"population" : 190000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 601,
+		"yearEnd" : 700,
+		"population" : 200000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 701,
+		"yearEnd" : 800,
+		"population" : 210000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 801,
+		"yearEnd" : 900,
+		"population" : 220000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 901,
+		"yearEnd" : 1000,
+		"population" : 240000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1001,
+		"yearEnd" : 1100,
+		"population" : 275000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1101,
+		"yearEnd" : 1200,
+		"population" : 320000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1201,
+		"yearEnd" : 1400,
+		"population" : 360000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1401,
+		"yearEnd" : 1500,
+		"population" : 350000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1501,
+		"yearEnd" : 1600,
+		"population" : 450000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1601,
+		"yearEnd" : 1700,
+		"population" : 500000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1701,
+		"yearEnd" : 1759,
+		"population" : 610000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1760,
+		"yearEnd" : 1803,
+		"population" : 770000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1804,
+		"yearEnd" : 1849,
+		"population" : 1000000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1850,
+		"yearEnd" : 1899,
+		"population" : 1200000000,
+		"createdAt" : "2025-11-15 06:39:56.454",
+		"updatedAt" : "2025-11-15 06:39:56.454"
+	},
+	{
+		"yearStart" : 1900,
+		"yearEnd" : 1919,
+		"population" : 1650000000,
+		"createdAt" : "2025-11-29 13:39:56.454",
+		"updatedAt" : "2025-11-29 13:39:56.454"
+	},
+	{
+		"yearStart" : 1920,
+		"yearEnd" : 1939,
+		"population" : 2000000000,
+		"createdAt" : "2025-11-29 13:39:56.454",
+		"updatedAt" : "2025-11-29 13:39:56.454"
+	},
+	{
+		"yearStart" : 1940,
+		"yearEnd" : 1959,
+		"population" : 2500000000,
+		"createdAt" : "2025-11-29 13:39:56.454",
+		"updatedAt" : "2025-11-29 13:39:56.454"
+	},
+	{
+		"yearStart" : 1960,
+		"yearEnd" : 1979,
+		"population" : 3500000000,
+		"createdAt" : "2025-11-29 13:39:56.454",
+		"updatedAt" : "2025-11-29 13:39:56.454"
+	},
+	{
+		"yearStart" : 1980,
+		"yearEnd" : 1989,
+		"population" : 4500000000,
+		"createdAt" : "2025-11-29 13:39:56.454",
+		"updatedAt" : "2025-11-29 13:39:56.454"
+	},
+	{
+		"yearStart" : 1990,
+		"yearEnd" : 1999,
+		"population" : 5300000000,
+		"createdAt" : "2025-11-29 13:39:56.454",
+		"updatedAt" : "2025-11-29 13:39:56.454"
+	},
+	{
+		"yearStart" : 2000,
+		"yearEnd" : 2009,
+		"population" : 6100000000,
+		"createdAt" : "2025-11-29 13:39:56.454",
+		"updatedAt" : "2025-11-29 13:39:56.454"
+	},
+	{
+		"yearStart" : 2010,
+		"yearEnd" : 2019,
+		"population" : 7000000000,
+		"createdAt" : "2025-11-29 13:39:56.454",
+		"updatedAt" : "2025-11-29 13:39:56.454"
+	},
+	{
+		"yearStart" : 2020,
+		"yearEnd" : 2026,
+		"population" : 8230000000,
+		"createdAt" : "2025-11-29 13:39:56.454",
+		"updatedAt" : "2025-11-29 13:39:56.454"
+	}
+]

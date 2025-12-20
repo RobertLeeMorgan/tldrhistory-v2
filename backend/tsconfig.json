@@ -12,6 +12,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "prisma", "public/dist"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "public/dist"],
+  "exclude": ["node_modules", "prisma", "dist"]
 }

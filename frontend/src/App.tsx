@@ -16,6 +16,7 @@ import SuggestEdit from "./pages/SuggestEdit";
 import User from "./pages/User";
 import RootLayout from "./pages/RootLayout";
 import ReviewSuggestions from "./pages/ReviewSuggestions";
+import { ToastProvider } from "./context/ToastContext";
 
 interface ProtectedRouteProps {
   element: React.ReactElement;
@@ -68,11 +69,13 @@ const router = createBrowserRouter([
 export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <EraProvider>
-          <RouterProvider router={router} />
-        </EraProvider>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <EraProvider>
+            <RouterProvider router={router} />
+          </EraProvider>
+        </AuthProvider>
+      </ToastProvider>
     </QueryClientProvider>
   );
 };

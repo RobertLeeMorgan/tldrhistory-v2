@@ -1,0 +1,20 @@
+[
+	{
+		"id" : 6,
+		"username" : "HistOracle",
+		"email" : "historacle@tldrhistory.local",
+		"password" : "$2b$12$UM7rmxJItt9BSbH/vdbGt.yBWgEmgbMLP.WMqVt6il4bY9ECBUWSG",
+		"createdAt" : "2025-11-17 14:14:46.165",
+		"updatedAt" : "2025-11-17 14:14:46.165",
+		"role" : "BOT"
+	},
+	{
+		"id" : 7,
+		"username" : "Kushim",
+		"email" : "robleemorgan@gmail.com",
+		"password" : "$2b$12$ykEzmSC9Vj/I5yICIldb/.KVPzy299nkm90L7IDMdJZi/3/a96xEy",
+		"createdAt" : "2025-11-23 08:01:15.171",
+		"updatedAt" : "2025-11-23 08:01:15.171",
+		"role" : "ADMIN"
+	}
+]

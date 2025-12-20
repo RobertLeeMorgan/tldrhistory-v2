@@ -1,6 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Nav from "../components/Nav";
-import { ToastContainer } from "react-toastify";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo } from "react";
 import { prefetchInitialTimeline } from "../hooks/prefetchTimeline";
@@ -39,16 +38,6 @@ export default function RootLayout() {
           <Outlet />
         </motion.div>
       </AnimatePresence>
-
-      <ToastContainer
-        position="top-center"
-        autoClose={4000}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable
-        theme="dark"
-      />
     </>
   );
 }

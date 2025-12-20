@@ -1,3 +1,0 @@
-ALTER TABLE `post` 
-  MODIFY COLUMN `imageUrl` TEXT,
-  MODIFY COLUMN `sourceUrl` TEXT;

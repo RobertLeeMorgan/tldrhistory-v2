@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
+import { useToast } from "./ToastContext";
 
 interface AuthState {
   token: string | null;
@@ -27,6 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     role: null,
   });
   const [loading, setLoading] = useState(true);
+  const { addToast } = useToast();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -57,6 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("role", user.role);
     localStorage.setItem("expiresAt", expiresAt.toString());
 
+    addToast({ message: "Welcome back!", type: "success" });
     setIsAuth({ token, id: user.id, username: user.username, role: user.role });
   }
 
