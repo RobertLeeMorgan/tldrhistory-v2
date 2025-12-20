@@ -21,25 +21,28 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        imgSrc: ["'self'", "data:", "https://upload.wikimedia.org"],
-        scriptSrc: ["'self'"],
-        styleSrc: ["'self'"],
-      },
+helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: [
+        "'self'",
+        "https://tldrhistory-v2.onrender.com",
+        "https://www.tldrhistory.xyz",
+      ],
+      imgSrc: ["'self'", "data:", "https://upload.wikimedia.org"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
     },
-  })
-);
+  },
+});
 app.use(compression());
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
       "https://www.tldrhistory.xyz",
-      "https://www.tldrhistory.onrender.com",
+      "https://tldrhistory-v2.onrender.com",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
