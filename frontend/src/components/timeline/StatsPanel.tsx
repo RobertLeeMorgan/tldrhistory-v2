@@ -10,6 +10,7 @@ import type { TimelineFilter } from "../drawer/drawerTypes";
 import { motion, AnimatePresence, useTransform } from "framer-motion";
 import { useCountAnimation } from "../../hooks/useCountUp";
 import { useMemo } from "react";
+import WorldMap from "../map/WorldMap";
 
 export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
   const { startYear, endYear, label, Icon } = useEra();
@@ -44,28 +45,12 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
     );
   }, [civilisationsRaw]);
 
-  const civCount = useCountAnimation(civilisations.length);
-
-  const topFive = civilisations.slice(0, 5);
-
   return (
-    <div className="stats sm:stats-vertical w-full shadow bg-base-200 rounded-lg border border-base-300 p-0 sm:p-1 md:p-2 lg:p-3 absolute bottom-0 sm:static sm:bottom-auto">
+    <div className="grid grid-cols-3 sm:grid-cols-1 stats sm:stats-vertical w-full shadow bg-base-200 rounded-lg border border-base-300 p-0 sm:p-1 md:p-2 lg:p-3 absolute bottom-0 sm:static sm:bottom-auto">
       {/* Population */}
       <div className="stat p-3 sm:gap-2">
-        <div className="stat-figure text-primary hidden sm:block">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 stroke-current"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"
-            />
-          </svg>
+        <div className="stat-figure hidden xs:block">
+          <Icon className="w-8 h-8 text-primary" />
         </div>
 
         <div className="stat-title truncate">Population</div>
@@ -74,7 +59,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
           {isLoading || populationValue == null ? (
             <span className="loading loading-spinner loading-md justify-center m-auto"></span>
           ) : (
-            <motion.div>{formattedPopulation}</motion.div>
+            <motion.div className="truncate">{formattedPopulation}</motion.div>
           )}
         </div>
         <div className="stat-desc truncate">{label}</div>
@@ -147,38 +132,9 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
         </div>
         <div className="stat-desc truncate">Highly influential event</div>
       </div>
-
       {/* Civilisations */}
-      <div className="stat p-3 sm:gap-2">
-        <div className="stat-figure text-accent hidden xs:block">
-          <Icon className="w-8 h-8 text-accent" />
-        </div>
-        <div className="stat-title truncate">
-          Active <span className="hidden sm:inline-block"> Civilisations </span>
-        </div>
-        <motion.div className="text-accent font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl">
-          {civCount}
-        </motion.div>
-        <div className="stat-desc sm:hidden xs:block truncate">
-          Civilisations
-        </div>
-        <div className="stat-desc flex flex-wrap gap-1 place-content-start overflow-y-auto h-18 hidden sm:flex">
-          Top 5:
-          <AnimatePresence mode="popLayout">
-            {topFive.map((c) => (
-              <motion.span
-                key={c.id}
-                className="badge md:badge-sm badge-xs text-accent badge-outline truncate max-w-full"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-              >
-                {cleanName(c.name)}
-              </motion.span>
-            ))}
-          </AnimatePresence>
-        </div>
+      <div className="stat p-3 px-0 sm:gap-2 max-h-48">
+        <WorldMap civilisations={civilisations} />
       </div>
     </div>
   );

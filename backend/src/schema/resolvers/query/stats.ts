@@ -34,14 +34,14 @@ export async function getSignificant(
 
   let post = await prisma.post.findFirst({
     where: { ...baseWhere, startSignificance: 1 },
-    orderBy: { endSignificance: 'desc' },
+    orderBy: { endSignificance: "desc" },
     select: { id: true, name: true, imageUrl: true },
   });
 
   if (!post) {
     post = await prisma.post.findFirst({
       where: baseWhere,
-      orderBy: { startSignificance: 'desc' },
+      orderBy: { startSignificance: "desc" },
       select: { id: true, name: true, imageUrl: true },
     });
   }
@@ -67,18 +67,12 @@ export async function getCivilisation(
     OR: [
       {
         startYear: { lte: endYear },
-        OR: [
-          { endYear: { gte: startYear } },
-          { endYear: 0 },
-        ],
+        OR: [{ endYear: { gte: startYear } }, { endYear: 0 }],
         startSignificance: { gt: 0 },
       },
       {
         startYear: { lte: endYear },
-        OR: [
-          { endYear: { gte: startYear } },
-          { endYear: 0 },
-        ],
+        OR: [{ endYear: { gte: startYear } }, { endYear: 0 }],
         endSignificance: { gt: 0 },
       },
     ],
@@ -87,6 +81,6 @@ export async function getCivilisation(
   return prisma.post.findMany({
     where,
     orderBy: { startSignificance: "desc" },
+    include: { country: true, group: true},
   });
 }
-

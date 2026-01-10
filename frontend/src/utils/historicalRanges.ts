@@ -34,8 +34,8 @@ export interface HistoricalRange {
 export const HISTORICAL_RANGES: HistoricalRange[] = [
   // Prehistory & Early Civilizations
   {
-    label: "Early Prehistory",
-    start: -3000000,
+    label: "Paleolithic Era",
+    start: -300000,
     end: -20001,
     icon: GiCaveEntrance,
   },

@@ -1,296 +1,326 @@
 [
-	{
-		"id" : 1,
-		"name" : "Ancient Egypt",
-		"description" : "Civilization along the Nile, famous for pharaohs, pyramids, and hieroglyphs.",
-		"icon" : "GiEgyptianPyramids"
-	},
-	{
-		"id" : 2,
-		"name" : "Ancient Greece",
-		"description" : "City-states, philosophy, democracy, and classical art.",
-		"icon" : "GiLaurelCrown"
-	},
-	{
-		"id" : 3,
-		"name" : "Ancient Rome",
-		"description" : "Republic and Empire, law, engineering, and military conquests.",
-		"icon" : "GiColiseum"
-	},
-	{
-		"id" : 4,
-		"name" : "Mesopotamia",
-		"description" : "The cradle of civilization: Sumerians, Akkadians, Babylonians, Assyrians.",
-		"icon" : "GiScrollUnfurled"
-	},
-	{
-		"id" : 5,
-		"name" : "Ancient China",
-		"description" : "Dynasties, Confucianism, Great Wall, and early inventions.",
-		"icon" : "GiStoneWall"
-	},
-	{
-		"id" : 6,
-		"name" : "Medieval Europe",
-		"description" : "Feudalism, knights, castles, and the Catholic Church’s influence.",
-		"icon" : "GiVisoredHelm"
-	},
-	{
-		"id" : 7,
-		"name" : "Renaissance",
-		"description" : "Cultural rebirth, art, science, and humanism.",
-		"icon" : "GiPalette"
-	},
-	{
-		"id" : 8,
-		"name" : "Islamic Golden Age",
-		"description" : "Science, philosophy, math, and cultural flowering across the Islamic world.",
-		"icon" : "GiSamaraMosque"
-	},
-	{
-		"id" : 9,
-		"name" : "Viking Age",
-		"description" : "Scandinavian seafarers, exploration, and raids.",
-		"icon" : "GiVikingHelmet"
-	},
-	{
-		"id" : 10,
-		"name" : "Precolonial North America",
-		"description" : "Indigenous North American cultures—Mississippian, Hopewell, Ancestral Pueblo, Iroquois.",
-		"icon" : "GiTotem"
-	},
-	{
-		"id" : 11,
-		"name" : "Mongol Empire",
-		"description" : "Largest contiguous land empire, trade, and conquest across Eurasia.",
-		"icon" : "GiHorseHead"
-	},
-	{
-		"id" : 12,
-		"name" : "Byzantine Empire",
-		"description" : "Eastern Roman Empire, Orthodox Christianity, and monumental architecture.",
-		"icon" : "GiByzantinTemple"
-	},
-	{
-		"id" : 14,
-		"name" : "Industrial Revolution",
-		"description" : "Technological, economic, and social changes from 18th–19th century.",
-		"icon" : "GiFactory"
-	},
-	{
-		"id" : 15,
-		"name" : "Modern Era",
-		"description" : "20th–21st century global history, wars, technology, and politics.",
-		"icon" : "GiEarthAmerica"
-	},
-	{
-		"id" : 16,
-		"name" : "Ottoman Empire",
-		"description" : "Multiethnic empire bridging Europe, Asia, and Africa.",
-		"icon" : "GiCrossedSabres"
-	},
-	{
-		"id" : 17,
-		"name" : "Sub-Saharan Kingdoms",
-		"description" : "West and Central African empires like Mali, Songhai, and Great Zimbabwe.",
-		"icon" : "GiCeremonialMask"
-	},
-	{
-		"id" : 18,
-		"name" : "Mesoamerica",
-		"description" : "Ancient civilizations of Mexico and Central America, like Maya and Aztec.",
-		"icon" : "GiMayanPyramid"
-	},
-	{
-		"id" : 19,
-		"name" : "Andean Civilizations",
-		"description" : "Pre-Columbian cultures of the Andes, including Inca, Moche, and Nazca.",
-		"icon" : "GiMountaintop"
-	},
-	{
-		"id" : 20,
-		"name" : "Ancient India",
-		"description" : "Early Indian civilizations including Indus Valley and Vedic culture.",
-		"icon" : "GiLotusFlower"
-	},
-	{
-		"id" : 21,
-		"name" : "Persian Empire",
-		"description" : "Empire from Greece to India known for tolerance, roads, and rulers like Cyrus.",
-		"icon" : "GiWingedEmblem"
-	},
-	{
-		"id" : 22,
-		"name" : "Imperial China",
-		"description" : "Dynastic China from Qin to Qing",
-		"icon" : "GiPagoda"
-	},
-	{
-		"id" : 23,
-		"name" : "Early Islamic Period",
-		"description" : "Founding phase of Islam with rapid expansion and early caliphate rule.",
-		"icon" : "GiArabicDoor"
-	},
-	{
-		"id" : 24,
-		"name" : "Baroque",
-		"description" : "Highly ornate, dramatic art style with bold motion and emotional intensity.",
-		"icon" : "GiMusicalNotes"
-	},
-	{
-		"id" : 25,
-		"name" : "Pirates",
-		"description" : "Seafaring outlaws known for raiding ships, hidden treasure, and skull-and-crossbones lore.",
-		"icon" : "GiPirateFlag"
-	},
-	{
-		"id" : 26,
-		"name" : "Classical Japan",
-		"description" : "Imperial court, literature, and culture flourish.",
-		"icon" : "GiJapaneseBridge"
-	},
-	{
-		"id" : 27,
-		"name" : "Feudal Japan",
-		"description" : "Era of samurai, ninja, castles, clans, and constant internal warfare.",
-		"icon" : "GiSamuraiHelmet"
-	},
-	{
-		"id" : 28,
-		"name" : "Modern Japan",
-		"description" : "Time of Meiji Restoration, rapid modernization, industrialization, and military expansion.",
-		"icon" : "GiJapan"
-	},
-	{
-		"id" : 29,
-		"name" : "Colonial Spanish America",
-		"description" : "Spanish conquest, colonization, and independence wars across South America.",
-		"icon" : "GiGalleon"
-	},
-	{
-		"id" : 30,
-		"name" : "Colonial and Imperial Brazil",
-		"description" : "Portuguese colonization, economic growth, and transition to Brazilian Empire.",
-		"icon" : "GiBrazilFlag"
-	},
-	{
-		"id" : 31,
-		"name" : "Precolonial Southeast Asia",
-		"description" : "Southeast Asian civilizations before European contact—Khmer, Majapahit, Pagan, Srivijaya.",
-		"icon" : "GiTempleGate"
-	},
-	{
-		"id" : 32,
-		"name" : "West African Empires",
-		"description" : "The great empires of West Africa—Ghana, Mali, Songhai, Hausa, Yoruba states.",
-		"icon" : "GiDjembe"
-	},
-	{
-		"id" : 33,
-		"name" : "Silk Road",
-		"description" : "Trans-Eurasian trade cultures—Sogdians, oasis cities, Central Asian khanates.",
-		"icon" : "GiCaravan"
-	},
-	{
-		"id" : 34,
-		"name" : "Polynesia and Oceania",
-		"description" : "Pacific civilizations—Lapita, Māori, Hawaiians, navigators of Polynesia and Micronesia.",
-		"icon" : "GiCanoe"
-	},
-	{
-		"id" : 35,
-		"name" : "Early Modern Europe",
-		"description" : "Europe from 1500–1789—Reformation, absolutism, scientific revolution, revolutions of thought.",
-		"icon" : "GiQuillInk"
-	},
-	{
-		"id" : 36,
-		"name" : "Reformation and Religious Wars",
-		"description" : "Protestant Reformation, Catholic response, and the great religious wars of Europe.",
-		"icon" : "GiHolyGrail"
-	},
-	{
-		"id" : 37,
-		"name" : "Colonial Southeast Asia",
-		"description" : "European rule in Southeast Asia—Dutch East Indies, Philippines, Indochina, British Malaya.",
-		"icon" : "GiAnchor"
-	},
-	{
-		"id" : 38,
-		"name" : "The Enlightenment",
-		"description" : "Age of reason—philosophy, science, and political thought shaping the modern world.",
-		"icon" : "GiLightBulb"
-	},
-	{
-		"id" : 39,
-		"name" : "Cold War",
-		"description" : "Global rivalry between the US and USSR—proxy wars, nuclear politics, geopolitics.",
-		"icon" : "GiSubmarineMissile"
-	},
-	{
-		"id" : 40,
-		"name" : "Globalization",
-		"description" : "Modern interconnected world—global trade, technology, communication, migration.",
-		"icon" : "GiWireframeGlobe"
-	},
-	{
-		"id" : 41,
-		"name" : "Black History",
-		"description" : "History of Black communities, from slavery and diaspora to civil rights and culture.",
-		"icon" : "GiFist"
-	},
-	{
-		"id" : 42,
-		"name" : "Feminism",
-		"description" : "Movements for women’s rights, equality, and social, political, and economic liberation.",
-		"icon" : "GiFemale"
-	},
-	{
-		"id" : 43,
-		"name" : "Pre-Columbian Brazil",
-		"description" : "Indigenous societies and cultures before European arrival.",
-		"icon" : "GiSpearFeather"
-	},
-	{
-		"id" : 44,
-		"name" : "Post-Independence South America",
-		"description" : "Era after Spanish colonies gained independence.",
-		"icon" : "GiSouthAmerica"
-	},
-	{
-		"id" : 45,
-		"name" : "Colonial North America",
-		"description" : "Includes early exploration, colonization, European settlement, and pre-Revolutionary society.",
-		"icon" : "GiTreasureMap"
-	},
-	{
-		"id" : 46,
-		"name" : "Early Republic",
-		"description" : "From independence through the early federal period, westward expansion, and up to the Civil War.",
-		"icon" : "GiMusket"
-	},
-	{
-		"id" : 47,
-		"name" : "Gilded Age",
-		"description" : "Rapid US industrial growth with wealth, inequality, and labor unrest.",
-		"icon" : "GiRevolver"
-	},
-	{
-		"id" : 48,
-		"name" : "Modern China",
-		"description" : "The post-imperial era marked by rapid reform, conflict, and major global rise.",
-		"icon" : "GiModernCity"
-	},
-	{
-		"id" : 49,
-		"name" : "Prehistory",
-		"description" : "Early humans, tools, art, and the rise of civilization.",
-		"icon" : "GiStoneAxe"
-	},
-	{
-		"id" : 50,
-		"name" : "WWII",
-		"description" : "Global conflict from 1939–1945 reshaping nations, politics, and societies.",
-		"icon" : "GiTank"
-	}
+  {
+    "id": 1,
+    "name": "Ancient Egypt",
+    "description": "Civilization along the Nile, famous for pharaohs, pyramids, and hieroglyphs.",
+    "icon": "GiEgyptianPyramids"
+  },
+  {
+    "id": 2,
+    "name": "Ancient Greece",
+    "description": "City-states, philosophy, democracy, and classical art.",
+    "icon": "GiLaurelCrown"
+  },
+  {
+    "id": 3,
+    "name": "Ancient Rome",
+    "description": "Republic and Empire, law, engineering, and military conquests.",
+    "icon": "GiColiseum"
+  },
+  {
+    "id": 4,
+    "name": "Mesopotamia",
+    "description": "The cradle of civilization: Sumerians, Akkadians, Babylonians, Assyrians.",
+    "icon": "GiScrollUnfurled"
+  },
+  {
+    "id": 5,
+    "name": "Ancient China",
+    "description": "Dynasties, Confucianism, Great Wall, and early inventions.",
+    "icon": "GiStoneWall"
+  },
+  {
+    "id": 6,
+    "name": "Medieval Europe",
+    "description": "Feudalism, knights, castles, and the Catholic Church’s influence.",
+    "icon": "GiVisoredHelm"
+  },
+  {
+    "id": 7,
+    "name": "Renaissance",
+    "description": "Cultural rebirth, art, science, and humanism.",
+    "icon": "GiPalette"
+  },
+  {
+    "id": 8,
+    "name": "Islamic Golden Age",
+    "description": "Science, philosophy, math, and cultural flowering across the Islamic world.",
+    "icon": "GiSamaraMosque"
+  },
+  {
+    "id": 9,
+    "name": "Viking Age",
+    "description": "Scandinavian seafarers, exploration, and raids.",
+    "icon": "GiVikingHelmet"
+  },
+  {
+    "id": 10,
+    "name": "Precolonial North America",
+    "description": "Indigenous North American cultures—Mississippian, Hopewell, Ancestral Pueblo, Iroquois.",
+    "icon": "GiTotem"
+  },
+  {
+    "id": 11,
+    "name": "Mongol Empire",
+    "description": "Largest contiguous land empire, trade, and conquest across Eurasia.",
+    "icon": "GiHorseHead"
+  },
+  {
+    "id": 12,
+    "name": "Byzantine Empire",
+    "description": "Eastern Roman Empire, Orthodox Christianity, and monumental architecture.",
+    "icon": "GiByzantinTemple"
+  },
+  {
+    "id": 14,
+    "name": "Industrial Revolution",
+    "description": "Technological, economic, and social changes from 18th–19th century.",
+    "icon": "GiFactory"
+  },
+  {
+    "id": 15,
+    "name": "Modern Era",
+    "description": "20th–21st century global history, wars, technology, and politics.",
+    "icon": "GiEarthAmerica"
+  },
+  {
+    "id": 16,
+    "name": "Ottoman Empire",
+    "description": "Multiethnic empire bridging Europe, Asia, and Africa.",
+    "icon": "GiCrossedSabres"
+  },
+  {
+    "id": 17,
+    "name": "Sub-Saharan Kingdoms",
+    "description": "West and Central African empires like Mali, Songhai, and Great Zimbabwe.",
+    "icon": "GiCeremonialMask"
+  },
+  {
+    "id": 18,
+    "name": "Mesoamerica",
+    "description": "Ancient civilizations of Mexico and Central America, like Maya and Aztec.",
+    "icon": "GiMayanPyramid"
+  },
+  {
+    "id": 19,
+    "name": "Andean Civilizations",
+    "description": "Pre-Columbian cultures of the Andes, including Inca, Moche, and Nazca.",
+    "icon": "GiMountaintop"
+  },
+  {
+    "id": 20,
+    "name": "Ancient India",
+    "description": "Early Indian civilizations including Indus Valley and Vedic culture.",
+    "icon": "GiLotusFlower"
+  },
+  {
+    "id": 21,
+    "name": "Persian Empire",
+    "description": "Empire from Greece to India known for tolerance, roads, and rulers like Cyrus.",
+    "icon": "GiWingedEmblem"
+  },
+  {
+    "id": 22,
+    "name": "Imperial China",
+    "description": "Dynastic China from Qin to Qing",
+    "icon": "GiPagoda"
+  },
+  {
+    "id": 23,
+    "name": "Early Islamic Period",
+    "description": "Founding phase of Islam with rapid expansion and early caliphate rule.",
+    "icon": "GiArabicDoor"
+  },
+  {
+    "id": 24,
+    "name": "Baroque",
+    "description": "Highly ornate, dramatic art style with bold motion and emotional intensity.",
+    "icon": "GiMusicalNotes"
+  },
+  {
+    "id": 25,
+    "name": "Pirates",
+    "description": "Seafaring outlaws known for raiding ships, hidden treasure, and skull-and-crossbones lore.",
+    "icon": "GiPirateFlag"
+  },
+  {
+    "id": 26,
+    "name": "Classical Japan",
+    "description": "Imperial court, literature, and culture flourish.",
+    "icon": "GiJapaneseBridge"
+  },
+  {
+    "id": 27,
+    "name": "Feudal Japan",
+    "description": "Era of samurai, ninja, castles, clans, and constant internal warfare.",
+    "icon": "GiSamuraiHelmet"
+  },
+  {
+    "id": 28,
+    "name": "Modern Japan",
+    "description": "Time of Meiji Restoration, rapid modernization, industrialization, and military expansion.",
+    "icon": "GiJapan"
+  },
+  {
+    "id": 29,
+    "name": "Colonial Spanish America",
+    "description": "Spanish conquest, colonization, and independence wars across South America.",
+    "icon": "GiGalleon"
+  },
+  {
+    "id": 30,
+    "name": "Colonial and Imperial Brazil",
+    "description": "Portuguese colonization, economic growth, and transition to Brazilian Empire.",
+    "icon": "GiBrazilFlag"
+  },
+  {
+    "id": 31,
+    "name": "Precolonial Southeast Asia",
+    "description": "Southeast Asian civilizations before European contact—Khmer, Majapahit, Pagan, Srivijaya.",
+    "icon": "GiTempleGate"
+  },
+  {
+    "id": 32,
+    "name": "West African Empires",
+    "description": "The great empires of West Africa—Ghana, Mali, Songhai, Hausa, Yoruba states.",
+    "icon": "GiDjembe"
+  },
+  {
+    "id": 33,
+    "name": "Silk Road",
+    "description": "Trans-Eurasian trade cultures—Sogdians, oasis cities, Central Asian khanates.",
+    "icon": "GiCaravan"
+  },
+  {
+    "id": 34,
+    "name": "Polynesia and Oceania",
+    "description": "Pacific civilizations—Lapita, Māori, Hawaiians, navigators of Polynesia and Micronesia.",
+    "icon": "GiCanoe"
+  },
+  {
+    "id": 35,
+    "name": "Early Modern Europe",
+    "description": "Europe from 1500–1789—Reformation, absolutism, scientific revolution, revolutions of thought.",
+    "icon": "GiQuillInk"
+  },
+  {
+    "id": 36,
+    "name": "Reformation and Religious Wars",
+    "description": "Protestant Reformation, Catholic response, and the great religious wars of Europe.",
+    "icon": "GiHolyGrail"
+  },
+  {
+    "id": 37,
+    "name": "Colonial Southeast Asia",
+    "description": "European rule in Southeast Asia—Dutch East Indies, Philippines, Indochina, British Malaya.",
+    "icon": "GiAnchor"
+  },
+  {
+    "id": 38,
+    "name": "The Enlightenment",
+    "description": "Age of reason—philosophy, science, and political thought shaping the modern world.",
+    "icon": "GiLightBulb"
+  },
+  {
+    "id": 39,
+    "name": "Cold War",
+    "description": "Global rivalry between the US and USSR—proxy wars, nuclear politics, geopolitics.",
+    "icon": "GiSubmarineMissile"
+  },
+  {
+    "id": 40,
+    "name": "Globalization",
+    "description": "Modern interconnected world—global trade, technology, communication, migration.",
+    "icon": "GiWireframeGlobe"
+  },
+  {
+    "id": 41,
+    "name": "Black History",
+    "description": "History of Black communities, from slavery and diaspora to civil rights and culture.",
+    "icon": "GiFist"
+  },
+  {
+    "id": 42,
+    "name": "Feminism",
+    "description": "Movements for women’s rights, equality, and social, political, and economic liberation.",
+    "icon": "GiFemale"
+  },
+  {
+    "id": 43,
+    "name": "Pre-Columbian Brazil",
+    "description": "Indigenous societies and cultures before European arrival.",
+    "icon": "GiSpearFeather"
+  },
+  {
+    "id": 44,
+    "name": "Post-Independence South America",
+    "description": "Era after Spanish colonies gained independence.",
+    "icon": "GiSouthAmerica"
+  },
+  {
+    "id": 45,
+    "name": "Colonial North America",
+    "description": "Includes early exploration, colonization, European settlement, and pre-Revolutionary society.",
+    "icon": "GiTreasureMap"
+  },
+  {
+    "id": 46,
+    "name": "Early Republic",
+    "description": "From independence through the early federal period, westward expansion, and up to the Civil War.",
+    "icon": "GiMusket"
+  },
+  {
+    "id": 47,
+    "name": "Gilded Age",
+    "description": "Rapid US industrial growth with wealth, inequality, and labor unrest.",
+    "icon": "GiRevolver"
+  },
+  {
+    "id": 48,
+    "name": "Modern China",
+    "description": "The post-imperial era marked by rapid reform, conflict, and major global rise.",
+    "icon": "GiModernCity"
+  },
+  {
+    "id": 49,
+    "name": "Prehistory",
+    "description": "Early humans, tools, art, and the rise of civilization.",
+    "icon": "GiStoneAxe"
+  },
+  {
+    "id": 50,
+    "name": "WWII",
+    "description": "Global conflict from 1939–1945 reshaping nations, politics, and societies.",
+    "icon": "GiTank"
+  },
+  {
+    "id": 51,
+    "name": "British Empire",
+    "description": "The global empire of the United Kingdom, spanning colonies, protectorates, and dominions.",
+    "icon": "GiRoyalLove"
+  },
+  {
+    "id": 52,
+    "name": "French Empire",
+    "description": "France's overseas empire, including colonies in North America, Africa, and Asia.",
+    "icon": "GiFleurDeLys"
+  },
+  {
+    "id": 53,
+    "name": "Spanish Empire",
+    "description": "Spain's empire encompassing the Americas, Asia, and Europe, a dominant global power.",
+    "icon": "GiSpain"
+  },
+  {
+    "id": 54,
+    "name": "Dutch Empire",
+    "description": "The overseas holdings of the Netherlands, focused on trade and colonies.",
+    "icon": "GiDutchBike"
+  },
+  {
+    "id": 55,
+    "name": "Portuguese Empire",
+    "description": "Portugal's global maritime empire, one of the earliest European global empires.",
+    "icon": "GiPortugal"
+  }
 ]

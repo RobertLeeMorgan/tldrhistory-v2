@@ -7,6 +7,7 @@ import ModalHeader from "./ModalHeader";
 import ModalDescription from "./ModalDescription";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { createPortal } from "react-dom";
 
 interface PostModalProps {
   open: boolean;
@@ -15,6 +16,8 @@ interface PostModalProps {
 }
 
 export default function PostModal({ open, post, onClose }: PostModalProps) {
+  const modalRoot = document.getElementById("modal-root");
+  
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -30,11 +33,11 @@ export default function PostModal({ open, post, onClose }: PostModalProps) {
 
   const deleteMutation = useDeletePost(onClose);
 
-  if (!open || !post) return null;
+  if (!open || !post || !modalRoot) return null;
 
-  return (
+  return createPortal(
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm"
       onClick={onClose}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -58,7 +61,6 @@ export default function PostModal({ open, post, onClose }: PostModalProps) {
           </button>
 
           <ModalHeader post={post} />
-
           <ModalDescription post={post} />
 
           <div className="flex overflow-y-auto my-1 items-center mt-auto">
@@ -80,6 +82,7 @@ export default function PostModal({ open, post, onClose }: PostModalProps) {
           />
         </div>
       </motion.div>
-    </motion.div>
+    </motion.div>,
+    modalRoot
   );
 }

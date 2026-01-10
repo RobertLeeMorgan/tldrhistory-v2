@@ -1,4 +1,4 @@
-import {createContext, useState, useContext } from "react";
+import { createContext, useState, useContext } from "react";
 import type { ReactNode } from "react";
 import { HISTORICAL_RANGES } from "../utils/historicalRanges";
 import type { IconType } from "react-icons";
@@ -10,16 +10,22 @@ interface EraContextType {
   eraIndex: number;
   Icon: IconType;
   setEra: (rangeIndex: number) => void;
+  dataStartYear: number;
+  setDataStartYear: (year: number) => void;
 }
 
 const EraContext = createContext<EraContextType | undefined>(undefined);
 
 export const EraProvider = ({ children }: { children: ReactNode }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [dataStartYear, setDataStartYear] = useState(0);
+
   const current = HISTORICAL_RANGES[currentIndex];
 
- const setEra = (rangeIndex: number) => {
-    setCurrentIndex((prevIndex) => (prevIndex !== rangeIndex ? rangeIndex : prevIndex));
+  const setEra = (rangeIndex: number) => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex !== rangeIndex ? rangeIndex : prevIndex
+    );
   };
 
   return (
@@ -30,7 +36,9 @@ export const EraProvider = ({ children }: { children: ReactNode }) => {
         label: current.label,
         eraIndex: currentIndex,
         Icon: current.icon,
-        setEra
+        setEra,
+        dataStartYear,
+        setDataStartYear,
       }}
     >
       {children}

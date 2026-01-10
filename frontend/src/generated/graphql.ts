@@ -378,7 +378,7 @@ export type GetCivilisationQueryVariables = Exact<{
 }>;
 
 
-export type GetCivilisationQuery = { __typename?: 'Query', getCivilisation: Array<{ __typename?: 'Post', id: string, name: string }> };
+export type GetCivilisationQuery = { __typename?: 'Query', getCivilisation: Array<{ __typename?: 'Post', id: string, name: string, startYear: number, endYear: number, startSignificance: number, group?: { __typename?: 'Group', id: number } | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent } }> };
 
 export type GetPostQueryVariables = Exact<{
   id: Scalars['Int']['input'];

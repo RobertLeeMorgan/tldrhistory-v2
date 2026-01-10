@@ -65,6 +65,16 @@ export const CIVILISATION_QUERY = gql`
     getCivilisation(startYear: $start, endYear: $end, filter: $filter) {
       id
       name
+      startYear
+      endYear
+      startSignificance
+      group {
+        id
+      }
+      country {
+        name
+        continent
+      }
     }
   }
 `;
