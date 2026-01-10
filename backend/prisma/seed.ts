@@ -79,6 +79,7 @@ async function main() {
     { name: "Germany", continent: "Europe" as const },
     { name: "Ghana", continent: "Africa" as const },
     { name: "Greece", continent: "Europe" as const },
+    { name: "Greenland", continent: "NorthAmerica" as const },
     { name: "Grenada", continent: "NorthAmerica" as const },
     { name: "Guatemala", continent: "NorthAmerica" as const },
     { name: "Guinea", continent: "Africa" as const },
@@ -350,10 +351,15 @@ async function main() {
     })
   );
 
-  await prisma.post.createMany({
-    data: postsData,
-    skipDuplicates: true,
-  });
+  try {
+    await prisma.post.createMany({
+      data: postsData,
+      skipDuplicates: true,
+    });
+    console.log("Posts seeded successfully!");
+  } catch (err) {
+    console.error("Error seeding posts:", err);
+  }
 
   // ---- POST SUBJECTS (JOIN TABLE) ----
   const postSubjectsData = loadJson<any>("postsubjects.json");
