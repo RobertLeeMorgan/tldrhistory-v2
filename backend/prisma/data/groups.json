@@ -322,5 +322,11 @@
     "name": "Portuguese Empire",
     "description": "Portugal's global maritime empire, one of the earliest European global empires.",
     "icon": "GiPortugal"
+  },
+  {
+    "id": 56,
+    "name": "Human Migrations",
+    "description": "Key prehistoric human migrations showing the spread of humans across continents.",
+    "icon": "GiEarthAfricaEurope"
   }
 ]
