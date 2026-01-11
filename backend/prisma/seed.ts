@@ -368,16 +368,33 @@ async function main() {
     const postId = Number(A);
     const subjectId = Number(B);
 
-    if (!postId || !subjectId) continue;
+    if (!postId || !subjectId) {
+      console.warn("Skipping invalid entry:", { A, B });
+      continue;
+    }
 
-    await prisma.post.update({
-      where: { id: postId },
-      data: {
-        subjects: {
-          connect: [{ id: subjectId }],
+    try {
+      await prisma.post.update({
+        where: { id: postId },
+        data: {
+          subjects: {
+            connect: { id: subjectId },
+          },
         },
-      },
-    });
+      });
+
+      console.log(`✅ Connected subject ${subjectId} to post ${postId}`);
+    } catch (err: any) {
+      console.error("❌ Failed to update post-subject relation", {
+        postId,
+        subjectId,
+        prismaCode: err?.code,
+        message: err?.message,
+      });
+
+      // optional: stop immediately on first failure
+      // throw err;
+    }
   }
 
   console.log("Seed finished!");
