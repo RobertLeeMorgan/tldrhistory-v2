@@ -98,20 +98,9 @@ export default function WorldMap({ civilisations }: Props) {
     return map;
   }, [activeCivilisations]);
 
-  const maxValue = useMemo(
-    () =>
-      Math.max(
-        ...Array.from(countryMap.values()).map(
-          (v) => v.totalSignificance * v.civs.length
-        ),
-        1
-      ),
-    [countryMap]
-  );
-
   const radiusScale = useMemo(
-    () => scaleSqrt().domain([0, maxValue]).range([1.5, 7]),
-    [maxValue]
+    () => scaleSqrt().domain([0, 3]).range([1.5, 6]).clamp(true),
+    []
   );
 
   useEffect(() => {
@@ -143,7 +132,6 @@ export default function WorldMap({ civilisations }: Props) {
       projection.fitSize([width, height], cachedWorld);
 
       const svg = select(svgRef.current);
-      const tooltip = select(tooltipRef.current);
 
       if (svg.select(".map-paths").empty()) {
         svg
@@ -165,24 +153,36 @@ export default function WorldMap({ civilisations }: Props) {
         countryMap.has(d.properties.name.trim().toLowerCase())
       );
 
-      dotsG
+      const circles = dotsG
         .selectAll("circle")
-        .data(filteredCountries, (d: any) => d.properties.name)
+        .data(filteredCountries, (d: any) => d.properties.name);
+
+      circles
         .join("circle")
         .attr("cx", (d) => projection(geoCentroid(d))?.[0] ?? 0)
         .attr("cy", (d) => projection(geoCentroid(d))?.[1] ?? 0)
         .attr("opacity", 0.7)
-        .attr("fill", (d: any) => {
+        .transition()
+        .duration(300)
+        .attr("fill", (d) => {
           const entry = countryMap.get(d.properties.name.trim().toLowerCase());
           if (!entry?.groupId) return "#adb7adff";
           return groupColors.get(entry.groupId) ?? "#adb7adff";
         })
+        .attr("r", (d) => {
+          const entry = countryMap.get(d.properties.name.trim().toLowerCase());
+          return entry
+            ? radiusScale(entry.totalSignificance * entry.civs.length)
+            : 1.5;
+        });
+
+      dotsG
+        .selectAll("circle")
         .on("mouseenter", (event, d: any) => {
           event;
           const entry = countryMap.get(d.properties.name.trim().toLowerCase());
           if (!entry) return;
-
-          tooltip
+          select(tooltipRef.current)
             .style("display", "block")
             .html(
               `<strong>${d.properties.name}</strong><br/>${entry.civs
@@ -192,21 +192,17 @@ export default function WorldMap({ civilisations }: Props) {
         })
         .on("mousemove", (event) => {
           if (!tooltipRef.current || !svgRef.current) return;
-
           const svgRect = svgRef.current.getBoundingClientRect();
           const tooltipEl = tooltipRef.current;
-
           const x = event.clientX - svgRect.left + 10;
           const y = event.clientY - svgRect.top + 10;
-
           const maxX = svgRect.width - tooltipEl.offsetWidth - 6;
           const maxY = svgRect.height - tooltipEl.offsetHeight - 6;
-
           tooltipEl.style.left = `${Math.max(4, Math.min(x, maxX))}px`;
           tooltipEl.style.top = `${Math.max(4, Math.min(y, maxY))}px`;
         })
         .on("mouseleave", () => {
-          tooltip.style("display", "none");
+          select(tooltipRef.current).style("display", "none");
         })
         .on("click", (_, d: any) => {
           const entry = countryMap.get(d.properties.name.trim().toLowerCase());
@@ -220,7 +216,6 @@ export default function WorldMap({ civilisations }: Props) {
 
           for (const [, data] of queries) {
             if (!data) continue;
-
             for (const page of data.pages) {
               const post = page.posts.find((p) => p.id === entry.civs[0].id);
               if (post) {
@@ -229,14 +224,6 @@ export default function WorldMap({ civilisations }: Props) {
               }
             }
           }
-        })
-        .transition()
-        .duration(600)
-        .attr("r", (d: any) => {
-          const entry = countryMap.get(d.properties.name.trim().toLowerCase());
-          return entry
-            ? radiusScale(entry.totalSignificance * entry.civs.length)
-            : 1.5;
         });
     };
 
