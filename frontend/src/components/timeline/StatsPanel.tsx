@@ -46,7 +46,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
   }, [civilisationsRaw]);
 
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-1 stats sm:stats-vertical w-full shadow bg-base-200 rounded-lg border border-base-300 p-0 sm:p-1 md:p-2 lg:p-3 absolute bottom-0 sm:static sm:bottom-auto">
+    <div className="grid  grid-cols-[29%_auto_33%] sm:grid-cols-1 stats sm:stats-vertical w-full shadow bg-base-200 rounded-lg border border-base-300 p-0 sm:p-1 md:p-2 lg:p-3 absolute bottom-0 sm:static sm:bottom-auto">
       {/* Population */}
       <div className="stat p-3 sm:gap-2">
         <div className="stat-figure hidden xs:block">
@@ -102,7 +102,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
           )}
         </div>
         <div className="stat-title truncate">Most Significant</div>
-        <div className="text-secondary truncate text-nowrap font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl">
+        <div className="text-secondary truncate text-nowrap font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl group">
           <AnimatePresence mode="wait">
             <motion.div
               key={
@@ -117,6 +117,15 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
+              onClick={(e) => {
+                const tooltip = e.currentTarget
+                  .nextElementSibling as HTMLDivElement | null;
+                if (tooltip) {
+                  // toggle opacity between 0 and 1
+                  tooltip.style.opacity =
+                    tooltip.style.opacity === "1" ? "0" : "1";
+                }
+              }}
             >
               {sigLoading ? (
                 <span className="loading loading-spinner loading-md justify-center m-auto"></span>
@@ -129,11 +138,17 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
               )}
             </motion.div>
           </AnimatePresence>
+
+          {significant?.name && (
+            <div className="absolute mt-1 w-max max-w-xs bg-base-200 text-base-content text-sm p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50 pointer-events-none">
+              {cleanName(significant.name)}
+            </div>
+          )}
         </div>
         <div className="stat-desc truncate">Highly influential event</div>
       </div>
       {/* Civilisations */}
-      <div className="stat p-3 px-0 sm:gap-2 max-h-48">
+      <div className="stat p-3 px-0 sm:gap-2">
         <WorldMap civilisations={civilisations} />
       </div>
     </div>

@@ -29222,7 +29222,7 @@
   "updatedAt": "2026-01-11 16:40:00.000"
   },
   {
-    "id": 2244,
+    "id": 2444,
     "type": "event",
     "name": "World War II",
     "startDescription": "World War II was a global conflict involving most of the world's nations, starting with Germany's invasion of Poland.",
@@ -29233,8 +29233,8 @@
     "endYear": 1945,
     "endMonth": 8,
     "endDay": 15,
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2e/WWII_Montage.png",
-    "imageCredit": "Image: Various / Wikimedia Commons",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/10/Bundesarchiv_Bild_101I-646-5188-17%2C_Flugzeuge_Junkers_Ju_87.jpg",
+    "imageCredit": "Image: Richard Opitz / Wikimedia Commons",
     "sourceUrl": "https://en.wikipedia.org/wiki/World_War_II",
     "startSignificance": 0.98,
     "endSignificance": 0.95,
@@ -29246,7 +29246,7 @@
     "updatedAt": "2026-01-12 12:10:00.000"
   },
   {
-    "id": 2245,
+    "id": 2445,
     "type": "person",
     "name": "Adolf Hitler",
     "startDescription": "Adolf Hitler was the leader of the National Socialist German Workers' Party (Nazi Party) and became Chancellor of Germany in 1933.",
@@ -29257,8 +29257,8 @@
     "endYear": 1945,
     "endMonth": 4,
     "endDay": 30,
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/53/Hitler_portrait_crop.jpg",
-    "imageCredit": "Image: Bundesarchiv / Wikimedia Commons",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Hitler_portrait_crop_%28cropped%29%282%29.jpg/250px-Hitler_portrait_crop_%28cropped%29%282%29.jpg",
+    "imageCredit": "Image: Heinrich Hoffmann / Wikimedia Commons",
     "sourceUrl": "https://en.wikipedia.org/wiki/Adolf_Hitler",
     "startSignificance": 0.95,
     "endSignificance": 0.95,

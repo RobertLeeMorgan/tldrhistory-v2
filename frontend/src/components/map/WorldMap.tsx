@@ -240,7 +240,7 @@ export default function WorldMap({ civilisations }: Props) {
           ref={svgRef}
           width="100%"
           viewBox={`0 0 ${width} ${height}`}
-          className="rounded-lg max-h-48"
+          className="rounded-lg max-h-[30vh]"
         />
         <div
           ref={tooltipRef}

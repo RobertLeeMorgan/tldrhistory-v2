@@ -16,7 +16,7 @@ export default function ModalActions({ post, deleteMutation }: any) {
           className={`btn btn-error ${
             deleteMutation.isPending ? "btn-disabled" : ""
           }`}
-          onClick={() => deleteMutation.delete(Number(post.id))}
+          onClick={() => post?.id && deleteMutation.delete(Number(post.id))}
           aria-label="delete post"
         >
           {deleteMutation.isPending ? (

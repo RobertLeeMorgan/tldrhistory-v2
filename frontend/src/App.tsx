@@ -24,17 +24,14 @@ interface ProtectedRouteProps {
 }
 
 function ProtectedRoute({ element, roles }: ProtectedRouteProps) {
-  const { isAuth, loading } = useAuth();
+  const { isAuth, loading, verifyToken } = useAuth();
 
   if (loading) return null;
 
-  if (!isAuth.token) return <Navigate to="/login" />;
+  if (!isAuth.token || !verifyToken()) return <Navigate to="/login" />;
 
-  if (roles) {
-    if (!isAuth.role || !roles.includes(isAuth.role)) {
-      return <Navigate to="/login" />;
-    }
-  }
+  if (roles && !roles.includes(isAuth.role || ""))
+    return <Navigate to="/login" />;
 
   return element;
 }

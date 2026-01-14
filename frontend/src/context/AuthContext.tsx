@@ -16,6 +16,7 @@ interface AuthContextType {
   ) => void;
   logout: () => void;
   loading: boolean;
+  verifyToken: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (token && id && username && role && expiresAt) {
       if (Date.now() > Number(expiresAt)) {
-        logout();
+        logout(true);
       } else {
         setIsAuth({ token, id, username, role });
       }
@@ -52,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     token: string,
     user: { id: string; username: string; role: string }
   ) {
-    const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24h expiry
+    const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
     localStorage.setItem("token", token);
     localStorage.setItem("id", user.id);
     localStorage.setItem("username", user.username);
@@ -63,11 +64,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsAuth({ token, id: user.id, username: user.username, role: user.role });
   }
 
-  function logout() {
+  function logout(expired = false) {
     localStorage.removeItem("token");
     localStorage.removeItem("id");
     localStorage.removeItem("username");
     localStorage.removeItem("role");
+    localStorage.removeItem("expiresAt");
 
     setIsAuth({
       token: null,
@@ -75,10 +77,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       username: null,
       role: null,
     });
+
+    if (expired) {
+      addToast({ message: "Session expired, please log in again.", type: "error" });
+    }
+  }
+
+  function verifyToken(): boolean {
+    const expiresAt = localStorage.getItem("expiresAt");
+    if (!expiresAt || Date.now() > Number(expiresAt)) {
+      logout(true);
+      return false;
+    }
+    return true;
   }
 
   return (
-    <AuthContext.Provider value={{ isAuth, login, logout, loading }}>
+    <AuthContext.Provider value={{ isAuth, login, logout, loading, verifyToken }}>
       {children}
     </AuthContext.Provider>
   );

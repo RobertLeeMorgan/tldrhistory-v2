@@ -312,11 +312,14 @@ export default function SuggestEdit() {
           disabled={mutation.isPending}
           aria-label="submit suggestion"
         >
-          {mutation.isPending
-            ? `${(
-                <span className="loading loading-spinner loading-md"></span>
-              )} Submitting...`
-            : "Submit Suggestion"}
+          {mutation.isPending ? (
+            <>
+              <span className="loading loading-spinner loading-md"></span>
+              Submitting...
+            </>
+          ) : (
+            "Submit Suggestion"
+          )}
         </button>
       </form>
     </div>
