@@ -30,5 +30,5 @@ Thumbs.db
 .vscode/
 *.swp
 
-# Docker
-docker-data/
+# Data
+/prisma/data/
