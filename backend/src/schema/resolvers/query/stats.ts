@@ -1,5 +1,4 @@
 import prisma from "../../../server/client";
-import { interpolatePopulation } from "../../../utils/populationData";
 import { queryFilters } from "../../../utils/filters/queryFilters";
 
 export async function getPopulation(_: any, { start }: { start: number }) {

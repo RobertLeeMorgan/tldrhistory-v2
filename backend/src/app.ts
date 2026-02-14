@@ -15,6 +15,7 @@ import { resolvers } from "./schema/resolvers/index";
 import GraphQLJSON from "graphql-type-json";
 import { GraphQLBigInt } from "graphql-scalars";
 import { AuthUser } from "./schema/resolvers/query/user";
+import { timeoutMiddleware } from "./utils/timeoutMiddleware";
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(timeoutMiddleware(15000));
 app.use(express.static(path.join(__dirname, "public/dist")));
 
 app.get(/.*/, (_req, res) => {

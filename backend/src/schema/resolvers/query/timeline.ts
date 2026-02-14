@@ -11,7 +11,7 @@ export async function timeline(
 ) {
   const filter = await filterSchema.parseAsync(validatedFilter);
 
-  const limit = 10;
+  const limit = 15;
   const where = queryFilters(filter);
 
   let generationAttempted = true;
