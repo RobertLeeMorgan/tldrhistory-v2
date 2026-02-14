@@ -46,14 +46,14 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
   }, [civilisationsRaw]);
 
   return (
-    <div className="grid  grid-cols-[29%_auto_33%] sm:grid-cols-1 stats sm:stats-vertical w-full shadow bg-base-200 rounded-lg border border-base-300 p-0 sm:p-1 md:p-2 lg:p-3 absolute bottom-0 sm:static sm:bottom-auto">
+    <div className="grid grid-cols-[29%_auto_33%] sm:grid-cols-1 stats sm:stats-vertical w-full sm:h-[60svh] md:h-[70svh] shadow bg-base-200 rounded-lg border border-base-300 p-0 md:py-2 lg:py-3 max-h-2xl absolute bottom-0 sm:static sm:bottom-auto sm:max-h-[450px] md:max-h-[600px]">
       {/* Population */}
-      <div className="stat p-3 sm:gap-2">
-        <div className="stat-figure hidden xs:block">
-          <Icon className="w-8 h-8 text-primary" />
+      <div className="stat lg:gap-2 space-y-1 p-3 xs:px-5 sm:px-4 lg:px-6 items-center">
+        <div className="stat-figure hidden sm:block">
+          <Icon className="w-8 md:w-10 lg:w-16 h-auto text-primary" />
         </div>
 
-        <div className="stat-title truncate">Population</div>
+        <div className="stat-title truncate self-end">Population</div>
 
         <div className="text-primary truncate text-nowrap font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl">
           {isLoading || populationValue == null ? (
@@ -62,17 +62,17 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
             <motion.div className="truncate">{formattedPopulation}</motion.div>
           )}
         </div>
-        <div className="stat-desc truncate">{label}</div>
+        <div className="stat-desc truncate self-start">{label}</div>
       </div>
 
       {/* Significant Figure */}
-      <div className="stat p-3 sm:gap-2">
-        <div className="stat-figure text-secondary hidden xs:block">
+      <div className="stat lg:gap-2 p-3 xs:px-5 sm:px-4 lg:p-6 space-y-1 items-center ">
+        <div className="stat-figure text-secondary hidden lg:block">
           {sigLoading ? (
             <span className="loading loading-spinner loading-md justify-center m-auto"></span>
           ) : significant?.imageUrl ? (
             <div className="avatar">
-              <div className="w-8 md:w-12 lg:w-16 ">
+              <div className="w-8 md:w-10 lg:w-16 hidden lg:block">
                 <motion.img
                   key={significant.imageUrl}
                   src={significant.imageUrl}
@@ -101,7 +101,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
             </svg>
           )}
         </div>
-        <div className="stat-title truncate">Most Significant</div>
+        <div className="stat-title truncate self-end">Most Significant</div>
         <div className="text-secondary truncate text-nowrap font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl group">
           <AnimatePresence mode="wait">
             <motion.div
@@ -121,7 +121,6 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
                 const tooltip = e.currentTarget
                   .nextElementSibling as HTMLDivElement | null;
                 if (tooltip) {
-                  // toggle opacity between 0 and 1
                   tooltip.style.opacity =
                     tooltip.style.opacity === "1" ? "0" : "1";
                 }
@@ -140,15 +139,15 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
           </AnimatePresence>
 
           {significant?.name && (
-            <div className="absolute mt-1 w-max max-w-xs bg-base-200 text-base-content text-sm p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50 pointer-events-none">
+            <div className="absolute w-max max-w-xs bg-base-200 text-base-content text-sm rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50 pointer-events-none">
               {cleanName(significant.name)}
             </div>
           )}
         </div>
-        <div className="stat-desc truncate">Highly influential event</div>
+        <div className="stat-desc truncate self-start">Highly influential event</div>
       </div>
       {/* Civilisations */}
-      <div className="stat p-3 px-0 sm:gap-2">
+      <div className="justify-center flex items-center py-2 sm:p-0">
         <WorldMap civilisations={civilisations} />
       </div>
     </div>

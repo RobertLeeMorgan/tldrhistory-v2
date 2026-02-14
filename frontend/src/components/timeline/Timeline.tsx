@@ -1,4 +1,11 @@
-import { useState, useCallback, Suspense, lazy } from "react";
+import {
+  useState,
+  useCallback,
+  Suspense,
+  lazy,
+  createRef,
+  useMemo,
+} from "react";
 import type { Post } from "../../generated/graphql";
 import type { TimelineFilter } from "../drawer/drawerTypes";
 import AnimatedCard from "./AnimatedCard";
@@ -15,23 +22,41 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
     useTimeline({ filter });
   const [openPost, setOpenPost] = useState<Post | null>(null);
 
-  useEraTracker(posts);
-
-  const maybeLoadMore = useInfiniteLoader(
-    () => {
-      if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-    },
-    {
-       isItemLoaded: (index, items) => index < items.length && !!items[index],
-      threshold: 4,
-    }
+  const postRefs = useMemo(
+    () => new Map<string, React.RefObject<HTMLDivElement | null>>(),
+    [],
   );
 
+  useEraTracker(posts, postRefs);
+
+  const loadMore = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const maybeLoadMore = useInfiniteLoader(loadMore, {
+    isItemLoaded: (index, items) => index < items.length && !!items[index],
+    threshold: 10,
+  });
+
   const renderCard = useCallback(
-    ({ data, width }: { data: Post; width: number }) => (
-      <AnimatedCard post={data} width={width} onClick={setOpenPost} />
-    ),
-    []
+    ({ data, width }: { data: Post; width: number }) => {
+      let ref = postRefs.get(data.id);
+      if (!ref) {
+        ref = createRef<HTMLDivElement>();
+        postRefs.set(data.id, ref);
+      }
+      return (
+        <AnimatedCard
+          post={data}
+          width={width}
+          onClick={setOpenPost}
+          ref={ref}
+        />
+      );
+    },
+    [postRefs, setOpenPost],
   );
 
   return (

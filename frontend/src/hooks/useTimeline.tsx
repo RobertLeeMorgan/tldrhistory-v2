@@ -6,53 +6,45 @@ import type {
   TimelineQueryVariables,
   TimelineResponse,
 } from "../generated/graphql";
+import { useMemo } from "react";
 
 interface UseTimelineOptions {
   filter?: TimelineQueryVariables["filter"];
   initialCursor?: string | null;
 }
 
-type TimelineSelectedData = {
-  pages: TimelineResponse[];
-  pageParams: unknown[];
-  posts: Post[];
-};
+const EMPTY_POSTS: Post[] = [];
 
 export default function useTimeline({
   filter,
   initialCursor = null,
 }: UseTimelineOptions = {}) {
-  const query = useInfiniteQuery<TimelineResponse, Error, TimelineSelectedData>(
-    {
-      queryKey: ["timeline", filter],
-      queryFn: async ({ pageParam = initialCursor }) => {
-        const data = await graphqlRequest<
-          { timeline: TimelineResponse },
-          TimelineQueryVariables
-        >(TIMELINE_QUERY, {
-          cursor: pageParam ? String(pageParam) : undefined,
-          filter,
-        });
+  const query = useInfiniteQuery({
+    queryKey: ["timeline", filter],
+    queryFn: async ({ pageParam = initialCursor }) => {
+      const data = await graphqlRequest<
+        { timeline: TimelineResponse },
+        TimelineQueryVariables
+      >(TIMELINE_QUERY, {
+        cursor: pageParam ? String(pageParam) : undefined,
+        filter,
+      });
 
-        if (!data?.timeline) throw new Error("No timeline data returned");
-        return data.timeline;
-      },
-      getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-      initialPageParam: initialCursor,
-      staleTime: 1000 * 60 * 5,
+      if (!data?.timeline) throw new Error("No timeline data returned");
+      return data.timeline;
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    initialPageParam: initialCursor,
+    staleTime: 1000 * 60 * 5,
+  });
 
-      select: (data) => {
-        const posts = data.pages.flatMap((p) => p.posts);
-        return Object.freeze({
-          ...data,
-          posts,
-        });
-      },
-    }
+  const posts = useMemo(
+    () => query.data?.pages.flatMap((p) => p.posts) ?? EMPTY_POSTS,
+    [query.data],
   );
 
   return {
-    posts: query.data?.posts ?? [],
+    posts,
     isLoading: query.isLoading,
     isFetchingNextPage: query.isFetchingNextPage,
     hasNextPage: query.hasNextPage,
