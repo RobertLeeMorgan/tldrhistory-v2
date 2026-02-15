@@ -60,7 +60,7 @@ export default function EraPage() {
         <EraHeader filter={memoizedFilter} />
 
         <div className="flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-[2fr_1fr]">
-          <div className="flex flex-col min-h-0 overflow-y-auto w-full p-4">
+          <div className="flex flex-col min-h-0 overflow-y-auto p-4">
             <Timeline
               filter={memoizedFilter}
               key={`timeline-${memoizedFilter.sortBy}`}

@@ -15,7 +15,7 @@ export default function ArticleCard({ post }: ArticleCardProps) {
 
   return (
     <article
-      className={`w-full card bg-neutral-800/80 shadow-lg flex flex-col overflow-hidden border ${
+      className={`w-full card bg-neutral-800/60 shadow-lg flex flex-col overflow-hidden border ${
         post.startSignificance === 1 ? "border-yellow-300" : "border-base-300"
       }`}
     >
