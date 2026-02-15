@@ -8,7 +8,7 @@ export default function DrawerCheckbox({
 }: DrawerCheckboxProps) {
   return (
     <input
-      className="btn btn-md m-1"
+      className="btn btn-md m-1 bg-zinc-800 text-neutral-200 hover:bg-zinc-700"
       type="checkbox"
       name={labelText}
       aria-label={labelText}

@@ -33,7 +33,7 @@ export default function Nav() {
       <div className="flex justify-between w-full">
         {/* Left: title */}
         <div className={`navbar-start ${isHome ? "hidden lg:block" : "block"}`}>
-          <Link to="/" className="btn btn-ghost text-xl" aria-label="home">
+          <Link to="/" className="btn btn-ghost text-xl hover:bg-neutral-800 transition-colors duration-300" aria-label="home">
             TLDR History
           </Link>
         </div>
@@ -53,7 +53,7 @@ export default function Nav() {
               <div
                 tabIndex={0}
                 role="button"
-                className="btn btn-ghost btn-circle w-12 h-12 md:w-16 md:h-16 avatar"
+                className="btn btn-ghost btn-circle w-12 h-12 md:w-16 md:h-16 avatar hover:bg-neutral-900 transition-colors duration-300"
                 aria-label="user menu"
               >
                 <div className="text-accent place-items-center w-8 h-8 md:w-12 md:h-12">
@@ -63,7 +63,7 @@ export default function Nav() {
             </motion.div>
             <ul
               tabIndex={0}
-              className="mt-3 z-50 p-2 shadow opacity-100 menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+              className="mt-3 z-50 p-2 shadow opacity-100 menu menu-sm dropdown-content bg-neutral-900 rounded-box w-52"
             >
               {isAuth.token ? (
                 <>

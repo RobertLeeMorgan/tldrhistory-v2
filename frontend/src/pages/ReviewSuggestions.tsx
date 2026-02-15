@@ -9,21 +9,21 @@ export default function ReviewSuggestions() {
 
   if (isLoading)
     return (
-      <div className="min-h-screen bg-base-200 w-full">
+      <div className="min-h-screen bg-zinc-600 w-full">
         <span className="loading loading-spinner loading-md justify-center m-auto"></span>
       </div>
     );
   if (error)
     return (
-      <div className="min-h-screen bg-base-200 w-full">
-        <span className="text-base justify-center m-auto">
+      <div className="min-h-screen bg-zinc-600 w-full">
+        <span className="text-neutral-200 justify-center m-auto">
           Failed to load content
         </span>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-base-200 w-full">
+    <div className="min-h-screen bg-zinc-600 w-full">
       <h1 className="text-3xl font-semibold mb-8 text-center pt-20">
         Review Edit Suggestions
       </h1>

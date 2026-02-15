@@ -19,7 +19,7 @@ export default function NumberInput({
 }: NumberInputProps) {
   return (
     <div>
-      <label className="label w-full" htmlFor={label}>
+      <label className="label w-full text-zinc-200" htmlFor={label}>
         <span className="label-text">{label}</span>
       </label>
       <input
@@ -27,7 +27,7 @@ export default function NumberInput({
         id={label}
         name={label}
         aria-label={label}
-        className="input input-bordered w-full"
+        className="input input-bordered w-full bg-zinc-900"
         required={required}
         placeholder={
           min && max ? `Type a number between ${min} and ${max}` : undefined

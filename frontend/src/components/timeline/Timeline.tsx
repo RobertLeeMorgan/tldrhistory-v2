@@ -60,7 +60,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
   );
 
   return (
-    <div className="p-2 relative pb-20">
+    <div className="pb-20">
       {!isLoading && posts.length === 0 && (
         <div className="p-8 text-center text-sm text-slate-400">
           No posts yet
@@ -72,7 +72,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
           key={JSON.stringify(filter)}
           items={posts}
           itemKey={(post: Post) => post.id}
-          columnGutter={12}
+          columnGutter={16}
           columnWidth={310}
           onRender={maybeLoadMore}
           render={renderCard}
@@ -84,7 +84,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-3"
         >
           <Skeleton />
           <Skeleton />

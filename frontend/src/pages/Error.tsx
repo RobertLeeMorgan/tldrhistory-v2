@@ -18,11 +18,11 @@ export default function Error() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-900 p-6">
       <div className="text-center">
-        <h1 className="text-5xl font-bold text-error mb-4">{title}</h1>
+        <h1 className="text-5xl font-bold text-red-500 mb-4">{title}</h1>
         <p className="text-lg text-neutral-content mb-6">{message}</p>
-        <Link to="/" className="btn btn-primary" aria-label="home">
+        <Link to="/" className="btn bg-indigo-700 hover:bg-indigo-600 transition-colors duration-400 rounded-lg" aria-label="home">
           Go Home
         </Link>
       </div>

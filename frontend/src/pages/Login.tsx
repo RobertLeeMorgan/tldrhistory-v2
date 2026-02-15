@@ -43,20 +43,21 @@ export default function Login() {
   };
 
   return (
-    <div className="hero bg-base-200 min-h-screen">
+    <div className="hero bg-zinc-600 min-h-screen">
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="text-center lg:text-left">
           <h1 className="text-5xl font-bold">Welcome back!</h1>
           <p className="py-6">Log in to continue.</p>
         </div>
 
-        <div className="card bg-base-100 w-full max-w-sm shadow-2xl">
+        <div className="card bg-neutral-900 w-full max-w-sm shadow-2xl">
           <form className="card-body" onSubmit={handleLogin}>
             {/* Email */}
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input input-bordered flex items-center gap-2 bg-neutral-900">
               <input
                 name="email"
                 type="email"
+                className="text-neutral-200 caret-neutral-200"
                 placeholder="mail@site.com"
                 aria-label="email"
                 value={form.email}
@@ -69,10 +70,12 @@ export default function Login() {
             )}
 
             {/* Password */}
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input input-bordered flex items-center gap-2 bg-neutral-900">
               <input
                 name="password"
                 type="password"
+                className="text-neutral-200 caret-neutral-200"
+
                 aria-label="password"
                 placeholder="Password"
                 value={form.password}
@@ -84,7 +87,7 @@ export default function Login() {
             )}
 
             <button
-              className="btn btn-neutral mt-4"
+              className="btn bg-indigo-700 hover:bg-indigo-600 transition-colors duration-400 mt-4 rounded-lg "
               disabled={mutation.isPending}
               aria-label="login"
             >

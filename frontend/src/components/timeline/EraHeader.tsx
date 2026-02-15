@@ -29,7 +29,7 @@ export default function EraHeader({ filter }: { filter: TimelineFilter }) {
   const animatedYears = sortedYears.map((y) => useCountAnimation(Math.abs(y)));
 
   return (
-    <header className="sticky top-0 z-40 shadow-lg">
+    <header className="sticky top-0 z-40 shadow-lg border-b border-zinc-800 backdrop-blur-sm h-30 xs:h-32 sm:h-26 md:h-28 lg:h-30">
       <h1 className="sr-only">Interactive Human History Timeline</h1>
 
       <img
@@ -39,7 +39,7 @@ export default function EraHeader({ filter }: { filter: TimelineFilter }) {
         fetchPriority="high"
         loading="eager"
       />
-      <div className="absolute inset-0 bg-black/35"></div>
+      <div className="absolute inset-0 bg-neutral-950/35"></div>
 
       <div className="hero-content justify-start py-3 md:py-4 opacity-90 text-start pl-6 mx-auto">
         <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 md:gap-4 lg:gap-6 items-center">

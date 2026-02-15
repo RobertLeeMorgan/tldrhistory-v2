@@ -46,14 +46,14 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
   }, [civilisationsRaw]);
 
   return (
-    <div className="grid grid-cols-[29%_auto_33%] sm:grid-cols-1 stats sm:stats-vertical w-full sm:h-[60svh] md:h-[70svh] shadow bg-base-200 rounded-lg border border-base-300 p-0 md:py-2 lg:py-3 max-h-2xl absolute bottom-0 sm:static sm:bottom-auto sm:max-h-[450px] md:max-h-[600px]">
+    <div className="grid grid-cols-[29%_auto_33%] sm:grid-rows-[28%_32%_40%] rounded-none border-t sm:border-t-0 sm:border-l border-neutral-800 sm:grid-cols-1 stats sm:stats-vertical w-full h-full shadow-xl bg-neutral-900 sm:static sm:bottom-auto overflow-hidden">
       {/* Population */}
-      <div className="stat lg:gap-2 space-y-1 p-3 xs:px-5 sm:px-4 lg:px-6 items-center">
+      <div className="stat lg:gap-2 space-y-1 p-3 xs:px-5 sm:px-4 lg:px-6 items-center ">
         <div className="stat-figure hidden sm:block">
           <Icon className="w-8 md:w-10 lg:w-16 h-auto text-primary" />
         </div>
 
-        <div className="stat-title truncate self-end">Population</div>
+        <div className="stat-title text-neutral-400 truncate self-end md:text-base lg:text-lg">Population</div>
 
         <div className="text-primary truncate text-nowrap font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl">
           {isLoading || populationValue == null ? (
@@ -62,11 +62,11 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
             <motion.div className="truncate">{formattedPopulation}</motion.div>
           )}
         </div>
-        <div className="stat-desc truncate self-start">{label}</div>
+        <div className="stat-desc truncate self-start text-neutral-400 md:text-base lg:text-lg">{label}</div>
       </div>
 
       {/* Significant Figure */}
-      <div className="stat lg:gap-2 p-3 xs:px-5 sm:px-4 lg:p-6 space-y-1 items-center ">
+      <div className="stat lg:gap-2 p-3 xs:px-5 sm:px-4 lg:px-6 space-y-1 items-center ">
         <div className="stat-figure text-secondary hidden lg:block">
           {sigLoading ? (
             <span className="loading loading-spinner loading-md justify-center m-auto"></span>
@@ -88,7 +88,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
           ) : (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 stroke-current"
+              className="w-8 md:w-10 lg:w-16 hidden lg:block stroke-current"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -101,7 +101,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
             </svg>
           )}
         </div>
-        <div className="stat-title truncate self-end">Most Significant</div>
+        <div className="stat-title truncate self-end text-neutral-400 md:text-base lg:text-lg">Most Significant</div>
         <div className="text-secondary truncate text-nowrap font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl group">
           <AnimatePresence mode="wait">
             <motion.div
@@ -112,7 +112,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
                   ? "error"
                   : significant?.id ?? "empty"
               }
-              className="truncate"
+              className="truncate sm:text-wrap"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -144,7 +144,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
             </div>
           )}
         </div>
-        <div className="stat-desc truncate self-start">Highly influential event</div>
+        <div className="stat-desc truncate self-start text-neutral-400 md:text-base lg:text-lg">Highly influential event</div>
       </div>
       {/* Civilisations */}
       <div className="justify-center flex items-center py-2 sm:p-0">

@@ -47,9 +47,9 @@ export default function WorldMap({ civilisations }: Props) {
   const activeCivilisations = useMemo(
     () =>
       civilisations.filter(
-        (c) => c.startYear <= dataStartYear && c.endYear >= dataStartYear
+        (c) => c.startYear <= dataStartYear && c.endYear >= dataStartYear,
       ),
-    [civilisations, dataStartYear]
+    [civilisations, dataStartYear],
   );
 
   const countryMap = useMemo(() => {
@@ -92,7 +92,7 @@ export default function WorldMap({ civilisations }: Props) {
       if (civ.group?.id != null && !map.has(civ.group.id)) {
         map.set(
           civ.group.id,
-          groupColor(civ.group.id, civ.country.continent as Continent)
+          groupColor(civ.group.id, civ.country.continent as Continent),
         );
       }
     }
@@ -101,7 +101,7 @@ export default function WorldMap({ civilisations }: Props) {
 
   const radiusScale = useMemo(
     () => scaleSqrt().domain([0, 3]).range([1.5, 6]).clamp(true),
-    []
+    [],
   );
 
   /** Load world JSON */
@@ -112,11 +112,17 @@ export default function WorldMap({ civilisations }: Props) {
       if (!cachedWorld) {
         const mod = await import("./world-110m.json");
         const topology = (mod as any).default ?? mod;
-        const fcUnknown = feature(topology, topology.objects.countries) as unknown;
+        const fcUnknown = feature(
+          topology,
+          topology.objects.countries,
+        ) as unknown;
 
         if ((fcUnknown as any).type !== "FeatureCollection") return;
 
-        cachedWorld = fcUnknown as FeatureCollection<Geometry, { name: string }>;
+        cachedWorld = fcUnknown as FeatureCollection<
+          Geometry,
+          { name: string }
+        >;
       }
 
       if (!cancelled) setWorldDataLoaded(true);
@@ -128,7 +134,7 @@ export default function WorldMap({ civilisations }: Props) {
     };
   }, []);
 
-  /** Draw country paths when world data is loaded */
+  /** Draw country paths */
   useEffect(() => {
     if (!svgRef.current || !cachedWorld || !worldDataLoaded) return;
 
@@ -143,15 +149,21 @@ export default function WorldMap({ civilisations }: Props) {
         .data(cachedWorld.features)
         .join("path")
         .attr("d", path as any)
-        .attr("fill", "#42454a")
-        .attr("stroke", "#24242d")
+        .attr("fill", "oklch(43.9% 0 0)")
+        .attr("stroke", "rgb(38,38,38)")
         .attr("stroke-width", 0.3);
     }
   }, [projection, path, worldDataLoaded]);
 
   /** Draw dots and attach event handlers */
   useEffect(() => {
-    if (!svgRef.current || !tooltipRef.current || !cachedWorld || !worldDataLoaded) return;
+    if (
+      !svgRef.current ||
+      !tooltipRef.current ||
+      !cachedWorld ||
+      !worldDataLoaded
+    )
+      return;
 
     const svg = select(svgRef.current);
 
@@ -159,15 +171,15 @@ export default function WorldMap({ civilisations }: Props) {
     if (dotsG.empty()) dotsG = svg.append("g").classed("dots", true);
 
     const filteredCountries = cachedWorld.features.filter((d) =>
-      countryMap.has(d.properties.name.trim().toLowerCase())
+      countryMap.has(d.properties.name.trim().toLowerCase()),
     );
 
     const circles = dotsG
-      .selectAll("circle")
-      .data(filteredCountries, (d: any) => d.properties.name);
+      .selectAll<SVGCircleElement, any>("circle")
+      .data(filteredCountries, (d: any) => d.properties.name)
+      .join("circle");
 
     circles
-      .join("circle")
       .attr("cx", (d) => projection(geoCentroid(d))?.[0] ?? 0)
       .attr("cy", (d) => projection(geoCentroid(d))?.[1] ?? 0)
       .attr("opacity", 0.7)
@@ -180,40 +192,49 @@ export default function WorldMap({ civilisations }: Props) {
       })
       .attr("r", (d) => {
         const entry = countryMap.get(d.properties.name.trim().toLowerCase());
-        return entry ? radiusScale(entry.totalSignificance * entry.civs.length) : 1.5;
+        return entry
+          ? radiusScale(entry.totalSignificance * entry.civs.length)
+          : 1.5;
       });
 
     circles
-      .on("mouseenter", (_event, d: any) => {
+      .on("mouseenter", function (_event, d: any) {
         const entry = countryMap.get(d.properties.name.trim().toLowerCase());
         if (!entry) return;
+
         select(tooltipRef.current)
           .style("display", "block")
           .html(
             `<strong>${d.properties.name}</strong><br/>${entry.civs
               .map((c) => c.name)
-              .join("<br/>")}`
+              .join("<br/>")}`,
           );
       })
-      .on("mousemove", (event) => {
+      .on("mousemove", function (event) {
         if (!tooltipRef.current || !svgRef.current) return;
+
         const svgRect = svgRef.current.getBoundingClientRect();
         const tooltipEl = tooltipRef.current;
+
         const x = event.clientX - svgRect.left + 10;
         const y = event.clientY - svgRect.top + 10;
+
         const maxX = svgRect.width - tooltipEl.offsetWidth - 6;
         const maxY = svgRect.height - tooltipEl.offsetHeight - 6;
+
         tooltipEl.style.left = `${Math.max(4, Math.min(x, maxX))}px`;
         tooltipEl.style.top = `${Math.max(4, Math.min(y, maxY))}px`;
       })
-      .on("mouseleave", () => {
+      .on("mouseleave", function () {
         select(tooltipRef.current).style("display", "none");
       })
-      .on("click", (_, d: any) => {
+      .on("click", function (_event, d: any) {
         const entry = countryMap.get(d.properties.name.trim().toLowerCase());
         if (!entry?.civs.length) return;
 
-        const queries = queryClient.getQueriesData<InfiniteData<{ posts: Post[] }>>({
+        const queries = queryClient.getQueriesData<
+          InfiniteData<{ posts: Post[] }>
+        >({
           queryKey: ["timeline"],
         });
 
@@ -228,7 +249,14 @@ export default function WorldMap({ civilisations }: Props) {
           }
         }
       });
-  }, [countryMap, groupColors, radiusScale, projection, queryClient, worldDataLoaded]);
+  }, [
+    countryMap,
+    groupColors,
+    radiusScale,
+    projection,
+    queryClient,
+    worldDataLoaded,
+  ]);
 
   return (
     <>

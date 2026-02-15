@@ -34,12 +34,12 @@ export default function Drawer({ filter, onChange }: DrawerProps) {
           className="drawer-overlay"
         />
 
-        <div className="menu p-4 pt-10 w-80 min-h-full bg-base-200 text-base-content">
+        <div className="menu p-4 pt-10 w-80 min-h-full bg-zinc-900 text-neutral-200">
           <DrawerCollapse title="Theme">
             <select
               value={filter.group ?? 0}
               onChange={(e) => updateValueFilter("group", e.target.value)}
-              className="select select-bordered w-full"
+              className="select select-bordered w-full bg-zinc-800 text-neutral-200"
               aria-label="Theme Select"
               name="Theme"
             >

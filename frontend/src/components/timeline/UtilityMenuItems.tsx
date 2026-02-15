@@ -42,7 +42,7 @@ export default function UtilityMenuItems({ filter, setFilter, onReset, onSort }:
       </div>
       {/* buttons that show up when FAB is open */}
       <div className="pointer-events-auto">
-        <label className="btn btn-lg btn-circle overflow-hidden absolute bottom-0 right-0 transition-all duration-200 focus-within:w-48 bg-slate-800">
+        <label className="btn btn-lg btn-circle overflow-hidden absolute bottom-0 right-0 transition-all duration-200 focus-within:w-48 bg-zinc-900 border-zinc-800">
           <motion.div
             whileHover={{
               scale: 1.1,
@@ -66,7 +66,7 @@ export default function UtilityMenuItems({ filter, setFilter, onReset, onSort }:
       <div className="tooltip tooltip-left" data-tip="Filter">
         <label
           htmlFor="my-drawer"
-          className="btn btn-lg btn-circle bg-slate-800"
+          className="btn btn-lg btn-circle bg-zinc-900 border-zinc-800"
           aria-label="Filter timeline"
         >
           <motion.div
@@ -81,7 +81,7 @@ export default function UtilityMenuItems({ filter, setFilter, onReset, onSort }:
         </label>
       </div>
       <div className="tooltip" data-tip="Sort">
-        <button className="btn btn-lg btn-circle bg-slate-800" onClick={onSort}>
+        <button className="btn btn-lg btn-circle bg-zinc-900 border-zinc-800" onClick={onSort}>
           <motion.div
             whileHover={{
               scale: 1.1,
@@ -96,7 +96,7 @@ export default function UtilityMenuItems({ filter, setFilter, onReset, onSort }:
       </div>
       <div className="tooltip" data-tip="Clear Filters">
         <button
-          className="btn btn-lg btn-circle text-3xl bg-slate-800"
+          className="btn btn-lg btn-circle text-3xl bg-zinc-900 border-zinc-800"
           onClick={onReset}
           aria-label="reset"
         >

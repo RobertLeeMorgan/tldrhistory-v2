@@ -17,7 +17,7 @@ export default function TextInput({
 }: TextInputProps) {
   return (
     <>
-      <label className="label" htmlFor={label}>
+      <label className="label text-zinc-200" htmlFor={label}>
         <span className="label-text">{label}</span>
       </label>
       <textarea
@@ -33,7 +33,7 @@ export default function TextInput({
           })
         }
         minLength={required ? 10 : 0}
-        className="textarea textarea-bordered w-full"
+        className="textarea textarea-bordered w-full bg-zinc-900"
         required={required}
         rows={rows}
       />

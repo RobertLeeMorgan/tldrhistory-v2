@@ -15,12 +15,12 @@ export default function ArticleCard({ post }: ArticleCardProps) {
 
   return (
     <article
-      className={`w-full card bg-base-300 shadow-xl flex flex-col overflow-hidden border ${
+      className={`w-full card bg-neutral-800/80 shadow-lg flex flex-col overflow-hidden border ${
         post.startSignificance === 1 ? "border-yellow-300" : "border-base-300"
       }`}
     >
       {IconComponent && (
-        <IconComponent className="h-70 w-70 -right-8 -bottom-8 absolute text-base-200 z-0" />
+        <IconComponent className="h-70 w-70 -right-8 -bottom-8 absolute text-zinc-700 z-0" />
       )}
       <CardHeader post={post} />
 

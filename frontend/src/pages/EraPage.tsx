@@ -51,26 +51,25 @@ export default function EraPage() {
       filter.search,
       filter.sortBy,
       filter.group,
-    ]
+    ],
   );
 
   return (
     <>
-      <main className="flex flex-col min-h-screen bg-base-100 w-full">
+      <main className="flex flex-col min-h-screen bg-stone-950 w-full">
         <EraHeader filter={memoizedFilter} />
 
-        <div className="flex-1 p-2">
-          <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-4 h-full">
-            <div className="flex flex-col min-h-0 overflow-y-auto">
-              <Timeline
-                filter={memoizedFilter}
-                key={`timeline-${memoizedFilter.sortBy}`}
-              />
-            </div>
-            <aside className="sticky bottom-0 sm:top-32 sm:m-0 -m-2 self-start z-30 pt-2 pr-2">
-              <StatsPanel filter={memoizedFilter} />
-            </aside>
+        <div className="flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-[2fr_1fr]">
+          <div className="flex flex-col min-h-0 overflow-y-auto w-full p-4">
+            <Timeline
+              filter={memoizedFilter}
+              key={`timeline-${memoizedFilter.sortBy}`}
+            />
           </div>
+
+          <aside className="sticky bottom-0 sm:top-[6.5rem] md:top-[7rem] lg:top-[7.5rem] sm:h-[calc(100vh-6.5rem)] md:h-[calc(100vh-7rem)] lg:h-[calc(100vh-7.5rem)] overflow-y-auto z-30">
+            <StatsPanel filter={memoizedFilter} />
+          </aside>
         </div>
       </main>
 

@@ -15,3 +15,11 @@
 html {
   scrollbar-width: none;
 }
+
+html, body {
+  background-color: oklch(21% 0.006 285.885);
+}
+
+.sidepanel {
+  background-color: rgb(47, 47, 55);
+}

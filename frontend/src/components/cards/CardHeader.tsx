@@ -36,11 +36,11 @@ export default function CardHeader({ post }: { post: Post }) {
         )}
 
         <div>
-          <h2 className="card-title text-slate-300 text-xl mb-2">
+          <h2 className="card-title text-neutral-200 text-xl mb-2">
             {post.name}
           </h2>
 
-          <div className="grid grid-cols-[max-content_1fr] gap-x-2 gap-y-1 text-slate-300 text-sm sm:text-md">
+          <div className="grid grid-cols-[max-content_1fr] gap-x-2 gap-y-1 text-neutral-200 text-sm sm:text-md">
             {post.type === "person" ? (
               <>
                 <span className="font-semibold">Born:</span>

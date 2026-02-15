@@ -45,7 +45,7 @@ export default function PostModal({ open, post, onClose }: PostModalProps) {
       transition={{ duration: 0.2 }}
     >
       <motion.div
-        className="w-full max-w-2xl bg-base-200 rounded-xl shadow-xl p-1 sm:p-6 relative m-4 max-h-[98vh] overflow-hidden"
+        className="w-full max-w-2xl bg-neutral-900 rounded-xl shadow-xl p-1 sm:p-6 relative m-4 max-h-[98vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         initial={{ scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -54,7 +54,7 @@ export default function PostModal({ open, post, onClose }: PostModalProps) {
       >
         <div className="overflow-y-auto">
           <button
-            className="absolute top-3 right-3 text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 text-xl"
+            className="absolute top-3 right-3 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300 text-xl"
             onClick={onClose}
           >
             ✕

@@ -52,20 +52,21 @@ export default function Register() {
   };
 
   return (
-    <div className="hero bg-base-200 min-h-screen">
+    <div className="hero bg-zinc-600 min-h-screen">
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="text-center lg:text-left">
           <h1 className="text-5xl font-bold">Register now!</h1>
           <p className="py-6">Create an account to continue.</p>
         </div>
 
-        <div className="card bg-base-100 w-full max-w-sm shadow-2xl">
+        <div className="card bg-neutral-900 w-full max-w-sm shadow-2xl">
           <form className="card-body" onSubmit={handleRegister}>
             {/* Username */}
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input input-bordered flex items-center gap-2 bg-neutral-900">
               <input
                 name="username"
                 type="text"
+                className="text-neutral-200 caret-neutral-200"
                 aria-label="username"
                 placeholder="Username"
                 value={form.username}
@@ -78,10 +79,11 @@ export default function Register() {
             )}
 
             {/* Email */}
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input input-bordered flex items-center gap-2 bg-neutral-900">
               <input
                 name="email"
                 type="email"
+                className="text-neutral-200 caret-neutral-200"
                 aria-label="email"
                 placeholder="mail@site.com"
                 value={form.email}
@@ -94,10 +96,11 @@ export default function Register() {
             )}
 
             {/* Password */}
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input input-bordered flex items-center gap-2 bg-neutral-900">
               <input
                 name="password"
                 type="password"
+                className="text-neutral-200 caret-neutral-200"
                 aria-label="password"
                 placeholder="Password"
                 value={form.password}
@@ -109,10 +112,11 @@ export default function Register() {
             )}
 
             {/* Confirm Password */}
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input input-bordered flex items-center gap-2 bg-neutral-900">
               <input
                 name="confirmPassword"
                 type="password"
+                className="text-neutral-200 caret-neutral-200"
                 aria-label="confirm password"
                 placeholder="Confirm Password"
                 value={form.confirmPassword}
@@ -126,7 +130,7 @@ export default function Register() {
             )}
 
             <button
-              className="btn btn-neutral mt-4"
+              className="btn bg-indigo-700 hover:bg-indigo-600 transition-colors duration-400 mt-4 rounded-lg"
               disabled={mutation.isPending}
               aria-label="register"
             >

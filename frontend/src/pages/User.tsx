@@ -32,13 +32,13 @@ export default function User() {
 
   if (isLoading)
     return (
-      <div className="min-h-screen bg-base-200 w-full justify-center flex items-center">
+      <div className="min-h-screen bg-zinc-500 w-full justify-center flex items-center">
         <span className="loading loading-spinner loading-md justify-center m-auto"></span>
       </div>
     );
   if (isError)
     return (
-      <div className="min-h-screen bg-base-200 w-full">
+      <div className="min-h-screen bg-zinc-500 w-full">
         <span className="text-base text-lg justify-center m-auto">
           Failed to load user
         </span>
@@ -46,7 +46,7 @@ export default function User() {
     );
   if (!data?.getUser)
     return (
-      <div className="min-h-screen bg-base-200 w-full">
+      <div className="min-h-screen bg-zinc-500 w-full">
         <span className="text-base text-lg justify-center m-auto">
           User not found
         </span>
@@ -58,11 +58,11 @@ export default function User() {
   const likedPosts = user.likes.map((like) => like.post);
 
   return (
-    <main className="min-h-screen bg-base-200 w-full p-4 pt-16 lg:p-20">
-      <h1 className="text-4xl font-bold mb-8 text-center">{user.username}</h1>
+    <main className="min-h-screen bg-zinc-600 w-full p-4 pt-16 lg:p-20">
+      <h1 className="text-4xl font-bold mb-8 text-center text-neutral-100">{user.username}</h1>
 
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4">Posts created:</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-neutral-200">Posts created:</h2>
         {createdPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {createdPosts.map((post) => (
@@ -70,12 +70,12 @@ export default function User() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500">No posts created yet.</p>
+          <p className="text-neutral-200">No posts created yet.</p>
         )}
       </section>
 
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Liked posts:</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-neutral-200">Liked posts:</h2>
         {likedPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {likedPosts.map((post) => (
@@ -83,7 +83,7 @@ export default function User() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500">No liked posts yet.</p>
+          <p className="text-neutral-200">No liked posts yet.</p>
         )}
       </section>
     </main>

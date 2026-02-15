@@ -20,7 +20,7 @@ export default function SuggestEdit() {
 
   if (isLoading)
     return (
-      <div className="min-h-screen bg-base-200 w-full justify-center flex items-center">
+      <div className="min-h-screen bg-zinc-600 w-full justify-center flex items-center">
         <span className="loading loading-spinner loading-md justify-center m-auto"></span>
       </div>
     );
@@ -65,10 +65,10 @@ export default function SuggestEdit() {
   };
 
   return (
-    <div className="p-4 py-20 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-center">Suggest an Edit</h1>
+    <div className="p-4 py-20 max-w-2xl bg-zinc-900 mx-auto">
+      <h1 className="text-2xl font-bold text-zinc-200 mb-4 text-center">Suggest an Edit</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <label className="label" htmlFor="name">
+        <label className="label text-zinc-200" htmlFor="name">
           <span className="label-text">Title</span>
         </label>
         <input
@@ -84,7 +84,7 @@ export default function SuggestEdit() {
               value: e.target.value,
             })
           }
-          className="input input-bordered w-full"
+          className="input bg-zinc-900 input-bordered w-full"
           minLength={5}
           required
         />
@@ -106,7 +106,7 @@ export default function SuggestEdit() {
           rows={4}
         />
 
-        <label htmlFor="type" className="label">
+        <label htmlFor="type" className="label text-zinc-200">
           <span className="label-text">Type</span>
         </label>
         <select
@@ -119,7 +119,7 @@ export default function SuggestEdit() {
               value: e.target.value,
             })
           }
-          className="select select-bordered w-full"
+          className="select select-bordered w-full bg-zinc-900 "
           aria-label="type"
           required
         >
@@ -130,7 +130,7 @@ export default function SuggestEdit() {
           <option value="period">Period</option>
         </select>
 
-        <label className="label" htmlFor="country">
+        <label className="label text-zinc-200" htmlFor="country">
           <span className="label-text">Country</span>
         </label>
         <select
@@ -144,7 +144,7 @@ export default function SuggestEdit() {
             })
           }
           aria-label="country"
-          className="select select-bordered w-full"
+          className="select select-bordered w-full bg-zinc-900"
           autoComplete="off"
           required
         >
@@ -156,7 +156,7 @@ export default function SuggestEdit() {
           ))}
         </select>
 
-        <label className="label" htmlFor="group">
+        <label className="label text-zinc-200" htmlFor="group">
           <span className="label-text">Theme</span>
         </label>
         <select
@@ -170,7 +170,7 @@ export default function SuggestEdit() {
               value: Number(e.target.value),
             })
           }
-          className="select select-bordered w-full"
+          className="select select-bordered w-full bg-zinc-900"
         >
           <option value={0}>Select Theme</option>
           {data?.getPost?.allGroups.map((c) => (
@@ -180,7 +180,7 @@ export default function SuggestEdit() {
           ))}
         </select>
 
-        <label className="label" htmlFor="subjects">
+        <label className="label text-zinc-200" htmlFor="subjects">
           <span className="label-text">Subjects</span>
         </label>
 
@@ -195,7 +195,7 @@ export default function SuggestEdit() {
                   type="button"
                   aria-label="subject button"
                   key={s.id}
-                  className={`btn btn-sm ${
+                  className={`btn btn-sm bg-zinc-900  ${
                     selected ? "btn-primary" : "btn-outline label"
                   }`}
                   onClick={() =>
@@ -288,7 +288,7 @@ export default function SuggestEdit() {
           dispatch={dispatch}
         />
 
-        <label className="label" htmlFor="imageCredit">
+        <label className="label text-zinc-200" htmlFor="imageCredit">
           <span className="label-text">Image Credit</span>
         </label>
         <input
@@ -296,7 +296,7 @@ export default function SuggestEdit() {
           id="imageCredit"
           placeholder="Image Credit"
           aria-label="image credit"
-          className="input w-full mb-4"
+          className="input w-full mb-4 bg-zinc-900"
           value={state.imageCredit}
           onChange={(e) =>
             dispatch({

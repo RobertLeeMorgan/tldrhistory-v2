@@ -7,7 +7,7 @@ export default function ModalActions({ post, deleteMutation }: any) {
 
   return (
     <div className="flex gap-3 justify-center p-4">
-      <button className="btn btn-outline" onClick={handleSuggestEdit} aria-label="suggest edit">
+      <button className="btn btn-outline hover:bg-neutral-700" onClick={handleSuggestEdit} aria-label="suggest edit">
         Suggest Edit
       </button>
 
