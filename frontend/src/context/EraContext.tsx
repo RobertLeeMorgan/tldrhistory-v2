@@ -12,6 +12,7 @@ interface EraContextType {
   setEra: (rangeIndex: number) => void;
   dataStartYear: number;
   setDataStartYear: (year: number) => void;
+  headline: string
 }
 
 const EraContext = createContext<EraContextType | undefined>(undefined);
@@ -68,6 +69,7 @@ export const EraProvider = ({ children }: { children: ReactNode }) => {
         endYear: current.end,
         label: current.label,
         eraIndex: currentIndex,
+        headline: current.headline,
         Icon: current.icon,
         setEra,
         dataStartYear,

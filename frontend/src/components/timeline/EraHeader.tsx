@@ -2,7 +2,7 @@ import { useEra } from "../../context/EraContext";
 import { formatYear } from "../../utils/formatYear";
 import bg from "../../assets/bg-home.webp";
 import { splitHeadline } from "../../utils/splitHeadline";
-import { useHeadlineQuery } from "../../hooks/useQueries";
+// import { useHeadlineQuery } from "../../hooks/useQueries";
 import type { TimelineFilter } from "../drawer/drawerTypes";
 import { themes } from "../../utils/drawerValues";
 import { motion } from "framer-motion";
@@ -10,10 +10,10 @@ import { TextSwap, useCountAnimation } from "../../hooks/useCountUp";
 import { useMemo } from "react";
 
 export default function EraHeader({ filter }: { filter: TimelineFilter }) {
-  const { startYear, endYear, label } = useEra();
+  const { startYear, endYear, label, headline } = useEra();
 
-  const { data: headlineData } = useHeadlineQuery({ startYear, endYear });
-  const headline = headlineData?.getHeadline ?? label;
+  // const { data: headlineData } = useHeadlineQuery({ startYear, endYear });
+  // const headline = headlineData?.getHeadline ?? label;
 
   const { title, subtitle } = splitHeadline(headline);
 
