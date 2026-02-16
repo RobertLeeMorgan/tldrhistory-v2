@@ -19,13 +19,13 @@ const SUBJECT_ICONS: Record<string, React.ComponentType<{ className?: string }>>
 
 export default function CardSubjects({ subjects }: { subjects: any[] }) {
   return (
-    <div className="items-center flex flex-wrap gap-2 text-primary">
+    <div className="items-center flex flex-wrap gap-2 text-primary items-center">
       {subjects.map((s) => {
         const Icon = SUBJECT_ICONS[s.name];
         return (
           <span
             key={s.id}
-            className="badge badge-primary flex items-center gap-1"
+            className="badge bg-primary border border-sky-800 flex items-center gap-1 shadow-sm shadow-black/30 text-shadow-sm"
           >
             {Icon && <Icon className="w-4 h-4" />} {s.name}
           </span>

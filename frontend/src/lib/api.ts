@@ -5,18 +5,18 @@ export const api = axios.create({
   timeout: 10000,
 });
 
-// Attach token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else {
     delete config.headers.Authorization;
   }
+
   return config;
 });
 
-// Handle expired/invalid token
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -28,15 +28,7 @@ api.interceptors.response.use(
         (e: any) => e.extensions?.code === "UNAUTHENTICATED"
       )
     ) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("id");
-      localStorage.removeItem("username");
-      localStorage.removeItem("role");
-      localStorage.removeItem("expiresAt");
-
-      window.location.href = "/login";
-
-      alert("Session expired. Please log in again.");
+      window.dispatchEvent(new Event("auth:logout"));
     }
 
     return Promise.reject(error);

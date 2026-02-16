@@ -7,13 +7,13 @@ export default function ModalActions({ post, deleteMutation }: any) {
 
   return (
     <div className="flex gap-3 justify-center p-4">
-      <button className="btn btn-outline hover:bg-neutral-700" onClick={handleSuggestEdit} aria-label="suggest edit">
+      <button className="btn btn-outline hover:bg-neutral-950 hover:border-neutral-200 transition-colors duration-300" onClick={handleSuggestEdit} aria-label="suggest edit">
         Suggest Edit
       </button>
 
       {deleteMutation.canDelete && (
         <button
-          className={`btn btn-error ${
+          className={`btn bg-rose-500 hover:bg-rose-600 transition-colors duration-400 ${
             deleteMutation.isPending ? "btn-disabled" : ""
           }`}
           onClick={() => post?.id && deleteMutation.delete(Number(post.id))}

@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useToast } from "./ToastContext";
 
 interface AuthState {
@@ -12,9 +12,9 @@ interface AuthContextType {
   isAuth: AuthState;
   login: (
     token: string,
-    user: { id: string; username: string; role: string }
+    user: { id: string; username: string; role: string },
   ) => void;
-  logout: () => void;
+  logout: (expired?: boolean) => void;
   loading: boolean;
   verifyToken: () => boolean;
 }
@@ -28,8 +28,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     username: null,
     role: null,
   });
+
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
+  const hasLoggedOut = useRef(false);
+
+  function getTokenExpiry(token: string): number | null {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.exp ? payload.exp * 1000 : null;
+    } catch {
+      return null;
+    }
+  }
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -39,32 +50,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const expiresAt = localStorage.getItem("expiresAt");
 
     if (token && id && username && role && expiresAt) {
-      if (Date.now() > Number(expiresAt)) {
-        logout(true);
-      } else {
+      if (Date.now() <= Number(expiresAt)) {
         setIsAuth({ token, id, username, role });
+      } else {
+        logout(true);
       }
     }
 
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    const handleAutoLogout = () => {
+      logout(true);
+    };
+
+    window.addEventListener("auth:logout", handleAutoLogout);
+    return () => window.removeEventListener("auth:logout", handleAutoLogout);
+  }, []);
+
   function login(
     token: string,
-    user: { id: string; username: string; role: string }
+    user: { id: string; username: string; role: string },
   ) {
-    const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+    hasLoggedOut.current = false;
+    const expiresAt = getTokenExpiry(token);
+
+    if (!expiresAt) {
+      logout(true);
+      return;
+    }
+
     localStorage.setItem("token", token);
     localStorage.setItem("id", user.id);
     localStorage.setItem("username", user.username);
     localStorage.setItem("role", user.role);
     localStorage.setItem("expiresAt", expiresAt.toString());
 
+    setIsAuth({
+      token,
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    });
+
     addToast({ message: "Welcome back!", type: "success" });
-    setIsAuth({ token, id: user.id, username: user.username, role: user.role });
   }
 
   function logout(expired = false) {
+    if (expired && hasLoggedOut.current) return;
+
+    if (expired) {
+      hasLoggedOut.current = true;
+    }
+
     localStorage.removeItem("token");
     localStorage.removeItem("id");
     localStorage.removeItem("username");
@@ -79,21 +118,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (expired) {
-      addToast({ message: "Session expired, please log in again.", type: "error" });
+      addToast({
+        message: "Session expired, please log in again.",
+        type: "error",
+      });
     }
   }
 
   function verifyToken(): boolean {
     const expiresAt = localStorage.getItem("expiresAt");
+
     if (!expiresAt || Date.now() > Number(expiresAt)) {
       logout(true);
       return false;
     }
+
     return true;
   }
 
   return (
-    <AuthContext.Provider value={{ isAuth, login, logout, loading, verifyToken }}>
+    <AuthContext.Provider
+      value={{ isAuth, login, logout, loading, verifyToken }}
+    >
       {children}
     </AuthContext.Provider>
   );

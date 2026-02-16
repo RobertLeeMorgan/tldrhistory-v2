@@ -62,7 +62,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
   return (
     <div className="pb-20">
       {!isLoading && posts.length === 0 && (
-        <div className="p-8 text-center text-sm text-slate-400">
+        <div className="p-8 text-center text-lg text-neutral-900">
           No posts yet
         </div>
       )}
@@ -79,7 +79,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
         />
       )}
 
-      {(isLoading || isFetchingNextPage) && (
+      {isLoading && posts.length === 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -89,6 +89,10 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
           <Skeleton />
           <Skeleton />
         </motion.div>
+      )}
+
+      {isFetchingNextPage && (
+            <span className="loading loading-spinner mx-auto flex pt-14 text-stone-800 loading-xl"></span>
       )}
 
       <AnimatePresence>

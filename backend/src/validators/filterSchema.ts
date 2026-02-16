@@ -11,8 +11,8 @@ export const filterSchema = z
       "MiddleEast", "NorthAmerica", "Antarctica", "SouthAmerica",
       "Oceania", "Asia", "Europe", "Africa", "Global"
     ])).default([]),
-    yearStart: z.number().int().gte(-300000).lte(2025).optional(),
-    yearEnd: z.number().int().gte(-300000).lte(2025).optional(),
+    yearStart: z.number().int().gte(-300000).lte(2026).optional(),
+    yearEnd: z.number().int().gte(-300000).lte(2026).optional(),
     search: z.string().max(100).trim().default(""),
     group: z.number().optional(),
     sortBy: z.boolean().default(true),

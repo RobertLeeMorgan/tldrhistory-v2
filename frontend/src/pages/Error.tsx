@@ -1,4 +1,5 @@
 import { useRouteError, isRouteErrorResponse, Link } from "react-router-dom";
+import Nav from "../components/Nav";
 
 export default function Error() {
   const error = useRouteError();
@@ -18,11 +19,12 @@ export default function Error() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-900 p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-stone-200/90 p-6">
+      <Nav/>
       <div className="text-center">
-        <h1 className="text-5xl font-bold text-red-500 mb-4">{title}</h1>
-        <p className="text-lg text-neutral-content mb-6">{message}</p>
-        <Link to="/" className="btn bg-indigo-700 hover:bg-indigo-600 transition-colors duration-400 rounded-lg" aria-label="home">
+        <h1 className="text-5xl font-bold text-red-500 mb-4 text-shadow-md">{title}</h1>
+        <p className="text-2xl text-neutral-800 mb-6">{message}</p>
+        <Link to="/" className="btn btn-lg bg-fuchsia-600 hover:bg-fuchsia-500 transition-colors duration-400 mt-4 rounded-lg shadow-md shadow-black/40" aria-label="home">
           Go Home
         </Link>
       </div>

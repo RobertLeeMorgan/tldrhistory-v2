@@ -23,7 +23,7 @@ export function useCivilisationQuery(variables: GetCivilisationQueryVariables) {
         CIVILISATION_QUERY,
         variables
       ),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 30,
     placeholderData: (prev) => prev,
   });
 }
@@ -37,7 +37,7 @@ export function usePopulationQuery(variables: GetPopulationQueryVariables) {
         POPULATION_QUERY,
         variables
       ),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 30,
     placeholderData: (prev) => prev,
   });
 }
@@ -51,7 +51,7 @@ export function useSignificantQuery(variables: GetSignificantQueryVariables) {
         SIGNIFICANT_QUERY,
         variables
       ),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 30,
     placeholderData: (prev) => prev,
   });
 }

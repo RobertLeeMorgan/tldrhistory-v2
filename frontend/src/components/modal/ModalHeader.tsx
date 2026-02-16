@@ -19,7 +19,7 @@ export default function ModalHeader({ post }: { post: Post }) {
 
   return (
     <div className="p-4">
-      <h2 className="card-title text-zinc-300 text-xl sm:text-2xl mb-2 md:mb-4">
+      <h2 className="card-title text-neutral-300 text-xl sm:text-2xl mb-2 md:mb-4">
         {post.name}
       </h2>
       <div
@@ -44,13 +44,13 @@ export default function ModalHeader({ post }: { post: Post }) {
             </a>
 
             {post.imageCredit && (
-              <p className="text-[10px] bg-black text-zinc-400 pl-2 italic">
+              <p className="text-[10px] bg-black text-neutral-400 pl-2 italic">
                 Image credit:{" "}
                 <a
                   href={post.sourceUrl ? post.sourceUrl : ""}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline hover:text-zinc-300 truncate"
+                  className="underline hover:text-neutral-300 truncate"
                 >
                   {post.imageCredit}
                 </a>
@@ -60,7 +60,7 @@ export default function ModalHeader({ post }: { post: Post }) {
         )}
 
         <div>
-          <div className="grid grid-cols-[max-content_1fr] gap-x-2 gap-y-1 text-zinc-300 text-md sm:text-lg pt-2">
+          <div className="grid grid-cols-[max-content_1fr] gap-x-2 gap-y-1 text-neutral-300 text-md sm:text-lg pt-2">
             {post.type === "person" ? (
               <>
                 <span className="font-semibold">Born:</span>

@@ -8,10 +8,10 @@ interface UrlInputProps {
 export default function UrlInput({ label, value, field, dispatch }: UrlInputProps) {
   return (
     <>
-      <label className="label text-zinc-200" htmlFor={label}>
+      <label className="label text-neutral-200/86 text-shadow-sm text-lg" htmlFor={label}>
         <span className="label-text">{label}</span>
       </label>
-      <label className="input validator w-full bg-zinc-900 shadow-none">
+      <label className="input validator w-full bg-neutral-950 shadow-none border border-neutral-600">
         <svg
           className="h-[1em] opacity-50"
           xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +32,7 @@ export default function UrlInput({ label, value, field, dispatch }: UrlInputProp
           type="url"
           pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9\-].*[a-zA-Z0-9])?\.)+[a-zA-Z].*$"
           title="Must be valid URL"
-          className="bg-zinc-900 "
+          className="bg-neutral-950 "
           name={label}
           id={label}
           aria-label={label}

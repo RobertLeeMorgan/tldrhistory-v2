@@ -5,7 +5,7 @@ export default function DrawerCollapse({
   children,
 }: DrawerCollapseProps) {
   return (
-    <div className="collapse bg-zinc-900">
+    <div className="collapse bg-neutral-900">
       <input type="checkbox" className="peer" name={title} aria-label={title} />
       <div className="collapse-title text-lg font-medium">{title}</div>
       <div className="collapse-content">{children}</div>

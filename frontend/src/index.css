@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: all;
+   themes: dark --default;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: true;
+ --color-primary: oklch(54.474% 0.25386 274.48);
 }
 
 @import "tailwindcss";
@@ -17,9 +23,5 @@ html {
 }
 
 html, body {
-  background-color: oklch(21% 0.006 285.885);
-}
-
-.sidepanel {
-  background-color: rgb(47, 47, 55);
+  background-color: #0c0a09;
 }

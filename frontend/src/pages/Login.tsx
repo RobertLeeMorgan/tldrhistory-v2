@@ -43,17 +43,17 @@ export default function Login() {
   };
 
   return (
-    <div className="hero bg-zinc-600 min-h-screen">
-      <div className="hero-content flex-col lg:flex-row-reverse">
+    <div className="hero bg-stone-200/90 min-h-screen">
+    <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="text-center lg:text-left">
-          <h1 className="text-5xl font-bold">Welcome back!</h1>
-          <p className="py-6">Log in to continue.</p>
+          <h1 className="text-5xl font-bold text-stone-900/86 text-shadow-sm">Welcome back!</h1>
+          <p className="py-6 text-stone-800 lg:text-lg">Log in to continue.</p>
         </div>
 
-        <div className="card bg-neutral-900 w-full max-w-sm shadow-2xl">
+        <div className="card border border-neutral-700 bg-gradient-to-br from-neutral-800 via-neutral-900 to-neutral-950 w-full max-w-sm shadow-black/40 shadow-xl">
           <form className="card-body" onSubmit={handleLogin}>
             {/* Email */}
-            <label className="input input-bordered flex items-center gap-2 bg-neutral-900">
+            <label className="input input-bordered flex items-center gap-2 bg-neutral-900/93 border-neutral-600">
               <input
                 name="email"
                 type="email"
@@ -70,7 +70,7 @@ export default function Login() {
             )}
 
             {/* Password */}
-            <label className="input input-bordered flex items-center gap-2 bg-neutral-900">
+            <label className="input input-bordered flex items-center gap-2 bg-neutral-900/93 border-neutral-600">
               <input
                 name="password"
                 type="password"
@@ -87,7 +87,7 @@ export default function Login() {
             )}
 
             <button
-              className="btn bg-indigo-700 hover:bg-indigo-600 transition-colors duration-400 mt-4 rounded-lg "
+              className="btn bg-fuchsia-700 hover:bg-fuchsia-600 transition-colors duration-400 mt-4 rounded-lg "
               disabled={mutation.isPending}
               aria-label="login"
             >

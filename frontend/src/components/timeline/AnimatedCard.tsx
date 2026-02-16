@@ -32,11 +32,11 @@ const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
         initial={hasAnimated ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="card overflow-hidden"
+        className="card shadow-lg shadow-black/35"
         whileHover={{
           scale: 1.03,
           y: -3,
-          boxShadow: "0px 6px 20px rgba(0,0,0,0.15)",
+    
         }}
       >
         <ArticleCard post={post} />

@@ -54,11 +54,11 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
               <div
                 className={`alert ${
                   toast.type === "success"
-                    ? "alert-success"
+                    ? "bg-green-600 border-green-700"
                     : toast.type === "error"
-                    ? "alert-error"
-                    : "alert-info"
-                } shadow-lg font-semibold`}
+                    ? "bg-rose-500 border-rose-600"
+                    : "bg-blue-500 border-blue-600"
+                } shadow-lg shadow-black/40 border text-shadow-sm font-semibold`}
               >
                 <span>{toast.message}</span>
               </div>

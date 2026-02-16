@@ -9,22 +9,22 @@ export default function ReviewSuggestions() {
 
   if (isLoading)
     return (
-      <div className="min-h-screen bg-zinc-600 w-full">
-        <span className="loading loading-spinner loading-md justify-center m-auto"></span>
+      <div className="min-h-screen bg-stone-200/90 w-full flex">
+        <span className="loading loading-spinner mx-auto text-stone-900 loading-xl"></span>
       </div>
     );
   if (error)
     return (
-      <div className="min-h-screen bg-zinc-600 w-full">
-        <span className="text-neutral-200 justify-center m-auto">
+      <div className="min-h-screen bg-stone-200/90 w-full">
+        <span className="text-shadow-sm text-stone-900 pt-30 text-2xl items-center flex justify-center">
           Failed to load content
         </span>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-zinc-600 w-full">
-      <h1 className="text-3xl font-semibold mb-8 text-center pt-20">
+    <div className="min-h-screen bg-stone-200/90 w-full">
+      <h1 className="text-3xl font-semibold mb-8 text-center pt-20 text-stone-800/86 text-shadow-sm">
         Review Edit Suggestions
       </h1>
 
@@ -36,7 +36,7 @@ export default function ReviewSuggestions() {
           >
             {/* LEFT: ORIGINAL POST */}
             <div>
-              <h2 className="text-xl font-medium mb-4 text-gray-700">
+              <h2 className="text-xl font-medium mb-4 text-stone-800/86 text-shadow-sm">
                 Original Post
               </h2>
               <ReviewCard post={suggestion.post} />
@@ -44,16 +44,16 @@ export default function ReviewSuggestions() {
 
             {/* RIGHT: SUGGESTION */}
             <div>
-              <h2 className="text-xl font-medium mb-4 text-gray-700">
+              <h2 className="text-xl font-medium mb-4 text-stone-800/86 text-shadow-sm">
                 Suggested Changes
               </h2>
 
               <ReviewCard post={{ ...suggestion.post, ...suggestion.data }} />
 
               {/* ACTION BUTTONS */}
-              <div className="mt-6 flex gap-4">
+              <div className="mt-6 flex gap-4 justify-center">
                 <button
-                  className="btn btn-success"
+                  className="btn shadow-lg shadow-black/40 bg-green-500 border border-green-600 hover:bg-green-600 w-28"
                   onClick={() => approveEdit.mutate(suggestion.id)}
                   disabled={approveEdit.isPending}
                   aria-label="approve suggestion"
@@ -62,7 +62,7 @@ export default function ReviewSuggestions() {
                 </button>
 
                 <button
-                  className="btn btn-error"
+                  className="btn shadow-lg shadow-black/40 bg-rose-600 border border-rose-700 hover:bg-rose-700 w-28"
                   onClick={() => rejectEdit.mutate(suggestion.id)}
                   disabled={rejectEdit.isPending}
                   aria-label="reject suggestion"

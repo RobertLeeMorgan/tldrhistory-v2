@@ -15,12 +15,12 @@ export default function ArticleCard({ post }: ArticleCardProps) {
 
   return (
     <article
-      className={`w-full card bg-neutral-800/60 shadow-lg flex flex-col overflow-hidden border ${
-        post.startSignificance === 1 ? "border-yellow-300" : "border-base-300"
+      className={`w-full card h-full bg-gradient-to-br from-stone-700  to-stone-900 via-stone-800 flex flex-col overflow-hidden border ${
+        post.startSignificance === 1 ? "border-yellow-300" : "border-stone-600"
       }`}
     >
       {IconComponent && (
-        <IconComponent className="h-70 w-70 -right-8 -bottom-8 absolute text-zinc-700 z-0" />
+        <IconComponent className="h-70 w-70 -right-8 -bottom-8 absolute text-stone-400/25 z-0" />
       )}
       <CardHeader post={post} />
 

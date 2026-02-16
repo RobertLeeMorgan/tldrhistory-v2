@@ -35,7 +35,7 @@ export default function useTimeline({
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     initialPageParam: initialCursor,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 30,
   });
 
   const posts = useMemo(

@@ -149,8 +149,8 @@ export default function WorldMap({ civilisations }: Props) {
         .data(cachedWorld.features)
         .join("path")
         .attr("d", path as any)
-        .attr("fill", "oklch(43.9% 0 0)")
-        .attr("stroke", "rgb(38,38,38)")
+        .attr("fill", "oklch(55.3% 0.013 58.071)")
+        .attr("stroke", "oklch(26.8% 0.007 34.298)")
         .attr("stroke-width", 0.3);
     }
   }, [projection, path, worldDataLoaded]);

@@ -46,7 +46,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
   }, [civilisationsRaw]);
 
   return (
-    <div className="grid grid-cols-[29%_auto_33%] sm:grid-rows-[28%_32%_40%] rounded-none border-t sm:border-t-0 sm:border-l border-neutral-800 sm:grid-cols-1 stats sm:stats-vertical w-full h-full shadow-xl bg-neutral-900/70 sm:static sm:bottom-auto overflow-hidden">
+    <div className="grid grid-cols-[29%_auto_33%] sm:grid-rows-[28%_32%_40%] rounded-none sm:border-l border-neutral-700 sm:grid-cols-1 stats sm:stats-vertical w-full h-full shadow-lg shadow-black/20 bg-gradient-to-br from-stone-800 via-stone-900 to-stone-950 sm:static sm:bottom-auto py-1 sm:py-0">
       {/* Population */}
       <div className="stat lg:gap-2 space-y-1 p-3 xs:px-5 sm:px-4 lg:px-6 items-center ">
         <div className="stat-figure hidden sm:block">

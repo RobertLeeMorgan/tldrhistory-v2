@@ -32,22 +32,22 @@ export default function User() {
 
   if (isLoading)
     return (
-      <div className="min-h-screen bg-zinc-500 w-full justify-center flex items-center">
-        <span className="loading loading-spinner loading-md justify-center m-auto"></span>
+      <div className="min-h-screen bg-stone-200/90 w-full flex">
+        <span className="loading loading-spinner mx-auto text-stone-900 loading-xl"></span>
       </div>
     );
   if (isError)
     return (
-      <div className="min-h-screen bg-zinc-500 w-full">
-        <span className="text-base text-lg justify-center m-auto">
+      <div className="min-h-screen bg-stone-200/90 w-full">
+        <span className="text-shadow-sm text-stone-900 pt-30 text-xl items-center flex justify-center">
           Failed to load user
         </span>
       </div>
     );
   if (!data?.getUser)
     return (
-      <div className="min-h-screen bg-zinc-500 w-full">
-        <span className="text-base text-lg justify-center m-auto">
+      <div className="min-h-screen bg-stone-200/90 w-full">
+        <span className="text-shadow-sm text-stone-900 pt-30 text-xl items-center flex justify-center">
           User not found
         </span>
       </div>
@@ -58,24 +58,34 @@ export default function User() {
   const likedPosts = user.likes.map((like) => like.post);
 
   return (
-    <main className="min-h-screen bg-zinc-600 w-full p-4 pt-16 lg:p-20">
-      <h1 className="text-4xl font-bold mb-8 text-center text-neutral-100">{user.username}</h1>
+    <main className="min-h-screen bg-stone-200/90 w-full p-4 pt-16 lg:p-20">
+      <h1 className="text-4xl font-bold mb-8 text-center text-stone-900/86 text-shadow-sm">
+        {user.username}
+      </h1>
 
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4 text-neutral-200">Posts created:</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-stone-800/86 text-shadow-sm">
+          Posts created:
+        </h2>
         {createdPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {createdPosts.map((post) => (
-              <ArticleCard key={post.id} post={post} />
+              <div className="shadow-lg shadow-black/40 card">
+                <ArticleCard key={post.id} post={post} />
+              </div>
             ))}
           </div>
         ) : (
-          <p className="text-neutral-200">No posts created yet.</p>
+          <p className="text-stone-800/86 text-shadow-sm">
+            No posts created yet.
+          </p>
         )}
       </section>
 
       <section>
-        <h2 className="text-2xl font-semibold mb-4 text-neutral-200">Liked posts:</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-stone-800/86 text-shadow-sm">
+          Liked posts:
+        </h2>
         {likedPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {likedPosts.map((post) => (
@@ -83,7 +93,9 @@ export default function User() {
             ))}
           </div>
         ) : (
-          <p className="text-neutral-200">No liked posts yet.</p>
+          <p className="text-stone-800/86 text-shadow-sm">
+            No liked posts yet.
+          </p>
         )}
       </section>
     </main>

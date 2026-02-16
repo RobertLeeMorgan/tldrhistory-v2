@@ -21,18 +21,16 @@ export const EraProvider = ({ children }: { children: ReactNode }) => {
 
   const current = HISTORICAL_RANGES[currentIndex];
 
-  // Always initialize inside valid range
   const [dataStartYear, setDataStartYearState] = useState(
     HISTORICAL_RANGES[0].start
   );
 
-  // --- SAFEGUARDED ERA SETTER ---
   const setEra = (rangeIndex: number) => {
     if (
       rangeIndex < 0 ||
       rangeIndex >= HISTORICAL_RANGES.length
     ) {
-      return; // ignore invalid index
+      return;
     }
 
     setCurrentIndex((prevIndex) =>
@@ -40,7 +38,6 @@ export const EraProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  // --- SAFEGUARDED YEAR SETTER ---
   const setDataStartYear = (year: number) => {
     if (typeof year !== "number" || Number.isNaN(year)) return;
 
@@ -54,7 +51,6 @@ export const EraProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  // --- AUTO-CORRECT YEAR ON ERA CHANGE ---
   useEffect(() => {
     setDataStartYearState((prev) => {
       const clamped = Math.max(
