@@ -18,51 +18,35 @@ export function useEraTracker(
   useEffect(() => {
     if (!posts || posts.length === 0) return;
 
+    lastIndexRef.current = 0;
+    currentEraRef.current = null;
+    currentYearRef.current = null;
+
     const update = () => {
       tickingRef.current = false;
 
       const scrollY = window.scrollY;
-      const scrollingDown = scrollY > lastScrollYRef.current;
       lastScrollYRef.current = scrollY;
 
-      let index = lastIndexRef.current;
-
-      const checkIndex = (i: number) => {
+      let index = 0;
+      for (let i = 0; i < posts.length; i++) {
         const post = posts[i];
         const el = postRefs.get(post.id)?.current;
-        if (!el) return false;
-        const rect = el.getBoundingClientRect();
-        return rect.top >= 0;
-      };
-
-      if (scrollingDown) {
-        // scan forward
-        for (let i = index; i < posts.length; i++) {
-          if (checkIndex(i)) {
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top >= 0) {
             index = i;
-            break;
-          }
-        }
-      } else {
-        // scan backward
-        for (let i = index; i >= 0; i--) {
-          if (checkIndex(i)) {
-            index = i;
-          } else {
             break;
           }
         }
       }
-
       lastIndexRef.current = index;
 
       const topPost = posts[index];
       if (!topPost) return;
 
       const newEraIndex = HISTORICAL_RANGES.findIndex(
-        (r) =>
-          topPost.startYear >= r.start &&
-          topPost.startYear <= r.end
+        (r) => topPost.startYear >= r.start && topPost.startYear <= r.end
       );
 
       if (newEraIndex !== -1 && currentEraRef.current !== newEraIndex) {
@@ -84,7 +68,8 @@ export function useEraTracker(
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    update();
+
+    requestAnimationFrame(update);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);

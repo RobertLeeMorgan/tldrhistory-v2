@@ -25,7 +25,7 @@ export default function CardSubjects({ subjects }: { subjects: any[] }) {
         return (
           <span
             key={s.id}
-            className="badge bg-primary border border-sky-800 flex items-center gap-1 shadow-sm shadow-black/30 text-shadow-sm"
+            className="badge bg-primary border border-indigo-800 flex items-center gap-1 shadow-sm shadow-black/30 text-shadow-sm"
           >
             {Icon && <Icon className="w-4 h-4" />} {s.name}
           </span>

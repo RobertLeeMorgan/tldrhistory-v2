@@ -23,7 +23,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
     isError: sigError,
   } = useSignificantQuery({ start: startYear, end: endYear, filter: filter });
 
-  const { data: civData } = useCivilisationQuery({
+  const { data: civData, isLoading: civLoading } = useCivilisationQuery({
     start: startYear,
     end: endYear,
     filter: filter,
@@ -36,12 +36,12 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
   const animatedPopulation = useCountAnimation(populationValue ?? 0);
 
   const formattedPopulation = useTransform(animatedPopulation, (v) =>
-    formatPopulation(Math.round(v))
+    formatPopulation(Math.round(v)),
   );
 
   const civilisations = useMemo(() => {
     return Array.from(
-      new Map(civilisationsRaw.map((c) => [cleanName(c.name), c])).values()
+      new Map(civilisationsRaw.map((c) => [cleanName(c.name), c])).values(),
     );
   }, [civilisationsRaw]);
 
@@ -53,24 +53,26 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
           <Icon className="w-8 md:w-10 lg:w-16 h-auto text-primary" />
         </div>
 
-        <div className="stat-title text-neutral-400 truncate self-end md:text-base lg:text-lg">Population</div>
+        <div className="stat-title text-neutral-400 truncate self-end md:text-base lg:text-lg">
+          Population
+        </div>
 
         <div className="text-primary truncate text-nowrap font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl">
           {isLoading || populationValue == null ? (
-            <span className="loading loading-spinner loading-md justify-center m-auto"></span>
+            <span className="loading loading-spinner loading-lg justify-center m-auto"></span>
           ) : (
             <motion.div className="truncate">{formattedPopulation}</motion.div>
           )}
         </div>
-        <div className="stat-desc truncate self-start text-neutral-400 md:text-base lg:text-lg">{label}</div>
+        <div className="stat-desc truncate self-start text-neutral-400 md:text-base lg:text-lg">
+          {label}
+        </div>
       </div>
 
       {/* Significant Figure */}
       <div className="stat lg:gap-2 p-3 xs:px-5 sm:px-4 lg:px-6 space-y-1 items-center ">
         <div className="stat-figure text-secondary hidden lg:block">
-          {sigLoading ? (
-            <span className="loading loading-spinner loading-md justify-center m-auto"></span>
-          ) : significant?.imageUrl ? (
+          {significant?.imageUrl ? (
             <div className="avatar">
               <div className="w-8 md:w-10 lg:w-16 hidden lg:block">
                 <motion.img
@@ -101,7 +103,9 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
             </svg>
           )}
         </div>
-        <div className="stat-title truncate self-end text-neutral-400 md:text-base lg:text-lg">Most Significant</div>
+        <div className="stat-title truncate self-end text-neutral-400 md:text-base lg:text-lg">
+          Most Significant
+        </div>
         <div className="text-secondary truncate text-nowrap font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl group">
           <AnimatePresence mode="wait">
             <motion.div
@@ -109,8 +113,8 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
                 sigLoading
                   ? "loading"
                   : sigError
-                  ? "error"
-                  : significant?.id ?? "empty"
+                    ? "error"
+                    : (significant?.id ?? "empty")
               }
               className="truncate sm:text-wrap"
               initial={{ opacity: 0 }}
@@ -127,7 +131,7 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
               }}
             >
               {sigLoading ? (
-                <span className="loading loading-spinner loading-md justify-center m-auto"></span>
+                <span className="loading loading-spinner loading-lg justify-center m-auto"></span>
               ) : sigError ? (
                 "Error"
               ) : significant?.name ? (
@@ -144,11 +148,17 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
             </div>
           )}
         </div>
-        <div className="stat-desc truncate self-start text-neutral-400 md:text-base lg:text-lg">Highly influential event</div>
+        <div className="stat-desc truncate self-start text-neutral-400 md:text-base lg:text-lg">
+          Highly influential event
+        </div>
       </div>
       {/* Civilisations */}
       <div className="justify-center flex items-center py-2 sm:p-0">
-        <WorldMap civilisations={civilisations} />
+        {civLoading ? (
+          <span className="loading loading-spinner loading-lg justify-center m-auto text-accent"></span>
+        ) : (
+          <WorldMap civilisations={civilisations} />
+        )}{" "}
       </div>
     </div>
   );

@@ -3,11 +3,7 @@
    themes: dark --default;
 }
 
-@plugin "daisyui/theme" {
-  name: "dark";
-  default: true;
- --color-primary: oklch(54.474% 0.25386 274.48);
-}
+
 
 @import "tailwindcss";
 @theme {
