@@ -11,8 +11,8 @@
     "generate": "prisma generate",
     "migrate": "prisma migrate deploy",
     "seed": "node dist/scripts/seed.js",
-    "imageAudit": "node dist/scripts/metadataAudit.js",
-    "cdnUpload": "node dist/scripts/cdnUpload.js"
+    "imageAudit": "npx ts-node src/scripts/metadataAudit.js",
+    "cdnUpload": "npx ts-node src/scripts/cdnUpload.ts"
   },
   "keywords": [],
   "author": "",

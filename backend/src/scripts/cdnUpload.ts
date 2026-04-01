@@ -92,6 +92,23 @@ async function withRetry(fn: () => Promise<any>, retries = 4) {
 // ==============================
 // Core logic
 // ==============================
+function normalizeWikimediaUrl(url: string) {
+  try {
+    const u = new URL(url);
+    if (u.hostname !== "upload.wikimedia.org") return url;
+
+    // Only process /thumb/ URLs
+    if (!u.pathname.includes("/thumb/")) return url;
+
+    const parts = u.pathname.split("/thumb/");
+    const base = parts[1]; // a/a8/Image_name.jpg/330px-Image_name.jpg
+    const segments = base.split("/");
+    segments.pop(); // remove the last 330px-... segment
+    return `https://${u.hostname}/wikipedia/commons/${segments.join("/")}`;
+  } catch {
+    return url;
+  }
+}
 
 async function processPost(post: any) {
   if (!post.imageUrl) return;
@@ -114,16 +131,30 @@ async function processPost(post: any) {
 
       console.log(`⬇️ Fetching image for post ${post.id}`);
 
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+      const fetchUrl = normalizeWikimediaUrl(post.imageUrl);
+
       const res = await withRetry(() =>
-        fetch(post.imageUrl, {
+        fetch(encodeURI(fetchUrl), {
           headers: {
             "User-Agent":
               "TLDRHistory/1.0 (https://tldrhistory.xyz; contact: robleemorgan@gmail.com)",
           },
+          redirect: "follow", // follow redirects explicitly
+          signal: controller.signal, // enable timeout
         }),
       );
-      
-      if (!res.ok) throw new Error("Failed to fetch image");
+
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        console.error(
+          `Fetch failed for post ${post.id} with status ${res.status} and URL: ${post.imageUrl}`,
+        );
+        throw new Error(`Failed to fetch image (HTTP ${res.status})`);
+      }
 
       const arrayBuffer = await res.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -136,7 +167,6 @@ async function processPost(post: any) {
 
       console.log(`Uploading to R2: ${key}`);
 
-      // Upload
       await withRetry(() =>
         s3.send(
           new PutObjectCommand({
@@ -148,10 +178,7 @@ async function processPost(post: any) {
           }),
         ),
       );
-    } else {
-      console.log(`Already exists in R2: ${key}`);
     }
-
     // Update DB
     await prisma.post.update({
       where: { id: post.id },
