@@ -71,7 +71,10 @@ export default function SuggestEdit() {
           Suggest an Edit
         </h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <label className="label text-neutral-200/86 text-shadow-sm text-lg" htmlFor="name">
+          <label
+            className="label text-neutral-200/86 text-shadow-sm text-lg"
+            htmlFor="name"
+          >
             <span className="label-text">Title</span>
           </label>
           <input
@@ -109,7 +112,10 @@ export default function SuggestEdit() {
             rows={4}
           />
 
-          <label htmlFor="type" className="label text-neutral-200/86 text-shadow-sm text-lg">
+          <label
+            htmlFor="type"
+            className="label text-neutral-200/86 text-shadow-sm text-lg"
+          >
             <span className="label-text">Type</span>
           </label>
           <select
@@ -133,7 +139,10 @@ export default function SuggestEdit() {
             <option value="period">Period</option>
           </select>
 
-          <label className="label text-neutral-200/86 text-shadow-sm text-lg" htmlFor="country">
+          <label
+            className="label text-neutral-200/86 text-shadow-sm text-lg"
+            htmlFor="country"
+          >
             <span className="label-text">Country</span>
           </label>
           <select
@@ -159,7 +168,10 @@ export default function SuggestEdit() {
             ))}
           </select>
 
-          <label className="label text-neutral-200/86 text-shadow-sm text-lg" htmlFor="group">
+          <label
+            className="label text-neutral-200/86 text-shadow-sm text-lg"
+            htmlFor="group"
+          >
             <span className="label-text">Theme</span>
           </label>
           <select
@@ -182,8 +194,21 @@ export default function SuggestEdit() {
               </option>
             ))}
           </select>
-
-          <label className="label text-neutral-200/86 text-shadow-sm text-lg" htmlFor="subjects">
+         <div className="flex items-center gap-2 mt-2">
+  <input
+    type="checkbox"
+    checked={state.civilisation}
+    onChange={(e) =>
+      dispatch({ type: "SET_FIELD", field: "civilisation", value: e.target.checked })
+    }
+    className="w-4 h-4"
+  />
+  <label className="text-sm text-neutral-200">Civilisation</label>
+</div>
+          <label
+            className="label text-neutral-200/86 text-shadow-sm text-lg"
+            htmlFor="subjects"
+          >
             <span className="label-text">Subjects</span>
           </label>
 
@@ -199,7 +224,9 @@ export default function SuggestEdit() {
                     aria-label="subject button"
                     key={s.id}
                     className={`btn btn-sm border border-neutral-600 hover:text-neutral-300 hover:bg-neutral-900 hover:border-neutral-300 ${
-                      selected ? "bg-stone-900/40 border-zinc-300 text-neutral-200 shadow-lg shadow-black-40" : "bg-neutral-950 border-neutral-400 text-neutral-400"
+                      selected
+                        ? "bg-stone-900/40 border-zinc-300 text-neutral-200 shadow-lg shadow-black-40"
+                        : "bg-neutral-950 border-neutral-400 text-neutral-400"
                     }`}
                     onClick={() =>
                       dispatch({
@@ -291,7 +318,10 @@ export default function SuggestEdit() {
             dispatch={dispatch}
           />
 
-          <label className="label text-neutral-200/86 text-shadow-sm text-lg" htmlFor="imageCredit">
+          <label
+            className="label text-neutral-200/86 text-shadow-sm text-lg"
+            htmlFor="imageCredit"
+          >
             <span className="label-text">Image Credit</span>
           </label>
           <input

@@ -43,6 +43,13 @@ enum UserRole {
   BOT
 }
 
+enum ImageStatus {
+  pending
+  approved
+  fallback
+  rejected
+}
+
 /// Models
 
 model User {
@@ -89,6 +96,10 @@ model Post {
   imageUrl     String?        @db.Text
   imageCredit  String?
   sourceUrl    String?        @db.Text
+  cdnId        String?        @db.Text
+  cdnUrl       String?        @db.Text
+  imageStatus  ImageStatus    @default(pending)
+
   startSignificance Float     @default(0)
   endSignificance   Float     @default(0)
 

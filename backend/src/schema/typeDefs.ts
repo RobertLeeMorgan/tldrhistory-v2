@@ -41,6 +41,13 @@ export const typeDefs = gql`
     moderatedEdits: [EditSuggestion!]!
   }
 
+  enum ImageStatus {
+    pending
+    approved
+    fallback
+    rejected
+  }
+
   type Like {
     post: Post!
   }
@@ -78,6 +85,7 @@ export const typeDefs = gql`
     endSignificance: Float!
     imageUrl: String
     imageCredit: String
+    cdnId: String
     sourceUrl: String
     country: CountrySummary!
     user: User!
@@ -103,15 +111,6 @@ export const typeDefs = gql`
     moderator: User
     data: JSON!
     status: String!
-    createdAt: String!
-    updatedAt: String!
-  }
-
-  type Summary {
-    id: ID!
-    startYear: Int!
-    endYear: Int!
-    headline: String!
     createdAt: String!
     updatedAt: String!
   }
@@ -158,6 +157,7 @@ export const typeDefs = gql`
     endDay: Int
     startSignificance: Float
     endSignificance: Float
+    civilisation: Boolean
     imageUrl: String
     imageCredit: String
     sourceUrl: String
@@ -193,7 +193,6 @@ export const typeDefs = gql`
     ): [Post!]!
     pendingEdits: [EditSuggestion!]!
     getPost(id: Int!): PostWithLists!
-    getHeadline(startYear: Int!, endYear: Int!): String
   }
 
   type Mutation {

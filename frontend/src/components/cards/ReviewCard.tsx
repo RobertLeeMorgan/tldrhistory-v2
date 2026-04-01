@@ -26,6 +26,11 @@ export default function ArticleCard({ post }: ArticleCardProps) {
             </div>
           </>
         )}
+        {post.civilisation && (
+          <div className="font-semibold md:text-lg pt-2 text-neutral-300 block">
+            Civilisation
+          </div>
+        )}
 
         <p className="md:text-lg pt-2 text-neutral-300">{post.sourceUrl}</p>
         <p className="md:text-lg pt-2 text-neutral-300">{post.imageCredit}</p>

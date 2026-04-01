@@ -12,7 +12,8 @@ export async function context({ req }: ExpressContextFunctionArgument) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
     return { user: decoded };
-  } catch {
+  } catch (err) {
+    console.warn("Invalid token:", err);
     return { user: null };
   }
 }

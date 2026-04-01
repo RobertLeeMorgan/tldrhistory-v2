@@ -16,6 +16,7 @@ export const postSchema = z
     endDay: z.number().int().lte(31),
     startSignificance: z.number().min(0).max(1).default(0),
     endSignificance: z.number().min(0).max(1).default(0),
+    civilisation: z.boolean().default(false),
     imageUrl: z
       .string()
       .trim()
@@ -31,8 +32,9 @@ export const postSchema = z
               return false;
             }
           })(),
-        { message: "Invalid URL" }
+        { message: "Invalid URL" },
       ),
+    cdnId: z.string().trim().optional(),
     sourceUrl: z
       .string()
       .trim()
@@ -47,7 +49,7 @@ export const postSchema = z
             return false;
           }
         },
-        { message: "Invalid URL" }
+        { message: "Invalid URL" },
       ),
     imageCredit: z.string().nullable().optional(),
     countryId: z
@@ -60,7 +62,7 @@ export const postSchema = z
           });
           return !!country;
         },
-        { message: "Location not recognised" }
+        { message: "Location not recognised" },
       ),
     groupId: z.number().nullable().optional(),
     subjects: z.array(z.number().int()).refine(
@@ -70,7 +72,7 @@ export const postSchema = z
         });
         return subjects.length === val.length;
       },
-      { message: "Subject not recognised" }
+      { message: "Subject not recognised" },
     ),
   })
   .superRefine((data, ctx) => {

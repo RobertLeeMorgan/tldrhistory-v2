@@ -9,11 +9,14 @@ import { cleanName } from "../../utils/cleanName";
 import type { TimelineFilter } from "../drawer/drawerTypes";
 import { motion, AnimatePresence, useTransform } from "framer-motion";
 import { useCountAnimation } from "../../hooks/useCountUp";
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import WorldMap from "../map/WorldMap";
+
+const Modal = lazy(() => import("../modal/Modal"));
 
 export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
   const { startYear, endYear, label, Icon } = useEra();
+  const [mapOpen, setMapOpen] = useState(false);
 
   const { data, isLoading } = usePopulationQuery({ start: startYear });
 
@@ -157,9 +160,28 @@ export default function StatsPanel({ filter }: { filter: TimelineFilter }) {
         {civLoading ? (
           <span className="loading loading-spinner loading-lg justify-center m-auto text-accent"></span>
         ) : (
-          <WorldMap civilisations={civilisations} />
-        )}{" "}
+          <div className="w-full max-w-md aspect-[16/9]">
+            <WorldMap
+              civilisations={civilisations}
+              onClick={() => setMapOpen(true)}
+              isInteractive={false}
+            />
+          </div>
+        )}
       </div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {mapOpen && (
+          <Suspense fallback={null}>
+            <Modal open={mapOpen} onClose={() => setMapOpen(false)}>
+              <div className="w-[90vw] max-w-6xl aspect-[16/9]">
+                <WorldMap civilisations={civilisations} isInteractive={true}/>
+              </div>
+            </Modal>
+          </Suspense>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

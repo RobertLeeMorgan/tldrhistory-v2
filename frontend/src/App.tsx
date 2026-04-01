@@ -22,12 +22,13 @@ interface ProtectedRouteProps {
   element: React.ReactElement;
   roles?: string[];
 }
+
 function ProtectedRoute({ element, roles }: ProtectedRouteProps) {
-  const { isAuth, loading, verifyToken } = useAuth();
+  const { isAuth, loading } = useAuth();
 
   if (loading) return null;
 
-  if (!verifyToken()) {
+  if (!isAuth.token) {
     return <Navigate to="/login" replace />;
   }
 
@@ -37,8 +38,6 @@ function ProtectedRoute({ element, roles }: ProtectedRouteProps) {
 
   return element;
 }
-
-
 
 const router = createBrowserRouter([
   {

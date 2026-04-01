@@ -53,6 +53,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
           width={width}
           onClick={setOpenPost}
           ref={ref}
+          key={data.id}
         />
       );
     },

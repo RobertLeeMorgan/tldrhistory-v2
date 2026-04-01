@@ -16,6 +16,8 @@ import GraphQLJSON from "graphql-type-json";
 import { GraphQLBigInt } from "graphql-scalars";
 import { AuthUser } from "./schema/resolvers/query/user";
 import { timeoutMiddleware } from "./utils/timeoutMiddleware";
+import authRoutes from "./routes/authRoutes";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -47,15 +49,18 @@ app.use(
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
 app.use(express.json());
 app.use(timeoutMiddleware(15000));
 app.use(express.static(path.join(__dirname, "public/dist")));
+app.use(cookieParser());
 
 app.get(/.*/, (_req, res) => {
   res.sendFile(path.join(__dirname, "public/dist", "index.html"));
 });
+
+app.use("/api", authRoutes);
 
 // Apollo GraphQL
 const server = new ApolloServer({
@@ -80,27 +85,24 @@ const server = new ApolloServer({
   app.use(
     "/graphql",
     expressMiddleware(server, {
-      context: async ({ req }: ExpressContextFunctionArgument) => {
+      context: async ({ req, res }: ExpressContextFunctionArgument) => {
         const authHeader = req.headers.authorization || "";
         const token = authHeader.startsWith("Bearer ")
           ? authHeader.slice(7)
           : null;
 
-        if (!token) return { user: null };
-
-        try {
-          const decoded = jwt.verify(
-            token,
-            process.env.JWT_SECRET!
-          ) as AuthUser;
-
-          return { user: decoded };
-        } catch (e) {
-          console.warn("Invalid or expired JWT token");
-          return { user: null };
+        let user = null;
+        if (token) {
+          try {
+            user = jwt.verify(token, process.env.JWT_SECRET!) as AuthUser;
+          } catch {
+            user = null;
+          }
         }
+
+        return { req, res, user };
       },
-    })
+    }),
   );
 
   // Error handling

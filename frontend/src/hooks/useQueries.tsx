@@ -2,12 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { graphqlRequest } from "../lib/graphql";
 import {
   GET_POST,
-  // GET_HEADLINE,
   PENDING_EDITS_QUERY,
 } from "../graphql/queries";
 import type {
   QueryGetPostArgs,
-  // QueryGetHeadlineArgs,
   PostWithLists,
   PendingEditsQueryVariables,
   PendingEditsQuery,
@@ -24,15 +22,6 @@ export function usePostQuery(variables: QueryGetPostArgs) {
     queryFn: () => graphqlRequest<GetPost>(GET_POST, variables),
   });
 }
-
-// export function useHeadlineQuery(variables: QueryGetHeadlineArgs) {
-//   return useQuery<{ getHeadline: string | null }, Error>({
-//     queryKey: ["headline", variables],
-//     queryFn: () => graphqlRequest(GET_HEADLINE, variables),
-//     staleTime: 1000 * 60 * 15,
-//     placeholderData: (prev) => prev,
-//   });
-// }
 
 export function usePendingEdits(variables?: PendingEditsQueryVariables) {
   return useQuery<EditSuggestion[]>({

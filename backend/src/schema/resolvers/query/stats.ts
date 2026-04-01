@@ -6,25 +6,18 @@ export async function getPopulation(_: any, { start }: { start: number }) {
     where: {
       OR: [
         { yearStart: { lte: start }, yearEnd: { gte: start } },
-
         { yearStart: { gt: start } },
       ],
     },
     orderBy: { yearStart: "asc" },
   });
 
-  if (!window) return 0;
-
-  return window.population;
+  return window?.population ?? 0;
 }
 
 export async function getSignificant(
   _: any,
-  {
-    startYear,
-    endYear,
-    filter,
-  }: { startYear: number; endYear: number; filter: any }
+  { startYear, endYear, filter }: { startYear: number; endYear: number; filter: any }
 ) {
   const baseWhere = queryFilters(filter, {
     startYear: { gte: startYear, lte: endYear },
@@ -50,36 +43,28 @@ export async function getSignificant(
 
 export async function getCivilisation(
   _: any,
-  {
-    startYear,
-    endYear,
-    filter,
-  }: { startYear: number; endYear: number; filter: any }
+  { startYear, endYear, filter }: { startYear: number; endYear: number; filter: any }
 ) {
   const where = queryFilters(filter, {
     civilisation: true,
-    subjects: {
-      some: {
-        name: { in: ["culture", "military"] },
-      },
-    },
+    subjects: { some: { name: { in: ["culture", "military"] } } },
     OR: [
-      {
-        startYear: { lte: endYear },
-        OR: [{ endYear: { gte: startYear } }, { endYear: 0 }],
-        startSignificance: { gt: 0 },
-      },
-      {
-        startYear: { lte: endYear },
-        OR: [{ endYear: { gte: startYear } }, { endYear: 0 }],
-        endSignificance: { gt: 0 },
-      },
+      { startYear: { lte: endYear }, OR: [{ endYear: { gte: startYear } }, { endYear: 0 }], startSignificance: { gt: 0 } },
+      { startYear: { lte: endYear }, OR: [{ endYear: { gte: startYear } }, { endYear: 0 }], endSignificance: { gt: 0 } },
     ],
   });
 
   return prisma.post.findMany({
     where,
     orderBy: { startSignificance: "desc" },
-    include: { country: true, group: true},
+    select: {
+      id: true,
+      name: true,
+      startYear: true,
+      endYear: true,
+      startSignificance: true,
+      group: { select: { id: true } },
+      country: { select: { name: true, continent: true } },
+    },
   });
 }

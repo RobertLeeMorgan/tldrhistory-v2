@@ -18,6 +18,7 @@ export const TIMELINE_QUERY = gql`
         startSignificance
         endSignificance
         imageUrl
+        cdnId
         imageCredit
         sourceUrl
         country {
@@ -99,6 +100,7 @@ export const GET_POST = gql`
         imageUrl
         imageCredit
         sourceUrl
+        civilisation
         country {
           name
           continent
@@ -126,12 +128,6 @@ export const GET_POST = gql`
         name
       }
     }
-  }
-`;
-
-export const GET_HEADLINE = gql`
-  query GetHeadline($startYear: Int!, $endYear: Int!) {
-    getHeadline(startYear: $startYear, endYear: $endYear)
   }
 `;
 
@@ -164,6 +160,7 @@ export const GET_USER = gql`
           icon
         }
         imageUrl
+        cdnId
         likes
         liked
       }
@@ -192,6 +189,7 @@ export const GET_USER = gql`
             icon
           }
           imageUrl
+          cdnId
           likes
           liked
         }
@@ -238,6 +236,8 @@ export const PENDING_EDITS_QUERY = gql`
           id
         }
         imageUrl
+        cdnId
+        civilisation
       }
       createdAt
     }

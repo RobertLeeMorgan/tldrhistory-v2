@@ -18,6 +18,7 @@ type State = {
   countryId: string;
   subjects: string[];
   groupId: number
+  civilisation?: boolean;
 };
 
 type Action =
@@ -52,7 +53,8 @@ export function useFormReducer(postData?: PostWithLists["post"]) {
     sourceUrl: "",
     countryId: "",
     subjects: [],
-    groupId: 0
+    groupId: 0,
+    civilisation: false
   });
 
   useEffect(() => {
@@ -75,7 +77,8 @@ export function useFormReducer(postData?: PostWithLists["post"]) {
           sourceUrl: postData.sourceUrl ?? "",
           countryId: postData.country?.name ?? "",
           subjects: postData.subjects.map((s) => s.id),
-          groupId: postData.group?.id ?? 0
+          groupId: postData.group?.id ?? 0,
+          civilisation: postData.civilisation ?? false
         },
       });
     }

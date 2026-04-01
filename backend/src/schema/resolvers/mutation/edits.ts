@@ -6,7 +6,7 @@ import { Context } from "../query/user";
 export async function suggestEdit(
   _: any,
   { postId, input }: any,
-  ctx: Context
+  ctx: Context,
 ) {
   requireRole(ctx, ["USER", "MODERATOR", "ADMIN"]);
 
@@ -31,7 +31,7 @@ export async function suggestEdit(
     },
     include: {
       suggestedBy: true,
-      post: true,
+      post: { select: { id: true, name: true } },
     },
   });
 }
@@ -52,9 +52,26 @@ export async function approveEdit(_: any, { id }: any, ctx: Context) {
 
   if (Array.isArray(data.subjects)) {
     subjectIds = data.subjects.map((s: any) =>
-      typeof s === "object" ? Number(s.id) : Number(s)
+      typeof s === "object" ? Number(s.id) : Number(s),
     );
   }
+
+  // 🔥 Fetch current post to compare
+  const existingPost = await prisma.post.findUnique({
+    where: { id: suggestion.postId },
+    select: {
+      imageUrl: true,
+      imageCredit: true,
+      sourceUrl: true,
+    },
+  });
+
+  if (!existingPost) throw new Error("Post not found");
+
+  const imageChanged =
+    (data.imageUrl !== undefined && data.imageUrl !== existingPost.imageUrl) ||
+    (data.imageCredit !== undefined && data.imageCredit !== existingPost.imageCredit) ||
+    (data.sourceUrl !== undefined && data.sourceUrl !== existingPost.sourceUrl);
 
   const updatedPost = await prisma.post.update({
     where: { id: suggestion.postId },
@@ -62,15 +79,38 @@ export async function approveEdit(_: any, { id }: any, ctx: Context) {
       ...data,
       groupId: data.groupId < 1 ? null : data.groupId,
       userId: suggestion.suggestedById,
-      subjects: {
-        set: subjectIds.map((id: number) => ({ id })),
-      },
+      subjects: { set: subjectIds.map((id) => ({ id })) },
+
+      ...(imageChanged && {
+        imageStatus: "pending",
+        cdnUrl: null,
+        cdnId: null,
+      }),
     },
-    include: {
-      user: true,
-      country: true,
-      subjects: true,
-      group: true
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      startYear: true,
+      startMonth: true,
+      startDay: true,
+      endYear: true,
+      endMonth: true,
+      endDay: true,
+      startDescription: true,
+      endDescription: true,
+      startSignificance: true,
+      endSignificance: true,
+      imageUrl: true,
+      cdnId: true,
+      imageCredit: true,
+      sourceUrl: true,
+      civilisation: true,
+      country: { select: { name: true, continent: true } },
+      subjects: { select: { id: true, name: true } },
+      group: { select: { id: true, name: true, icon: true } },
+      user: { select: { id: true, username: true } },
+      _count: { select: { likes: true } },
     },
   });
 
@@ -79,18 +119,15 @@ export async function approveEdit(_: any, { id }: any, ctx: Context) {
     data: { status: "approved", moderatorId: ctx.user!.id },
   });
 
-  const likeCount = await prisma.like.count({
-    where: { postId: updatedPost.id },
-  });
   const liked = ctx.user
     ? !!(await prisma.like.findFirst({
-        where: { postId: updatedPost.id, userId: ctx.user!.id },
+        where: { postId: updatedPost.id, userId: ctx.user.id },
+        select: { userId: true },
       }))
     : false;
 
-  return { ...updatedPost, likes: likeCount, liked };
+  return { ...updatedPost, likes: updatedPost._count.likes, liked };
 }
-
 
 export async function rejectEdit(_: any, { id }: any, ctx: Context) {
   requireRole(ctx, ["MODERATOR", "ADMIN"]);

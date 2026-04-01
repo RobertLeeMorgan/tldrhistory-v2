@@ -1,4 +1,3 @@
-import { Country, Like, Post, Subject, User, Group } from "@prisma/client";
 import prisma from "../../../server/client";
 import { Context } from "./user";
 import { queryFilters } from "../../../utils/filters/queryFilters";
@@ -7,47 +6,84 @@ import { filterSchema } from "../../../validators/filterSchema";
 export async function timeline(
   _: any,
   { cursor, filter: validatedFilter }: any,
-  ctx: Context
+  ctx: Context,
 ) {
   const filter = await filterSchema.parseAsync(validatedFilter);
 
   const limit = 15;
   const where = queryFilters(filter);
 
-  let generationAttempted = true;
+  // let generationAttempted = true;
+
+  const direction = filter.sortBy ? "asc" : "desc";
 
   async function fetchPosts() {
-    return (await prisma.post.findMany({
+    return await prisma.post.findMany({
       where,
       take: limit,
+
+      // For correctness, this should become a composite cursor later
       ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
-      orderBy: filter.sortBy
-        ? [
-            { startYear: "asc" },
-            { startMonth: "asc" },
-            { startDay: "asc" },
-            { id: "asc" },
-          ]
-        : [
-            { startYear: "desc" },
-            { startMonth: "desc" },
-            { startDay: "desc" },
-            { id: "desc" },
-          ],
-      include: {
-        user: true,
-        country: true,
-        subjects: true,
-        likes: true,
-        group: true,
+
+      orderBy: [
+        { startYear: direction },
+        { startMonth: direction },
+        { startDay: direction },
+        { id: direction },
+      ],
+
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        startDescription: true,
+        endDescription: true,
+        startYear: true,
+        startMonth: true,
+        startDay: true,
+        endYear: true,
+        endMonth: true,
+        endDay: true,
+        startSignificance: true,
+        endSignificance: true,
+        imageUrl: true,
+        cdnId: true,
+        imageCredit: true,
+        sourceUrl: true,
+
+        country: {
+          select: {
+            name: true,
+            continent: true,
+          },
+        },
+
+        subjects: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+
+        group: {
+          select: {
+            name: true,
+            icon: true,
+          },
+        },
+
+        user: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+
+        _count: {
+          select: { likes: true },
+        },
       },
-    })) as (Post & {
-      user: User;
-      country: Country;
-      subjects: Subject[];
-      likes: Like[];
-      group: Group;
-    })[];
+    });
   }
 
   let dbPosts = await fetchPosts();
@@ -100,14 +136,15 @@ export async function timeline(
 
   const likedSet = new Set(userLikes.map((like) => like.postId));
 
-  const finalPosts = dbPosts.map((post) => ({
+  const finalPosts = dbPosts.map(({ _count, ...post }: any) => ({
     ...post,
-    likes: post.likes?.length ?? 0,
+    likes: _count.likes,
     liked: likedSet.has(post.id),
   }));
 
   return {
     posts: finalPosts,
+
     nextCursor: finalPosts.length ? finalPosts[finalPosts.length - 1].id : null,
   };
 }

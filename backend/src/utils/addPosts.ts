@@ -10,15 +10,25 @@ export async function addPosts(
     imageCredit?: string | null;
   },
   bot: User,
-  ctx: Context
+  ctx: Context,
 ) {
   try {
+    // Fetch matching subjects by name
     const subjectRecords = await prisma.subject.findMany({
       where: { name: { in: aiPost.subjects } },
     });
+    const subjectIds = subjectRecords.map((s) => s.id);
 
-    const subjects = subjectRecords.map((s) => s.id);
+    // Country validation
+    const countryRecord = await prisma.country.findUnique({
+      where: { name: aiPost.country }, // name is PK
+    });
+    if (!countryRecord) {
+      console.warn(`Skipping post due to unknown country: ${aiPost.country}`);
+      return null;
+    }
 
+    // Complete input for validation
     const completeInput = {
       name: aiPost.name,
       type: aiPost.type,
@@ -35,8 +45,8 @@ export async function addPosts(
       imageUrl: aiPost.imageUrl ?? "",
       imageCredit: aiPost.imageCredit ?? null,
       sourceUrl: aiPost.sourceUrl ?? null,
-      countryId: aiPost.country,
-      subjects,
+      countryId: countryRecord.name, // use name as ID
+      subjects: subjectIds,
       groupId:
         aiPost.groupId === undefined || aiPost.groupId < 1
           ? null
@@ -45,14 +55,20 @@ export async function addPosts(
 
     const validatedInput = await postSchema.parseAsync(completeInput);
 
+    // Create the post
     return await prisma.post.create({
       data: {
         ...validatedInput,
         userId: bot.id,
-        subjects: { connect: subjects.map((id) => ({ id })) },
+        subjects: { connect: subjectIds.map((id) => ({ id })) },
       },
-
-      include: { user: true, country: true, subjects: true, likes: true },
+      select: {
+        id: true,
+        name: true,
+        country: { select: { name: true } },
+        groupId: true,
+        subjects: { select: { name: true } },
+      },
     });
   } catch (err) {
     console.warn("Skipping post due to error:", aiPost.name, err);

@@ -14,7 +14,9 @@ export default function CardHeader({ post }: { post: Post }) {
     Number(post.endDay)
   );
 
-  const hasImage = Boolean(post.imageUrl);
+  
+  const imageSrc = post.cdnId ? `https://cdn.tldrhistory.xyz/${post.cdnId}` : post.imageUrl;
+  const hasImage = Boolean(imageSrc);
 
   return (
     <div className="p-4 z-20">
@@ -26,7 +28,7 @@ export default function CardHeader({ post }: { post: Post }) {
         {hasImage && (
           <div className="relative w-full h-28 overflow-hidden rounded flex items-center justify-center">
             <img
-              src={post.imageUrl!}
+              src={imageSrc!}
               alt={post.name}
               className="h-full object-cover rounded"
               loading="eager"

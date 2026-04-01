@@ -15,7 +15,8 @@ export const postSchemaClient = z
     endYear: z.number().int().gte(-300000).lte(2025),
     endMonth: z.number().int().min(0).max(12),
     endDay: z.number().int().min(0).max(31),
-
+    civilisation: z.boolean().default(false),
+    cdnId: z.string().optional(),
     imageUrl: z
       .string()
       .trim()
@@ -30,7 +31,7 @@ export const postSchemaClient = z
             return false;
           }
         },
-        { message: "Invalid URL" }
+        { message: "Invalid URL" },
       ),
 
     sourceUrl: z
@@ -47,7 +48,7 @@ export const postSchemaClient = z
             return false;
           }
         },
-        { message: "Invalid URL" }
+        { message: "Invalid URL" },
       ),
 
     imageCredit: z.string().optional(),

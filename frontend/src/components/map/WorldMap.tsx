@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, Suspense, lazy } from "react";
 import { scaleSqrt } from "d3-scale";
 import "d3-transition";
 import { useEra } from "../../context/EraContext";
-import type { FeatureCollection, Geometry } from "geojson";
+import type { FeatureCollection, Geometry, Feature } from "geojson";
 import { useQueryClient } from "@tanstack/react-query";
 import type { InfiniteData } from "@tanstack/react-query";
 import type { Post } from "../../generated/graphql";
@@ -25,13 +25,20 @@ type Props = {
     startSignificance: number;
     group?: { id: number } | null;
   }[];
+  onClick?: () => void;
+  isInteractive?: boolean;
 };
 
 let cachedWorld: FeatureCollection<Geometry, { name: string }> | null = null;
 
-export default function WorldMap({ civilisations }: Props) {
+export default function WorldMap({
+  civilisations,
+  onClick,
+  isInteractive,
+}: Props) {
   const { dataStartYear } = useEra();
   const queryClient = useQueryClient();
+
   const [openPost, setOpenPost] = useState<Post | null>(null);
   const [worldDataLoaded, setWorldDataLoaded] = useState(false);
 
@@ -53,15 +60,7 @@ export default function WorldMap({ civilisations }: Props) {
   );
 
   const countryMap = useMemo(() => {
-    const map = new Map<
-      string,
-      {
-        civs: typeof activeCivilisations;
-        totalSignificance: number;
-        groupId: number | null;
-        country?: { name: string; continent: Continent };
-      }
-    >();
+    const map = new Map<string, any>();
 
     activeCivilisations.forEach((c) => {
       const key = c.country.name.trim().toLowerCase();
@@ -99,12 +98,13 @@ export default function WorldMap({ civilisations }: Props) {
     return map;
   }, [activeCivilisations]);
 
+  /** Dot scaling tied to map size */
   const radiusScale = useMemo(
     () => scaleSqrt().domain([0, 3]).range([1.5, 6]).clamp(true),
     [],
   );
 
-  /** Load world JSON */
+  /** Load world */
   useEffect(() => {
     let cancelled = false;
 
@@ -134,11 +134,12 @@ export default function WorldMap({ civilisations }: Props) {
     };
   }, []);
 
-  /** Draw country paths */
+  /** Draw map */
   useEffect(() => {
     if (!svgRef.current || !cachedWorld || !worldDataLoaded) return;
 
     const svg = select(svgRef.current);
+
     projection.fitSize([width, height], cachedWorld);
 
     if (svg.select(".map-paths").empty()) {
@@ -153,52 +154,79 @@ export default function WorldMap({ civilisations }: Props) {
         .attr("stroke", "oklch(26.8% 0.007 34.298)")
         .attr("stroke-width", 0.3);
     }
-  }, [projection, path, worldDataLoaded]);
+  }, [worldDataLoaded]);
 
-  /** Draw dots and attach event handlers */
+  /** Draw dots */
   useEffect(() => {
-    if (
-      !svgRef.current ||
-      !tooltipRef.current ||
-      !cachedWorld ||
-      !worldDataLoaded
-    )
-      return;
+    if (!svgRef.current || !cachedWorld || !worldDataLoaded) return;
 
     const svg = select(svgRef.current);
 
     let dotsG = svg.select<SVGGElement>(".dots");
     if (dotsG.empty()) dotsG = svg.append("g").classed("dots", true);
 
-    const filteredCountries = cachedWorld.features.filter((d) =>
+    const filtered = cachedWorld.features.filter((d) =>
       countryMap.has(d.properties.name.trim().toLowerCase()),
     );
 
+    // Bind data
+    // Bind data
     const circles = dotsG
-      .selectAll<SVGCircleElement, any>("circle")
-      .data(filteredCountries, (d: any) => d.properties.name)
-      .join("circle");
+      .selectAll<
+        SVGCircleElement,
+        Feature<Geometry, { name: string }>
+      >("circle")
+      .data(filtered, (d: any) => d.properties.name);
 
+    // EXIT: fade and shrink
     circles
-      .attr("cx", (d) => projection(geoCentroid(d))?.[0] ?? 0)
-      .attr("cy", (d) => projection(geoCentroid(d))?.[1] ?? 0)
-      .attr("opacity", 0.7)
+      .exit()
       .transition()
       .duration(300)
+      .attr("r", 0)
+      .attr("opacity", 0)
+      .remove();
+
+    // ENTER: new circles
+    const enterCircles = circles
+      .enter()
+      .append("circle")
+      .attr("cx", (d) => projection(geoCentroid(d))?.[0] ?? 0)
+      .attr("cy", (d) => projection(geoCentroid(d))?.[1] ?? 0)
+      .attr("r", 0)
+      .attr("opacity", 0)
       .attr("fill", (d) => {
         const entry = countryMap.get(d.properties.name.trim().toLowerCase());
-        if (!entry?.groupId) return "#adb7adff";
-        return groupColors.get(entry.groupId) ?? "#adb7adff";
-      })
+        return entry?.groupId
+          ? (groupColors.get(entry.groupId) ?? "#adb7adff")
+          : "#adb7adff";
+      });
+
+    // MERGE enter + update and transition all
+    enterCircles
+      .merge(circles)
+      .transition()
+      .duration(300)
+      .attr("cx", (d) => projection(geoCentroid(d))?.[0] ?? 0)
+      .attr("cy", (d) => projection(geoCentroid(d))?.[1] ?? 0)
       .attr("r", (d) => {
         const entry = countryMap.get(d.properties.name.trim().toLowerCase());
         return entry
           ? radiusScale(entry.totalSignificance * entry.civs.length)
           : 1.5;
-      });
+      })
+      .attr("fill", (d) => {
+        const entry = countryMap.get(d.properties.name.trim().toLowerCase());
+        return entry?.groupId
+          ? (groupColors.get(entry.groupId) ?? "#adb7adff")
+          : "#adb7adff";
+      })
+      .attr("opacity", 0.7);
 
-    circles
-      .on("mouseenter", function (_event, d: any) {
+    // Tooltip & click logic (same as before)
+    dotsG
+      .selectAll("circle")
+      .on("mouseenter", (_e, d: any) => {
         const entry = countryMap.get(d.properties.name.trim().toLowerCase());
         if (!entry) return;
 
@@ -206,30 +234,34 @@ export default function WorldMap({ civilisations }: Props) {
           .style("display", "block")
           .html(
             `<strong>${d.properties.name}</strong><br/>${entry.civs
-              .map((c) => c.name)
+              .map((c: any) => c.name)
               .join("<br/>")}`,
-          );
+          )
+          .style("opacity", 0)
+          .transition()
+          .duration(200)
+          .style("opacity", 1);
       })
-      .on("mousemove", function (event) {
+      .on("mousemove", (event) => {
         if (!tooltipRef.current || !svgRef.current) return;
 
-        const svgRect = svgRef.current.getBoundingClientRect();
-        const tooltipEl = tooltipRef.current;
-
-        const x = event.clientX - svgRect.left + 10;
-        const y = event.clientY - svgRect.top + 10;
-
-        const maxX = svgRect.width - tooltipEl.offsetWidth - 6;
-        const maxY = svgRect.height - tooltipEl.offsetHeight - 6;
-
-        tooltipEl.style.left = `${Math.max(4, Math.min(x, maxX))}px`;
-        tooltipEl.style.top = `${Math.max(4, Math.min(y, maxY))}px`;
+        const rect = svgRef.current.getBoundingClientRect();
+        tooltipRef.current.style.left = `${event.clientX - rect.left + 10}px`;
+        tooltipRef.current.style.top = `${event.clientY - rect.top + 10}px`;
       })
-      .on("mouseleave", function () {
+      .on("mouseleave", () => {
         select(tooltipRef.current).style("display", "none");
       })
-      .on("click", function (_event, d: any) {
+      .on("click", function (event, d: any) {
         const entry = countryMap.get(d.properties.name.trim().toLowerCase());
+
+        if (!isInteractive) {
+          onClick?.();
+          return;
+        }
+
+        event.stopPropagation();
+
         if (!entry?.civs.length) return;
 
         const queries = queryClient.getQueriesData<
@@ -248,28 +280,28 @@ export default function WorldMap({ civilisations }: Props) {
             }
           }
         }
-      });
-  }, [
-    countryMap,
-    groupColors,
-    radiusScale,
-    projection,
-    queryClient,
-    worldDataLoaded,
-  ]);
+      })
+      .style("cursor", isInteractive ? "pointer" : "default");
+  }, [countryMap, groupColors, worldDataLoaded]);
 
   return (
     <>
-      <div className="relative w-full max-w-md mx-auto">
+      <div
+        className="relative w-full"
+        onClick={onClick}
+        style={{
+          cursor: isInteractive ? "default" : "pointer",
+        }}
+      >
         <svg
           ref={svgRef}
-          width="100%"
           viewBox={`0 0 ${width} ${height}`}
-          className="rounded-lg max-h-[30vh]"
+          className="w-full h-auto"
         />
+
         <div
           ref={tooltipRef}
-          className="absolute pointer-events-none bg-base-100 text-white text-xs rounded px-2 py-1 hidden z-10"
+          className={`${isInteractive ? "text-lg" : "text-sm" } absolute pointer-events-none bg-base-100 text-white rounded px-2 py-1 hidden z-10`}
         />
       </div>
 

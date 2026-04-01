@@ -62,53 +62,47 @@ export async function pendingEdits(_: any, __: any, ctx: Context) {
   return mappedEdits;
 }
 
-
 export async function getPost(_: any, { id }: { id: number }, ctx: Context) {
   requireRole(ctx, ["USER", "MODERATOR", "ADMIN"]);
 
   const post = await prisma.post.findUnique({
     where: { id: Number(id) },
-    include: {
-      country: true,
-      subjects: true,
-      group: true,
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      startDescription: true,
+      endDescription: true,
+      startYear: true,
+      startMonth: true,
+      startDay: true,
+      endYear: true,
+      endMonth: true,
+      endDay: true,
+      startSignificance: true,
+      endSignificance: true,
+      imageUrl: true,
+      imageCredit: true,
+      sourceUrl: true,
+      civilisation: true,
+      country: { select: { name: true, continent: true } },
+      subjects: { select: { id: true, name: true } },
+      group: { select: { id: true, name: true, icon: true } },
     },
   });
 
   if (!post) throw new Error("Post not found");
 
   const [allCountries, allSubjects, allGroups] = await Promise.all([
-    prisma.country.findMany({
-      orderBy: { name: "asc" },
-    }),
-    prisma.subject.findMany({
-      orderBy: { name: "asc" },
-    }),
-    prisma.group.findMany({
-      orderBy: { name: "asc" },
-    }),
+    prisma.country.findMany({ select: { name: true, continent: true }, orderBy: { name: "asc" } }),
+    prisma.subject.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.group.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
   ]);
 
   return {
     post,
     allCountries,
     allSubjects,
-    allGroups
+    allGroups,
   };
-}
-
-export async function getHeadline(
-  _: any,
-  { startYear, endYear }: { startYear: number; endYear: number }
-) {
-  const summary = await prisma.summary.findUnique({
-    where: {
-      startYear_endYear: {
-        startYear,
-        endYear,
-      },
-    },
-  });
-
-  return summary ? summary.headline : null;
 }

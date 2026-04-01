@@ -15,7 +15,8 @@ export default function ModalHeader({ post }: { post: Post }) {
     Number(post.endDay)
   );
 
-  const hasImage = Boolean(post.imageUrl);
+  const imageSrc = post.cdnId ? `https://cdn.tldrhistory.xyz/${post.cdnId}` : post.imageUrl;
+  const hasImage = Boolean(imageSrc);
 
   return (
     <div className="p-4">
@@ -35,7 +36,7 @@ export default function ModalHeader({ post }: { post: Post }) {
               rel="noopener noreferrer"
             >
               <img
-                src={post.imageUrl ? post.imageUrl : ""}
+                src={imageSrc ? imageSrc : ""}
                 alt={post.name}
                 style={{ maxHeight: "10rem" }}
                 className="h-full object-cover justify-self-center rounded"

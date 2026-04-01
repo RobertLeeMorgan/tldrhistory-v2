@@ -7,6 +7,7 @@ export async function likePost(_: any, { postId }: any, ctx: Context) {
 
   const existing = await prisma.like.findFirst({
     where: { postId, userId: user.id },
+    select: { userId: true }
   });
 
   if (existing) {
@@ -17,16 +18,21 @@ export async function likePost(_: any, { postId }: any, ctx: Context) {
     await prisma.like.create({ data: { postId, userId: user.id } });
   }
 
-  const likeCount = await prisma.like.count({ where: { postId } });
-  const liked = !!(await prisma.like.findFirst({
-    where: { postId, userId: user.id },
-  }));
-
-  const updated = await prisma.post.findUnique({
+  const postWithCount = await prisma.post.findUnique({
     where: { id: postId },
-    include: { user: true, country: true, subjects: true, group: true, likes: true },
+    select: {
+      id: true,
+      _count: { select: { likes: true } },
+    },
   });
-  if (!updated) throw new Error("Post not found");
 
-  return { ...updated, likes: likeCount, liked };
+  if (!postWithCount) throw new Error("Post not found");
+
+  const { _count, id } = postWithCount;
+
+  return {
+    id,
+    likes: _count.likes,
+    liked: !existing,
+  };
 }
