@@ -12,7 +12,11 @@ import {
 // Setup
 // ==============================
 
-const queue = new PQueue({ concurrency: 3 });
+const queue = new PQueue({
+  concurrency: 2,
+  intervalCap: 2,
+  interval: 1000,
+});
 
 const s3 = new S3Client({
   region: "auto",
@@ -43,7 +47,7 @@ async function existsInR2(key: string) {
       new HeadObjectCommand({
         Bucket: BUCKET,
         Key: key,
-      })
+      }),
     );
     return true;
   } catch {
@@ -52,14 +56,34 @@ async function existsInR2(key: string) {
 }
 
 // Retry wrapper
-async function withRetry(fn: () => Promise<any>, retries = 3) {
+async function withRetry(fn: () => Promise<any>, retries = 4) {
   let attempt = 0;
+
   while (attempt < retries) {
     try {
       return await fn();
-    } catch (err) {
+    } catch (err: any) {
       attempt++;
-      console.warn(`Retry ${attempt}/${retries}`);
+
+      const status = err?.$metadata?.httpStatusCode || err?.status;
+
+      // Respect Retry-After if present (Wikimedia sends this)
+      const retryAfter =
+        err?.response?.headers?.["retry-after"] ||
+        err?.$response?.headers?.["retry-after"];
+
+      if (retryAfter) {
+        const delay = parseInt(retryAfter, 10) * 1000;
+        console.warn(`Rate limited. Waiting ${delay}ms`);
+        await new Promise((res) => setTimeout(res, delay));
+        continue;
+      }
+
+      // Exponential backoff
+      const delay = Math.min(1000 * 2 ** attempt, 10000);
+      console.warn(`Retry ${attempt}/${retries} after ${delay}ms`);
+      await new Promise((res) => setTimeout(res, delay));
+
       if (attempt >= retries) throw err;
     }
   }
@@ -86,10 +110,19 @@ async function processPost(post: any) {
     const exists = await existsInR2(key);
 
     if (!exists) {
+      await new Promise((res) => setTimeout(res, 200)); // 👈 throttle
+
       console.log(`⬇️ Fetching image for post ${post.id}`);
 
-      // Fetch image
-      const res = await withRetry(() => fetch(post.imageUrl));
+      const res = await withRetry(() =>
+        fetch(post.imageUrl, {
+          headers: {
+            "User-Agent":
+              "TLDRHistory/1.0 (https://tldrhistory.xyz; contact: robleemorgan@gmail.com)",
+          },
+        }),
+      );
+      
       if (!res.ok) throw new Error("Failed to fetch image");
 
       const arrayBuffer = await res.arrayBuffer();
@@ -111,9 +144,9 @@ async function processPost(post: any) {
             Key: key,
             Body: processed,
             ContentType: "image/webp",
-            CacheControl: "public, max-age=31536000, immutable"
-          })
-        )
+            CacheControl: "public, max-age=31536000, immutable",
+          }),
+        ),
       );
     } else {
       console.log(`Already exists in R2: ${key}`);

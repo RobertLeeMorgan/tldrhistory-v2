@@ -1,9 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
 import fs from "fs";
 import path from "path";
+import prisma from "../server/client";
 
 function loadJson<T>(file: string): T[] {
   const fullPath = path.join(__dirname, "data", file);

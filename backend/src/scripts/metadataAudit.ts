@@ -9,8 +9,41 @@ import path from "path";
 // Setup
 // ==============================
 
-const queue = new PQueue({ concurrency: 3 });
-const cache = new NodeCache({ stdTTL: 60 * 60 * 24 }); // 24h cache
+const queue = new PQueue({ concurrency: 2 });
+const cache = new NodeCache({ stdTTL: 60 * 60 * 24 });
+const REQUEST_DELAY = 300;
+
+function delay(ms: number) {
+  return new Promise((res) => setTimeout(res, ms));
+}
+
+async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+  let attempt = 0;
+
+  while (attempt < retries) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      attempt++;
+
+      const retryAfter = err?.response?.headers?.["retry-after"];
+
+      if (retryAfter) {
+        const wait = parseInt(retryAfter, 10) * 1000;
+        console.warn(`⏳ Rate limited. Waiting ${wait}ms`);
+        await delay(wait);
+      } else {
+        const backoff = 1000 * attempt;
+        console.warn(`⚠️ Retry ${attempt}/${retries} after ${backoff}ms`);
+        await delay(backoff);
+      }
+
+      if (attempt >= retries) throw err;
+    }
+  }
+
+  throw new Error("Retry failed");
+}
 
 const http = axios.create({
   baseURL: "https://commons.wikimedia.org/w/api.php",
@@ -137,15 +170,18 @@ async function fetchPageImages(title: string) {
   const cached = cache.get<any[]>(cacheKey);
   if (cached) return cached;
 
-  const res = await http.get("", {
-    params: {
-      action: "query",
-      format: "json",
-      titles: title,
-      prop: "images",
-    },
-  });
+  await delay(REQUEST_DELAY);
 
+  const res = await withRetry(() =>
+    http.get("", {
+      params: {
+        action: "query",
+        format: "json",
+        titles: title,
+        prop: "images",
+      },
+    }),
+  );
   const pages = res.data.query.pages;
   const page = Object.values(pages)[0] as any;
   const images = page.images || [];
@@ -290,7 +326,10 @@ async function fetchImageMeta(filename: string) {
   const cached = cache.get<any>(cacheKey);
   if (cached) return cached;
 
-  const res = await http.get("", {
+ await delay(REQUEST_DELAY);
+
+const res = await withRetry(() =>
+  http.get("", {
     params: {
       action: "query",
       format: "json",
@@ -298,7 +337,8 @@ async function fetchImageMeta(filename: string) {
       prop: "imageinfo",
       iiprop: "url|extmetadata",
     },
-  });
+  }),
+);
 
   const pages = res.data.query.pages;
   const page = Object.values(pages)[0] as any;
@@ -307,17 +347,17 @@ async function fetchImageMeta(filename: string) {
 
   const meta = info.extmetadata;
 
-//   console.log("\n================ IMAGE META DEBUG ================");
-//   console.log("Filename:", filename);
+  //   console.log("\n================ IMAGE META DEBUG ================");
+  //   console.log("Filename:", filename);
 
-//   for (const key in meta) {
-//     const value = meta[key]?.value;
-//     if (value) {
-//       console.log(`${key}:`, stripHtml(value));
-//     }
-//   }
+  //   for (const key in meta) {
+  //     const value = meta[key]?.value;
+  //     if (value) {
+  //       console.log(`${key}:`, stripHtml(value));
+  //     }
+  //   }
 
-//   console.log("=================================================\n");
+  //   console.log("=================================================\n");
 
   const { authors, sourceField } = extractAuthors(meta);
 
@@ -362,7 +402,7 @@ function isValidImage(filename: string): boolean {
     lower.includes("edit") ||
     lower.includes("pencil") ||
     lower.includes("wiki") ||
-    lower.endsWith(".svg") // optional but recommended
+    lower.endsWith(".svg")
   );
 }
 
@@ -431,12 +471,12 @@ async function processPost(post: Post): Promise<ProcessPostResult> {
 async function run() {
   console.log("Starting metadata cleanup...");
 
-//   const summary = {
-//     pending: 0,
-//     approved: 0,
-//     fallback: 0,
-//     rejected: 0,
-//   };
+  //   const summary = {
+  //     pending: 0,
+  //     approved: 0,
+  //     fallback: 0,
+  //     rejected: 0,
+  //   };
 
   const posts = await prisma.post.findMany({
     where: { imageStatus: "pending" },
@@ -467,7 +507,7 @@ async function run() {
 
           const result = await processPost(post);
 
-        //   summary[result.imageStatus]++;
+          //   summary[result.imageStatus]++;
 
           await prisma.post.update({
             where: { id: post.id },
@@ -478,17 +518,17 @@ async function run() {
             },
           });
 
-        //   auditRecords.push({
-        //     postId: post.id,
-        //     name: post.name,
-        //     timestamp: new Date().toISOString(),
-        //     sourceUrl: post.sourceUrl,
-        //     sourceValid: isValidWikiSource(post.sourceUrl),
-        //     previous,
-        //     updated: result,
-        //     sourceField: result.sourceField,
-        //     usedFallback: result.imageStatus === "fallback",
-        //   });
+          //   auditRecords.push({
+          //     postId: post.id,
+          //     name: post.name,
+          //     timestamp: new Date().toISOString(),
+          //     sourceUrl: post.sourceUrl,
+          //     sourceValid: isValidWikiSource(post.sourceUrl),
+          //     previous,
+          //     updated: result,
+          //     sourceField: result.sourceField,
+          //     usedFallback: result.imageStatus === "fallback",
+          //   });
 
           console.log(`✔ Post ${post.id} → ${result.imageStatus}`);
         } catch (err) {
@@ -498,31 +538,31 @@ async function run() {
     ),
   );
 
-//   let existing = null;
+  //   let existing = null;
 
-//   if (fs.existsSync(auditFile)) {
-//     try {
-//       const raw = fs.readFileSync(auditFile, "utf-8");
-//       existing = JSON.parse(raw);
-//     } catch {
-//       existing = null;
-//     }
-//   }
+  //   if (fs.existsSync(auditFile)) {
+  //     try {
+  //       const raw = fs.readFileSync(auditFile, "utf-8");
+  //       existing = JSON.parse(raw);
+  //     } catch {
+  //       existing = null;
+  //     }
+  //   }
 
-//   const finalAudit = {
-//     summary,
-//     totalProcessed: (existing?.totalProcessed || 0) + auditRecords.length,
-//     records: [...(existing?.records || []), ...auditRecords],
-//   };
+  //   const finalAudit = {
+  //     summary,
+  //     totalProcessed: (existing?.totalProcessed || 0) + auditRecords.length,
+  //     records: [...(existing?.records || []), ...auditRecords],
+  //   };
 
-//   const keys = Object.keys(summary) as (keyof typeof summary)[];
+  //   const keys = Object.keys(summary) as (keyof typeof summary)[];
 
-//   for (const key of keys) {
-//     finalAudit.summary[key] = (existing.summary[key] || 0) + summary[key];
-//   }
+  //   for (const key of keys) {
+  //     finalAudit.summary[key] = (existing.summary[key] || 0) + summary[key];
+  //   }
 
-//   fs.writeFileSync(auditFile, JSON.stringify(finalAudit, null, 2));
-//   console.log(`Audit written to ${auditFile}`);
+  //   fs.writeFileSync(auditFile, JSON.stringify(finalAudit, null, 2));
+  //   console.log(`Audit written to ${auditFile}`);
 
   console.log("Metadata cleanup complete");
 }
