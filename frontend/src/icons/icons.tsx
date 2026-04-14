@@ -106,7 +106,7 @@ export function SearchIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="w-6 h-6 pl-1"
+      className="w-5 h-5"
     >
       <circle cx="11" cy="11" r="7" />
       <line x1="16" y1="16" x2="21" y2="21" />

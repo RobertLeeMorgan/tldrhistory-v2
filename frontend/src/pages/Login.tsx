@@ -1,17 +1,18 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../hooks/useAuthMutations";
 import { loginSchema } from "../schemas/loginSchema";
+import Button from "../components/ui/Button";
+import PageContainer from "../components/ui/PageContainer";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
   const mutation = useLoginMutation();
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<
     Partial<Record<keyof typeof form, string>>
   >({});
@@ -21,43 +22,48 @@ export default function Login() {
     setErrors({});
 
     const result = loginSchema.safeParse(form);
-
     if (!result.success) {
-      const fieldErrors: Partial<Record<keyof typeof form, string>> = {};
-
-      result.error.issues.forEach((issue) => {
-        const field = issue.path[0];
-        if (field) fieldErrors[field as keyof typeof form] = issue.message;
-      });
-
+      const fieldErrors = Object.fromEntries(
+        result.error.issues.map((issue) => [issue.path[0], issue.message]),
+      ) as Partial<Record<keyof typeof form, string>>;
       setErrors(fieldErrors);
       return;
     }
 
+    const from = (location.state as { from?: Location })?.from?.pathname || "/";
+
     mutation.mutate(result.data, {
-      onSuccess: () => navigate("/"),
-      onError: () => {
-        setErrors({ password: "Invalid email or password" });
+      onSuccess: (data) => {
+        login(data.login.token, data.login.user, true);
+        navigate(from, { replace: true });
       },
+      onError: () => setErrors({ password: "Invalid email or password" }),
     });
   };
 
   return (
-    <div className="hero bg-stone-200/90 min-h-screen">
-    <div className="hero-content flex-col lg:flex-row-reverse">
-        <div className="text-center lg:text-left">
-          <h1 className="text-5xl font-bold text-stone-900/86 text-shadow-sm">Welcome back!</h1>
-          <p className="py-6 text-stone-800 lg:text-lg">Log in to continue.</p>
+    <PageContainer>
+      <div className="hero-content flex-col lg:flex-row-reverse">
+        <div className="relative max-w-md text-center lg:text-left">
+          <div className="absolute inset-y-[-24px] inset-x-[-32px] -z-10 rounded-3xl bg-gradient-to-r from-black/55 via-black/35 to-black/10 blur-xl" />
+
+          <h1 className="text-5xl font-serif font-semibold tracking-wide text-stone-200">
+            Welcome back!
+          </h1>
+
+          <p className="hidden sm:block py-6 text-stone-300 font-medium lg:text-lg">
+            Log in to continue.
+          </p>
         </div>
 
-        <div className="card border border-neutral-700 bg-gradient-to-br from-neutral-800 via-neutral-900 to-neutral-950 w-full max-w-sm shadow-black/40 shadow-xl">
+        <div className="card border border-stone-900/70 bg-gradient-to-br from-stone-800 to-stone-900 w-full max-w-sm shadow-stone-950/40 shadow-xl">
           <form className="card-body" onSubmit={handleLogin}>
             {/* Email */}
-            <label className="input input-bordered flex items-center gap-2 bg-neutral-900/93 border-neutral-600">
+            <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600">
               <input
                 name="email"
                 type="email"
-                className="text-neutral-200 caret-neutral-200"
+                className="text-stone-200 caret-stone-200"
                 placeholder="mail@site.com"
                 aria-label="email"
                 value={form.email}
@@ -70,12 +76,11 @@ export default function Login() {
             )}
 
             {/* Password */}
-            <label className="input input-bordered flex items-center gap-2 bg-neutral-900/93 border-neutral-600">
+            <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600 mb-4">
               <input
                 name="password"
                 type="password"
-                className="text-neutral-200 caret-neutral-200"
-
+                className="text-stone-200 caret-stone-200"
                 aria-label="password"
                 placeholder="Password"
                 value={form.password}
@@ -86,23 +91,16 @@ export default function Login() {
               <p className="text-error text-xs">{errors.password}</p>
             )}
 
-            <button
-              className="btn bg-fuchsia-700 hover:bg-fuchsia-600 transition-colors duration-400 mt-4 rounded-lg "
-              disabled={mutation.isPending}
-              aria-label="login"
-            >
-              {mutation.isPending ? (
-                <>
-                  <span className="loading loading-spinner loading-md"></span>
-                  Logging in...
-                </>
-              ) : (
-                "Login"
-              )}
-            </button>
+            <Button
+              isLoading={mutation.isPending}
+              primary
+              label="Login"
+              type="submit"
+              loading="Logging In..."
+            />
           </form>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

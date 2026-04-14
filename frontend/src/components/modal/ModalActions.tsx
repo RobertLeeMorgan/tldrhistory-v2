@@ -1,33 +1,18 @@
-import { useNavigate } from "react-router-dom";
+import Button from "../ui/Button";
 
 export default function ModalActions({ post, deleteMutation }: any) {
-  const navigate = useNavigate();
-
-  const handleSuggestEdit = () => navigate(`/edit/${post.id}`);
-
   return (
-    <div className="flex gap-3 justify-center p-4">
-      <button className="btn btn-outline hover:bg-neutral-950 hover:border-neutral-200 transition-colors duration-300" onClick={handleSuggestEdit} aria-label="suggest edit">
-        Suggest Edit
-      </button>
+    <div className="flex gap-4 justify-center">
+      <Button label="Suggest Edit" to={`/edit/${post.id}`} />
 
       {deleteMutation.canDelete && (
-        <button
-          className={`btn bg-rose-500 hover:bg-rose-600 transition-colors duration-400 ${
-            deleteMutation.isPending ? "btn-disabled" : ""
-          }`}
+        <Button
           onClick={() => post?.id && deleteMutation.delete(Number(post.id))}
-          aria-label="delete post"
-        >
-          {deleteMutation.isPending ? (
-            <>
-              <span className="loading loading-spinner loading-md"></span>
-              Deleting...
-            </>
-          ) : (
-            "Delete Post"
-          )}
-        </button>
+          label="Delete Post"
+          loading="Deleting..."
+          isLoading={deleteMutation.isPending}
+          primary
+        />
       )}
     </div>
   );

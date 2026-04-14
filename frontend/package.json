@@ -11,9 +11,11 @@
     "codegen": "graphql-codegen"
   },
   "dependencies": {
+    "@react-router/node": "^7.14.1",
     "@tailwindcss/vite": "^4.1.17",
     "@tanstack/react-query": "^5.90.8",
     "axios": "^1.13.2",
+    "clsx": "^2.1.1",
     "d3-geo": "^3.1.1",
     "d3-interpolate": "^3.0.1",
     "d3-scale": "^4.0.2",
@@ -28,7 +30,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-icons": "^5.5.0",
-    "react-router-dom": "^7.9.5",
+    "react-router": "^7.14.1",
+    "react-router-dom": "^7.14.1",
     "topojson-client": "^3.1.0",
     "zod": "^4.1.12"
   },
@@ -37,6 +40,7 @@
     "@graphql-codegen/cli": "^6.1.0",
     "@graphql-codegen/typescript": "^5.0.5",
     "@graphql-codegen/typescript-operations": "^5.0.5",
+    "@react-router/dev": "^7.14.1",
     "@types/d3-geo": "^3.1.0",
     "@types/d3-interpolate": "^3.0.4",
     "@types/d3-scale": "^4.0.9",
@@ -58,6 +62,7 @@
     "tailwindcss": "^4.1.17",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.3",
-    "vite": "^7.2.2"
+    "vite": "^7.2.2",
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }

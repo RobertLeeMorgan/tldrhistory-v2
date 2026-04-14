@@ -53,11 +53,24 @@ export const postSchemaClient = z
 
     imageCredit: z.string().optional(),
 
-    countryId: z.string().min(1, "Country is required"),
+    country: z.object({
+      name: z.string(),
+    }),
 
-    groupId: z.number().optional(),
-
-    subjects: z.array(z.number().int()).min(1, "Select at least one subject"),
+    group: z
+      .object({
+        id: z.number(),
+        name: z.string(),
+      })
+      .optional(),
+    subjects: z
+      .array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+        }),
+      )
+      .min(1, "Select at least one subject"),
   })
   .superRefine((data, ctx) => {
     const maxStart = getMaxDays(data.startYear, data.startMonth);

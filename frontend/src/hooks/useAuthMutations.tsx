@@ -7,44 +7,25 @@ import type {
   RegisterMutation,
   RegisterMutationVariables,
 } from "../generated/graphql";
-import { useAuth } from "../context/AuthContext";
 
 // Login
 export function useLoginMutation() {
-  const { login } = useAuth();
-
   return useMutation({
     mutationFn: (variables: LoginMutationVariables) =>
       graphqlRequest<LoginMutation, LoginMutationVariables>(
         LOGIN_MUTATION,
-        variables
+        variables,
       ),
-    onSuccess: (data) => {
-      login(data.login.token, {
-        id: data.login.user.id,
-        username: data.login.user.username,
-        role: data.login.user.role,
-      });
-    },
   });
 }
 
 // Register
 export function useRegisterMutation() {
-  const { login } = useAuth();
-
   return useMutation({
     mutationFn: (variables: RegisterMutationVariables) =>
       graphqlRequest<RegisterMutation, RegisterMutationVariables>(
         REGISTER_MUTATION,
-        variables
+        variables,
       ),
-    onSuccess: (data) => {
-      login(data.register.token, {
-        id: data.register.user.id,
-        username: data.register.user.username,
-        role: "USER",
-      });
-    },
   });
 }

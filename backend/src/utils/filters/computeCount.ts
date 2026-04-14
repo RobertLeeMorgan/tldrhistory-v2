@@ -1,6 +1,10 @@
-import { Filter } from "../generatePosts";
+import { Filter } from "../botPost/generatePosts";
 
-export function computeCount(filter: Filter, dbPostsLength: number, limit: number): number {
+export function computeCount(
+  filter: Filter,
+  dbPostsLength: number,
+  limit: number,
+): number {
   if (filter.search?.length) return 1;
 
   if (filter.yearStart && filter.yearEnd) {

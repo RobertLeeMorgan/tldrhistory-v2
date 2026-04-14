@@ -1,5 +1,7 @@
-import { useRouteError, isRouteErrorResponse, Link } from "react-router-dom";
-import Nav from "../components/Nav";
+import { useRouteError, isRouteErrorResponse } from "react-router-dom";
+import Nav from "../components/ui/Nav";
+import Button from "../components/ui/Button";
+import PageContainer from "../components/ui/PageContainer";
 
 export default function Error() {
   const error = useRouteError();
@@ -19,15 +21,16 @@ export default function Error() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-stone-200/90 p-6">
-      <Nav/>
-      <div className="text-center">
-        <h1 className="text-5xl font-bold text-red-500 mb-4 text-shadow-md">{title}</h1>
-        <p className="text-2xl text-neutral-800 mb-6">{message}</p>
-        <Link to="/" className="btn btn-lg bg-fuchsia-600 hover:bg-fuchsia-500 transition-colors duration-400 mt-4 rounded-lg shadow-md shadow-black/40" aria-label="home">
-          Go Home
-        </Link>
+    <PageContainer>
+      <Nav />
+
+      <div className="text-center z-10">
+        <h1 className="text-5xl font-bold text-gold mb-4 text-shadow-md">
+          {title}
+        </h1>
+        <p className="text-2xl text-stone-300 mb-6">{message}</p>
+        <Button label="Go Home" primary to="/" />
       </div>
-    </div>
+    </PageContainer>
   );
 }

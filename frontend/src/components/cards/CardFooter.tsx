@@ -10,6 +10,7 @@ import type {
   LikePostMutation,
 } from "../../generated/graphql";
 import { motion } from "framer-motion";
+import { queryClient } from "../../lib/queryClient";
 
 interface CardFooterProps {
   post: Post;
@@ -26,11 +27,14 @@ export default function CardFooter({ post }: CardFooterProps) {
     mutationFn: (variables: LikePostMutationVariables) =>
       graphqlRequest<LikePostMutation, LikePostMutationVariables>(
         LIKE_POST,
-        variables
+        variables,
       ),
     onSuccess: (data) => {
       setLiked(data.likePost.liked);
       setLikesCount(data.likePost.likes);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["userLikes"] });
     },
   });
 
@@ -46,11 +50,11 @@ export default function CardFooter({ post }: CardFooterProps) {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-end px-4 pb-3 gap-1">
+    <div className="flex flex-1 items-center justify-end gap-1">
       <motion.button
         onClick={handleClick}
         disabled={likePostMutation.isPending}
-        className="btn btn-ghost btn-sm text-secondary p-0"
+        className="btn btn-ghost btn-sm text-gold p-1 hover:text-gold-hover hover:bg-stone-800/70"
         aria-label={liked ? "Unlike article" : "Like article"}
         whileTap={{ scale: 0.9 }}
       >
@@ -61,7 +65,10 @@ export default function CardFooter({ post }: CardFooterProps) {
           stroke="currentColor"
           fill={liked ? "currentColor" : "none"}
           initial={false}
-          animate={{ fill: liked ? "currentColor" : "none", scale: liked ? 1.2 : 1 }}
+          animate={{
+            fill: liked ? "currentColor" : "none",
+            scale: liked ? 1.1 : 1,
+          }}
           transition={{ type: "spring", stiffness: 500, damping: 20 }}
         >
           <path
@@ -72,7 +79,7 @@ export default function CardFooter({ post }: CardFooterProps) {
           />
         </motion.svg>
       </motion.button>
-      <span className="text-sm">{likesCount}</span>
+      <span className="text-base">{likesCount}</span>
     </div>
   );
 }

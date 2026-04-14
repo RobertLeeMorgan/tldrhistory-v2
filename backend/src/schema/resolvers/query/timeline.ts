@@ -2,149 +2,91 @@ import prisma from "../../../server/client";
 import { Context } from "./user";
 import { queryFilters } from "../../../utils/filters/queryFilters";
 import { filterSchema } from "../../../validators/filterSchema";
+import { timelinePostSelect } from "../../../utils/timelineSelect";
+import { encodeCursor, decodeCursor, buildCursorWhere } from "../../../utils/cursor";
+
+const TIMELINE_PAGE_SIZE = 15;
+
+type TimelineArgs = {
+  cursor?: string | null;
+  filter?: unknown;
+};
+
+type DbPost = {
+  id: number;
+  startYear: number;
+  startMonth: number | null;
+  startDay: number | null;
+  _count: { likes: number };
+  [key: string]: any;
+};
+
+type LikeRow = {
+  postId: number;
+};
+
 
 export async function timeline(
-  _: any,
-  { cursor, filter: validatedFilter }: any,
-  ctx: Context,
+  _: unknown,
+  { cursor, filter: rawFilter }: TimelineArgs,
+  ctx: Context
 ) {
-  const filter = await filterSchema.parseAsync(validatedFilter);
+  const filter = await filterSchema.parseAsync(rawFilter ?? {});
+  const parsedCursor = cursor ? decodeCursor(cursor) : null;
 
-  const limit = 15;
-  const where = queryFilters(filter);
+  const direction: "asc" | "desc" = filter.sortBy ? "asc" : "desc";
+  const baseWhere = queryFilters(filter);
 
-  // let generationAttempted = true;
+  const where = parsedCursor
+    ? {
+        AND: [baseWhere, buildCursorWhere(parsedCursor, direction)],
+      }
+    : baseWhere;
 
-  const direction = filter.sortBy ? "asc" : "desc";
+  const dbPosts: DbPost[] = await prisma.post.findMany({
+    where,
+    take: TIMELINE_PAGE_SIZE,
+    orderBy: [
+      { startYear: direction },
+      { startMonth: direction },
+      { startDay: direction },
+      { id: direction },
+    ],
+    select: timelinePostSelect,
+  });
 
-  async function fetchPosts() {
-    return await prisma.post.findMany({
-      where,
-      take: limit,
-
-      // For correctness, this should become a composite cursor later
-      ...(cursor && { cursor: { id: Number(cursor) }, skip: 1 }),
-
-      orderBy: [
-        { startYear: direction },
-        { startMonth: direction },
-        { startDay: direction },
-        { id: direction },
-      ],
-
-      select: {
-        id: true,
-        name: true,
-        type: true,
-        startDescription: true,
-        endDescription: true,
-        startYear: true,
-        startMonth: true,
-        startDay: true,
-        endYear: true,
-        endMonth: true,
-        endDay: true,
-        startSignificance: true,
-        endSignificance: true,
-        imageUrl: true,
-        cdnId: true,
-        imageCredit: true,
-        sourceUrl: true,
-
-        country: {
-          select: {
-            name: true,
-            continent: true,
+  const likedPostIds: LikeRow[] =
+    ctx.user && dbPosts.length > 0
+      ? await prisma.like.findMany({
+          where: {
+            userId: ctx.user.id,
+            postId: { in: dbPosts.map((post) => post.id) },
           },
-        },
-
-        subjects: {
           select: {
-            id: true,
-            name: true,
+            postId: true,
           },
-        },
+        })
+      : [];
 
-        group: {
-          select: {
-            name: true,
-            icon: true,
-          },
-        },
+  const likedSet = new Set(likedPostIds.map((like) => like.postId));
 
-        user: {
-          select: {
-            id: true,
-            username: true,
-          },
-        },
-
-        _count: {
-          select: { likes: true },
-        },
-      },
-    });
-  }
-
-  let dbPosts = await fetchPosts();
-
-  // if (
-  //   !cursor &&
-  //   dbPosts.length < 1 &&
-  //   filter &&
-  //   Object.keys(filter).length > 0 &&
-  //   !generationAttempted
-  // ) {
-  //   generationAttempted = true;
-  //   const existingNames = dbPosts.map((p) => p.name);
-  //   try {
-  //     const count = computeCount(filter, dbPosts.length, limit);
-  //     await generatePosts(filter, existingNames, count, ctx);
-  //   } catch (err) {
-  //     console.error("AI generation error:", err);
-  //   }
-  //   dbPosts = await fetchPosts();
-  // }
-
-  // dbPosts.sort((a, b) => {
-  //   if (filter.sortBy) {
-  //     return (
-  //       a.startYear - b.startYear ||
-  //       a.startMonth - b.startMonth ||
-  //       a.startDay - b.startDay ||
-  //       a.id - b.id
-  //     );
-  //   }
-  //   return (
-  //     b.startYear - a.startYear ||
-  //     b.startMonth - a.startMonth ||
-  //     b.startDay - a.startDay ||
-  //     b.id - a.id
-  //   );
-  // });
-
-  // Likes
-  const userLikes = ctx.user
-    ? await prisma.like.findMany({
-        where: {
-          userId: ctx.user.id,
-          postId: { in: dbPosts.map((p) => p.id) },
-        },
-        select: { postId: true },
-      })
-    : [];
-
-  const likedSet = new Set(userLikes.map((like) => like.postId));
-
-  const finalPosts = dbPosts.map(({ _count, ...post }: any) => ({
+  const posts = dbPosts.map(({ _count, ...post }) => ({
     ...post,
     likes: _count.likes,
     liked: likedSet.has(post.id),
   }));
 
-  return {
-    posts: finalPosts,
+  const lastPost = dbPosts[dbPosts.length - 1];
 
-    nextCursor: finalPosts.length ? finalPosts[finalPosts.length - 1].id : null,
+  return {
+    posts,
+    nextCursor: lastPost
+      ? encodeCursor({
+          startYear: lastPost.startYear,
+          startMonth: lastPost.startMonth,
+          startDay: lastPost.startDay,
+          id: lastPost.id,
+        })
+      : null,
   };
 }

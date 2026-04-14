@@ -54,11 +54,11 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
               <div
                 className={`alert ${
                   toast.type === "success"
-                    ? "bg-green-600 border-green-700"
+                    ? "bg-gradient-to-br from-stone-800 to-stone-900 border-stone-950/90 text-gold shadow-lg shadow-black/30 rounded"
                     : toast.type === "error"
-                    ? "bg-rose-500 border-rose-600"
-                    : "bg-blue-500 border-blue-600"
-                } shadow-lg shadow-black/40 border text-shadow-sm font-semibold`}
+                    ? "bg-gradient-to-br to-gold from-[#ead04c] border-stone-950/90 text-stone-950 shadow-lg shadow-black/30 rounded"
+                    : "bg-gradient-to-br from-stone-800 to-stone-900 border-stone-950/90 text-gold shadow-lg shadow-black/30 rounded"
+                } shadow-lg shadow-black/40 text-lg font-serif border text-shadow-sm font-semibold`}
               >
                 <span>{toast.message}</span>
               </div>

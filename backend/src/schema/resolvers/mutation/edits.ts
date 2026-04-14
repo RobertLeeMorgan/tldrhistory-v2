@@ -1,6 +1,11 @@
 import prisma from "../../../server/client";
-import { requireRole } from "../../../utils/requireRole";
-import { postSchema } from "../../../validators/postSchema";
+import {
+  hasImageChanged,
+  shouldTransferOwnership,
+  SUGGESTION_STATUS,
+} from "../../../utils/suggestionHelpers";
+import { requireRole } from "../../../utils/auth/requireRole";
+import { inputSchema } from "../../../validators/inputSchema";
 import { Context } from "../query/user";
 
 export async function suggestEdit(
@@ -10,24 +15,21 @@ export async function suggestEdit(
 ) {
   requireRole(ctx, ["USER", "MODERATOR", "ADMIN"]);
 
-  const normalizedInput = {
-    ...input,
-    subjects: input.subjects?.map((s: any) => Number(s)) ?? [],
-  };
+  const validated = await inputSchema.parseAsync(input);
 
-  const validated = await postSchema.parseAsync(normalizedInput);
-
-  const postExists = await prisma.post.count({
+  const post = await prisma.post.findUnique({
     where: { id: Number(postId) },
+    select: { id: true, name: true },
   });
-  if (!postExists) throw new Error("Post not found");
+
+  if (!post) throw new Error("Post not found");
 
   return prisma.editSuggestion.create({
     data: {
-      postId: Number(postId),
+      postId: post.id,
       suggestedById: ctx.user!.id,
       data: validated,
-      status: "pending",
+      status: SUGGESTION_STATUS.PENDING,
     },
     include: {
       suggestedBy: true,
@@ -39,94 +41,88 @@ export async function suggestEdit(
 export async function approveEdit(_: any, { id }: any, ctx: Context) {
   requireRole(ctx, ["MODERATOR", "ADMIN"]);
 
-  const suggestion = await prisma.editSuggestion.findUnique({
-    where: { id: Number(id) },
-  });
-  if (!suggestion) throw new Error("Suggestion not found");
-  if (suggestion.status !== "pending")
-    throw new Error("Suggestion already processed");
+  await prisma.$transaction(async (tx) => {
+    const suggestion = await tx.editSuggestion.findUnique({
+      where: { id: Number(id) },
+    });
 
-  const data = suggestion.data as any;
+    if (!suggestion) throw new Error("Suggestion not found");
+    if (suggestion.status !== SUGGESTION_STATUS.PENDING) {
+      throw new Error("Suggestion already processed");
+    }
 
-  let subjectIds: number[] = [];
+    const validated = await inputSchema.parseAsync(suggestion.data);
 
-  if (Array.isArray(data.subjects)) {
-    subjectIds = data.subjects.map((s: any) =>
-      typeof s === "object" ? Number(s.id) : Number(s),
-    );
-  }
+    const existingPost = await tx.post.findUnique({
+      where: { id: suggestion.postId },
+      select: {
+        id: true,
+        imageUrl: true,
+        imageCredit: true,
+        sourceUrl: true,
+        userId: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+            role: true,
+          },
+        },
+      },
+    });
 
-  // 🔥 Fetch current post to compare
-  const existingPost = await prisma.post.findUnique({
-    where: { id: suggestion.postId },
-    select: {
-      imageUrl: true,
-      imageCredit: true,
-      sourceUrl: true,
-    },
-  });
+    if (!existingPost) throw new Error("Post not found");
 
-  if (!existingPost) throw new Error("Post not found");
+    const imageChanged = hasImageChanged(validated, existingPost);
 
-  const imageChanged =
-    (data.imageUrl !== undefined && data.imageUrl !== existingPost.imageUrl) ||
-    (data.imageCredit !== undefined && data.imageCredit !== existingPost.imageCredit) ||
-    (data.sourceUrl !== undefined && data.sourceUrl !== existingPost.sourceUrl);
-
-  const updatedPost = await prisma.post.update({
-    where: { id: suggestion.postId },
-    data: {
-      ...data,
-      groupId: data.groupId < 1 ? null : data.groupId,
-      userId: suggestion.suggestedById,
-      subjects: { set: subjectIds.map((id) => ({ id })) },
-
+    const updateData: any = {
+      name: validated.name,
+      type: validated.type,
+      startDescription: validated.startDescription,
+      endDescription: validated.endDescription ?? null,
+      startYear: validated.startYear,
+      startMonth: validated.startMonth ?? 0,
+      startDay: validated.startDay ?? 0,
+      endYear: validated.endYear ?? 0,
+      endMonth: validated.endMonth ?? 0,
+      endDay: validated.endDay ?? 0,
+      startSignificance: validated.startSignificance ?? 0,
+      endSignificance: validated.endSignificance ?? 0,
+      imageUrl: validated.imageUrl ?? null,
+      imageCredit: validated.imageCredit ?? null,
+      sourceUrl: validated.sourceUrl ?? null,
+      civilisation: validated.civilisation ?? false,
+      countryId: validated.country.name,
+      groupId: validated.group?.id ?? null,
+      subjects: {
+        set: validated.subjects.map((subject) => ({ id: subject.id })),
+      },
       ...(imageChanged && {
         imageStatus: "pending",
         cdnUrl: null,
         cdnId: null,
       }),
-    },
-    select: {
-      id: true,
-      name: true,
-      type: true,
-      startYear: true,
-      startMonth: true,
-      startDay: true,
-      endYear: true,
-      endMonth: true,
-      endDay: true,
-      startDescription: true,
-      endDescription: true,
-      startSignificance: true,
-      endSignificance: true,
-      imageUrl: true,
-      cdnId: true,
-      imageCredit: true,
-      sourceUrl: true,
-      civilisation: true,
-      country: { select: { name: true, continent: true } },
-      subjects: { select: { id: true, name: true } },
-      group: { select: { id: true, name: true, icon: true } },
-      user: { select: { id: true, username: true } },
-      _count: { select: { likes: true } },
-    },
+    };
+
+    if (shouldTransferOwnership(existingPost)) {
+      updateData.userId = suggestion.suggestedById;
+    }
+
+    await tx.post.update({
+      where: { id: suggestion.postId },
+      data: updateData,
+    });
+
+    await tx.editSuggestion.update({
+      where: { id: Number(id) },
+      data: {
+        status: SUGGESTION_STATUS.APPROVED,
+        moderatorId: ctx.user!.id,
+      },
+    });
   });
 
-  await prisma.editSuggestion.update({
-    where: { id: Number(id) },
-    data: { status: "approved", moderatorId: ctx.user!.id },
-  });
-
-  const liked = ctx.user
-    ? !!(await prisma.like.findFirst({
-        where: { postId: updatedPost.id, userId: ctx.user.id },
-        select: { userId: true },
-      }))
-    : false;
-
-  return { ...updatedPost, likes: updatedPost._count.likes, liked };
+  return true;
 }
 
 export async function rejectEdit(_: any, { id }: any, ctx: Context) {
@@ -134,12 +130,20 @@ export async function rejectEdit(_: any, { id }: any, ctx: Context) {
 
   const suggestion = await prisma.editSuggestion.findUnique({
     where: { id: Number(id) },
+    select: { id: true, status: true },
   });
+
   if (!suggestion) throw new Error("Suggestion not found");
+  if (suggestion.status !== SUGGESTION_STATUS.PENDING) {
+    throw new Error("Suggestion already processed");
+  }
 
   await prisma.editSuggestion.update({
-    where: { id: Number(id) },
-    data: { status: "rejected", moderatorId: ctx.user!.id },
+    where: { id: suggestion.id },
+    data: {
+      status: SUGGESTION_STATUS.REJECTED,
+      moderatorId: ctx.user!.id,
+    },
   });
 
   return true;

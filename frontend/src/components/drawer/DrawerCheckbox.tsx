@@ -8,9 +8,11 @@ export default function DrawerCheckbox({
 }: DrawerCheckboxProps) {
   return (
     <input
-      className={`btn btn-md m-1 border hover:text-neutral-300 rounded-md hover:bg-neutral-900/80 hover:border-neutral-400 ${
-                      checked ? "bg-stone-950/40 border-neutral-300 text-neutral-200 shadow-md shadow-indigo-300/30" : "bg-neutral-900 border-neutral-600 text-neutral-400"
-                    } transition-all duration-200 ease-in-out`}
+      className={`btn btn-md m-1 border rounded-md  ${
+        checked
+          ? "bg-stone-950/40 border-gold text-gold shadow-sm shadow-stone-950/30 hover:bg-gold/10 hover:border-gold hover:text-gold/80"
+          : "bg-drawer border-stone-600 text-stone-400 hover:text-stone-300 hover:bg-drawer/80 hover:border-stone-400"
+      } transition-all duration-200 ease-in-out`}
       type="checkbox"
       name={labelText}
       aria-label={labelText}

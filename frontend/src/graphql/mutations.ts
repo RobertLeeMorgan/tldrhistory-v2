@@ -58,9 +58,7 @@ export const SUGGEST_EDIT = `
 
 export const APPROVE_EDIT_MUTATION = `
   mutation ApproveEdit($id: Int!) {
-    approveEdit(id: $id) {
-      id
-    }
+    approveEdit(id: $id)
   }
 `;
 
@@ -69,3 +67,32 @@ export const REJECT_EDIT_MUTATION = `
     rejectEdit(id: $id)
   }
 `;
+
+export const CREATE_POST_SUGGESTION_MUTATION = gql`
+  mutation CreatePostSuggestion($input: PostInput!) {
+    createPostSuggestion(input: $input) {
+      id
+      status
+      data
+      createdAt
+      updatedAt
+      suggestedBy {
+        id
+        username
+      }
+    }
+  }
+`;
+
+export const APPROVE_CREATED_POST_MUTATION = `
+  mutation ApproveCreatedPost($id: Int!) {
+    approveCreatedPost(id: $id)
+  }
+`;
+
+export const REJECT_CREATED_POST_MUTATION = `
+  mutation RejectCreatedPost($id: Int!) {
+    rejectCreatedPost(id: $id)
+  }
+`;
+

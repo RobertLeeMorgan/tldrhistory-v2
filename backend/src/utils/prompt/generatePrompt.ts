@@ -1,4 +1,4 @@
-import { Filter } from "../generatePosts";
+import { Filter } from "../botPost/generatePosts";
 import { buildConditions } from "./buildConditions";
 import { buildTypes } from "./buildTypes";
 

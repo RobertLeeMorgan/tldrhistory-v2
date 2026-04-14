@@ -1,80 +1,121 @@
-import prisma from "../../../server/client";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import { GraphQLError } from "graphql";
+import prisma from "../../../server/client";
+import { issueTokens } from "../../../utils/auth/issueTokens";
 
-export async function register(_: any, { email, password, username }: any, ctx: any) {
+type AuthContext = {
+  res: any;
+};
+
+type RegisterArgs = {
+  email: string;
+  password: string;
+  username: string;
+};
+
+type LoginArgs = {
+  email: string;
+  password: string;
+};
+
+export async function register(
+  _: unknown,
+  { email, password, username }: RegisterArgs,
+  ctx: AuthContext
+) {
+  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedUsername = username.trim();
+
   const existingUser = await prisma.user.findFirst({
-    where: { OR: [{ email }, { username }] },
-    select: { email: true, username: true },
+    where: {
+      OR: [
+        { email: normalizedEmail },
+        { username: normalizedUsername },
+      ],
+    },
+    select: {
+      email: true,
+      username: true,
+    },
   });
 
-  if (existingUser) {
-    if (existingUser.email === email) throw new Error("Email already in use");
-    if (existingUser.username === username) throw new Error("Username already in use");
+  if (existingUser?.email === normalizedEmail) {
+    throw new GraphQLError("Email already in use", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  if (existingUser?.username === normalizedUsername) {
+    throw new GraphQLError("Username already in use", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
   const user = await prisma.user.create({
-    data: { email, username, password: hashedPassword, role: "USER" },
-    select: { id: true, email: true, username: true, role: true },
+    data: {
+      email: normalizedEmail,
+      username: normalizedUsername,
+      password: hashedPassword,
+      role: "USER",
+    },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      role: true,
+    },
   });
 
-  const accessToken = jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
-    process.env.JWT_SECRET!,
-    { expiresIn: "15m" }
-  );
+  const accessToken = await issueTokens(user, ctx);
 
-  const refreshToken = jwt.sign(
-    { id: user.id },
-    process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: "7d" }
-  );
-
-ctx.res.cookie("refreshToken", refreshToken, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
-  path: "/", // send on all paths
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-});
-
-  return { token: accessToken, user };
+  return {
+    token: accessToken,
+    user,
+  };
 }
 
-export async function login(_: any, { email, password }: any, ctx: any) {
+export async function login(
+  _: unknown,
+  { email, password }: LoginArgs,
+  ctx: AuthContext
+) {
+  const normalizedEmail = email.trim().toLowerCase();
+
   const user = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true, email: true, username: true, role: true, password: true },
+    where: { email: normalizedEmail },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      role: true,
+      password: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
 
-  if (!user) throw new Error("Incorrect credentials");
+  if (!user) {
+    throw new GraphQLError("Incorrect credentials", {
+      extensions: { code: "UNAUTHENTICATED" },
+    });
+  }
 
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) throw new Error("Incorrect credentials");
+  const validPassword = await bcrypt.compare(password, user.password);
 
-  const { password: _pw, ...safeUser } = user;
+  if (!validPassword) {
+    throw new GraphQLError("Incorrect credentials", {
+      extensions: { code: "UNAUTHENTICATED" },
+    });
+  }
 
-  const accessToken = jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
-    process.env.JWT_SECRET!,
-    { expiresIn: "15m" }
-  );
+  const { password: _password, ...safeUser } = user;
 
-  const refreshToken = jwt.sign(
-    { id: user.id },
-    process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: "7d" }
-  );
+  const accessToken = await issueTokens(safeUser, ctx);
 
-ctx.res.cookie("refreshToken", refreshToken, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
-  path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-});
-
-  return { token: accessToken, user: safeUser };
+  return {
+    token: accessToken,
+    user: safeUser,
+  };
 }

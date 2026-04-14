@@ -1,13 +1,49 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-   themes: dark --default;
 }
-
-
 
 @import "tailwindcss";
 @theme {
   --breakpoint-xs: 30rem;
+
+  --color-gold: #b8893c;
+  --color-gold-hover: #936c2c;
+
+  --color-card-primary: #52433b;
+  --color-card-secondary: #3d2d26;
+
+  --color-stats-primary: #2c2623;
+  --color-stats-secondary: #1b1715;
+
+  --color-drawer: #1b1715;
+
+  --color-overlay: #221814;
+
+  --color-base: #d6d3d2;
+}
+
+:root {
+  --header-height-sm: 5.8rem;
+  --header-height-md: 7.6rem;
+  --header-height-lg: 8rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --header-height-sm: 5.8rem;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-height-md: 7.6rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-height-lg: 8rem;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -18,6 +54,13 @@ html {
   scrollbar-width: none;
 }
 
-html, body {
-  background-color: #0c0a09;
+html,
+body {
+  background-color: var(--color-base);
+}
+
+@layer base {
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
 }

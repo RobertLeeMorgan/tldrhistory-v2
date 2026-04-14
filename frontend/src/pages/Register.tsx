@@ -2,10 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRegisterMutation } from "../hooks/useAuthMutations";
 import { registerSchema } from "../schemas/registerSchema";
+import PageContainer from "../components/ui/PageContainer";
+import Button from "../components/ui/Button";
+import { useToast } from "../context/ToastContext";
 
 export default function Register() {
   const navigate = useNavigate();
   const mutation = useRegisterMutation();
+  const { addToast } = useToast();
 
   const [form, setForm] = useState({
     email: "",
@@ -43,30 +47,43 @@ export default function Register() {
         password: result.data.password,
       },
       {
-        onSuccess: () => navigate("/"),
+        onSuccess: () => {
+          addToast({
+            type: "success",
+            message: "Registration successful! Please log in.",
+          });
+          navigate("/login");
+        },
         onError: () => {
           setErrors({ email: "Registration failed" });
         },
-      }
+      },
     );
   };
 
   return (
-    <div className="hero bg-stone-200/90 min-h-screen">
+    <PageContainer>
       <div className="hero-content flex-col lg:flex-row-reverse">
-        <div className="text-center lg:text-left">
-          <h1 className="text-5xl font-bold text-neutral-900/86 text-shadow-sm">Register now!</h1>
-          <p className="py-6 text-neutral-800 lg:text-lg">Create an account to continue.</p>
+        <div className="relative max-w-md text-center lg:text-left">
+          <div className="absolute inset-y-[-24px] inset-x-[-32px] -z-10 rounded-3xl bg-gradient-to-r from-black/55 via-black/35 to-black/10 blur-xl" />
+
+          <h1 className="text-5xl font-serif font-semibold tracking-wide text-stone-200 drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]">
+            Register now!
+          </h1>
+
+          <p className="hidden sm:block py-6 text-stone-300 font-medium lg:text-lg drop-shadow-[0_1px_6px_rgba(0,0,0,0.45)]">
+            Create an account to continue.
+          </p>
         </div>
 
-        <div className="card border border-neutral-700 bg-gradient-to-br from-neutral-800 via-neutral-900 to-neutral-950 w-full max-w-sm shadow-black/40 shadow-xl">
+        <div className="card border border-stone-900/70 bg-gradient-to-br from-stone-800 to-stone-900 w-full max-w-sm shadow-stone-950/40 shadow-xl">
           <form className="card-body" onSubmit={handleRegister}>
             {/* Username */}
-            <label className="input input-bordered flex items-center gap-2 bg-neutral-900/93 border-neutral-600">
+            <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600">
               <input
                 name="username"
                 type="text"
-                className="text-neutral-200 caret-neutral-200"
+                className="text-stone-200 caret-stone-200"
                 aria-label="username"
                 placeholder="Username"
                 value={form.username}
@@ -79,11 +96,11 @@ export default function Register() {
             )}
 
             {/* Email */}
-            <label className="input input-bordered flex items-center gap-2 bg-neutral-900/93 border-neutral-600">
+            <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600">
               <input
                 name="email"
                 type="email"
-                className="text-neutral-200 caret-neutral-200"
+                className="text-stone-200 caret-stone-200"
                 aria-label="email"
                 placeholder="mail@site.com"
                 value={form.email}
@@ -96,11 +113,11 @@ export default function Register() {
             )}
 
             {/* Password */}
-            <label className="input input-bordered flex items-center gap-2 bg-neutral-900/93 border-neutral-600">
+            <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600">
               <input
                 name="password"
                 type="password"
-                className="text-neutral-200 caret-neutral-200"
+                className="text-stone-200 caret-stone-200"
                 aria-label="password"
                 placeholder="Password"
                 value={form.password}
@@ -112,11 +129,11 @@ export default function Register() {
             )}
 
             {/* Confirm Password */}
-            <label className="input input-bordered flex items-center gap-2 bg-neutral-900/93 border-neutral-600">
+            <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600 mb-4">
               <input
                 name="confirmPassword"
                 type="password"
-                className="text-neutral-200 caret-neutral-200"
+                className="text-stone-200 caret-stone-200"
                 aria-label="confirm password"
                 placeholder="Confirm Password"
                 value={form.confirmPassword}
@@ -129,23 +146,16 @@ export default function Register() {
               <p className="text-error text-xs">{errors.confirmPassword}</p>
             )}
 
-            <button
-              className="btn bg-fuchsia-700 hover:bg-fuchsia-600 transition-colors duration-400 mt-4 rounded-lg"
-              disabled={mutation.isPending}
-              aria-label="register"
-            >
-              {mutation.isPending ? (
-                <>
-                  <span className="loading loading-spinner loading-md"></span>
-                  Registering...
-                </>
-              ) : (
-                "Register"
-              )}
-            </button>
+            <Button
+              isLoading={mutation.isPending}
+              primary
+              label="Register"
+              type="submit"
+              loading="Registering..."
+            />
           </form>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

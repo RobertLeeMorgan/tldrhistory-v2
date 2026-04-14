@@ -1,14 +1,14 @@
 import OpenAI from "openai";
 import { AIInput, AIOutput } from "./types";
 import { generatePrompt } from "../../utils/prompt/generatePrompt";
-import { Filter } from "../../utils/generatePosts";
+import { Filter } from "../../utils/botPost/generatePosts";
 import prisma from "../../server/client";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
 
 export async function openAIService(
   rawData: AIInput,
-  filter: Filter
+  filter: Filter,
 ): Promise<AIOutput> {
   const group = filter?.group
     ? await prisma.group.findUnique({ where: { id: filter.group } })

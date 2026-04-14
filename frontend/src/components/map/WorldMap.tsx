@@ -13,7 +13,9 @@ import { AnimatePresence } from "framer-motion";
 import groupColor from "./MapColour";
 import type { Continent } from "./MapColour";
 
-const PostModal = lazy(() => import("../modal/PostModal"));
+const PostModal = lazy(
+  () => import("../../features/timeline/components/TimelineModal"),
+);
 
 type Props = {
   civilisations: {
@@ -151,7 +153,7 @@ export default function WorldMap({
         .join("path")
         .attr("d", path as any)
         .attr("fill", "oklch(55.3% 0.013 58.071)")
-        .attr("stroke", "oklch(26.8% 0.007 34.298)")
+        .attr("stroke", "#1B1715")
         .attr("stroke-width", 0.3);
     }
   }, [worldDataLoaded]);
@@ -221,7 +223,7 @@ export default function WorldMap({
           ? (groupColors.get(entry.groupId) ?? "#adb7adff")
           : "#adb7adff";
       })
-      .attr("opacity", 0.7);
+      .attr("opacity", 0.9);
 
     // Tooltip & click logic (same as before)
     dotsG
@@ -301,7 +303,7 @@ export default function WorldMap({
 
         <div
           ref={tooltipRef}
-          className={`${isInteractive ? "text-lg" : "text-sm" } absolute pointer-events-none bg-base-100 text-white rounded px-2 py-1 hidden z-10`}
+          className={`${isInteractive ? "text-lg" : "text-sm"} absolute pointer-events-none bg-stone-800 text-stone-200 rounded px-2 py-1 hidden z-10`}
         />
       </div>
 

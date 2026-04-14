@@ -6,14 +6,14 @@ import * as MutationPosts from "./mutation/posts";
 import * as MutationEdits from "./mutation/edits";
 import * as MutationDelete from "./mutation/delete";
 import * as MutationLikePosts from "./mutation/likePost";
-import * as OtherQueries from "./query/queries";
+import * as QuerySuggestions from "./query/suggestions";
 
 export const resolvers = {
   Query: {
     ...QueryTimeline,
     ...QueryStats,
     ...QueryUser,
-    ...OtherQueries,
+    ...QuerySuggestions,
   },
   Mutation: {
     ...MutationAuth,

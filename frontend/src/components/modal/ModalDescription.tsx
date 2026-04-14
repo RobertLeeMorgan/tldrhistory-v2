@@ -2,13 +2,13 @@ import type { Post } from "../../generated/graphql";
 
 export default function ModalDescription({ post }: { post: Post }) {
   return (
-    <div className="px-4 pb-4">
-      <p className="text-base md:text-lg text-zinc-300 mb-2">
+    <div className="space-y-2">
+      <p className="md:text-lg text-stone-300">
         {post.startDescription}
       </p>
 
       {post.endDescription && (
-        <p className="italic text-sm md:text-lg text-zinc-400">{post.endDescription}</p>
+        <p className="md:text-lg text-stone-400">{post.endDescription}</p>
       )}
     </div>
   );

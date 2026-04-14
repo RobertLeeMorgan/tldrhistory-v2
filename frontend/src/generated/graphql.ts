@@ -40,10 +40,31 @@ export type Country = {
   posts: Array<Post>;
 };
 
+export type CountryInput = {
+  name: Scalars['String']['input'];
+};
+
 export type CountrySummary = {
   __typename?: 'CountrySummary';
   continent: Continent;
   name: Scalars['String']['output'];
+};
+
+export type CreatedPost = {
+  __typename?: 'CreatedPost';
+  createdAt: Scalars['String']['output'];
+  data: Scalars['JSON']['output'];
+  id: Scalars['Int']['output'];
+  moderator?: Maybe<User>;
+  post?: Maybe<Post>;
+  status: ReviewStatus;
+  suggestedBy: User;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type CreatedPostsResponse = {
+  __typename?: 'CreatedPostsResponse';
+  createdPosts: Array<PendingCreatedPostReview>;
 };
 
 export type EditSuggestion = {
@@ -53,20 +74,27 @@ export type EditSuggestion = {
   id: Scalars['Int']['output'];
   moderator?: Maybe<User>;
   post: Post;
-  status: Scalars['String']['output'];
+  status: ReviewStatus;
   suggestedBy: User;
   updatedAt: Scalars['String']['output'];
 };
 
 export type FilterInput = {
-  continent?: InputMaybe<Array<Scalars['String']['input']>>;
+  continent?: InputMaybe<Array<Continent>>;
   group?: InputMaybe<Scalars['Int']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['Boolean']['input']>;
   subject?: InputMaybe<Array<Scalars['String']['input']>>;
-  type?: InputMaybe<Array<Scalars['String']['input']>>;
+  type?: InputMaybe<Array<PostType>>;
   yearEnd?: InputMaybe<Scalars['Int']['input']>;
   yearStart?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type FormLists = {
+  __typename?: 'FormLists';
+  allCountries: Array<CountrySummary>;
+  allGroups: Array<Group>;
+  allSubjects: Array<Subject>;
 };
 
 export type Group = {
@@ -74,6 +102,17 @@ export type Group = {
   description: Scalars['String']['output'];
   icon: Scalars['String']['output'];
   id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type GroupInput = {
+  id: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+};
+
+export type GroupSummary = {
+  __typename?: 'GroupSummary';
+  icon?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
 };
 
@@ -90,20 +129,33 @@ export type Like = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  approveEdit: Post;
+  approveCreatedPost: Scalars['Boolean']['output'];
+  approveEdit: Scalars['Boolean']['output'];
+  createPostSuggestion: CreatedPost;
   deletePost: Scalars['Boolean']['output'];
   editTimeline: Post;
   likePost: Post;
   login: AuthPayload;
   postTimeline: Post;
   register: AuthPayload;
+  rejectCreatedPost: Scalars['Boolean']['output'];
   rejectEdit: Scalars['Boolean']['output'];
   suggestEdit: EditSuggestion;
 };
 
 
+export type MutationApproveCreatedPostArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type MutationApproveEditArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type MutationCreatePostSuggestionArgs = {
+  input: PostInput;
 };
 
 
@@ -141,6 +193,11 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationRejectCreatedPostArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type MutationRejectEditArgs = {
   id: Scalars['Int']['input'];
 };
@@ -151,9 +208,73 @@ export type MutationSuggestEditArgs = {
   postId: Scalars['Int']['input'];
 };
 
+export type PendingCreatedPostReview = {
+  __typename?: 'PendingCreatedPostReview';
+  createdAt: Scalars['String']['output'];
+  data: Scalars['JSON']['output'];
+  id: Scalars['Int']['output'];
+  status: ReviewStatus;
+  suggestedBy: User;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type PendingEditChanges = {
+  __typename?: 'PendingEditChanges';
+  civilisation?: Maybe<ReviewChange>;
+  country?: Maybe<ReviewChange>;
+  endDay?: Maybe<ReviewChange>;
+  endDescription?: Maybe<ReviewChange>;
+  endMonth?: Maybe<ReviewChange>;
+  endSignificance?: Maybe<ReviewChange>;
+  endYear?: Maybe<ReviewChange>;
+  group?: Maybe<ReviewChange>;
+  imageCredit?: Maybe<ReviewChange>;
+  imageUrl?: Maybe<ReviewChange>;
+  name?: Maybe<ReviewChange>;
+  sourceUrl?: Maybe<ReviewChange>;
+  startDay?: Maybe<ReviewChange>;
+  startDescription?: Maybe<ReviewChange>;
+  startMonth?: Maybe<ReviewChange>;
+  startSignificance?: Maybe<ReviewChange>;
+  startYear?: Maybe<ReviewChange>;
+  subjects?: Maybe<ReviewChange>;
+  type?: Maybe<ReviewChange>;
+};
+
+export type PendingEditReview = {
+  __typename?: 'PendingEditReview';
+  changes: PendingEditChanges;
+  createdAt: Scalars['String']['output'];
+  hasImageChanges: Scalars['Boolean']['output'];
+  id: Scalars['Int']['output'];
+  post: Post;
+  suggestedBy: User;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type PendingEditsResponse = {
+  __typename?: 'PendingEditsResponse';
+  edits: Array<PendingEditReview>;
+};
+
+export type PendingReviewStats = {
+  __typename?: 'PendingReviewStats';
+  approved: Scalars['Int']['output'];
+  pending: Scalars['Int']['output'];
+  rejected: Scalars['Int']['output'];
+};
+
+export type PeriodType =
+  | 'century'
+  | 'decade'
+  | 'millennia'
+  | 'year';
+
 export type Population = {
   __typename?: 'Population';
+  createdAt: Scalars['String']['output'];
   population: Scalars['BigInt']['output'];
+  updatedAt: Scalars['String']['output'];
   yearEnd: Scalars['Int']['output'];
   yearStart: Scalars['Int']['output'];
 };
@@ -161,8 +282,10 @@ export type Population = {
 export type Post = {
   __typename?: 'Post';
   cdnId?: Maybe<Scalars['String']['output']>;
+  cdnUrl?: Maybe<Scalars['String']['output']>;
   civilisation?: Maybe<Scalars['Boolean']['output']>;
   country: CountrySummary;
+  createdAt: Scalars['String']['output'];
   editSuggestions: Array<EditSuggestion>;
   endDay: Scalars['Int']['output'];
   endDescription?: Maybe<Scalars['String']['output']>;
@@ -172,6 +295,7 @@ export type Post = {
   group?: Maybe<Group>;
   id: Scalars['ID']['output'];
   imageCredit?: Maybe<Scalars['String']['output']>;
+  imageStatus?: Maybe<ImageStatus>;
   imageUrl?: Maybe<Scalars['String']['output']>;
   liked?: Maybe<Scalars['Boolean']['output']>;
   likes: Scalars['Int']['output'];
@@ -184,18 +308,19 @@ export type Post = {
   startYear: Scalars['Int']['output'];
   subjects: Array<Subject>;
   type: PostType;
+  updatedAt: Scalars['String']['output'];
   user: User;
 };
 
 export type PostInput = {
   civilisation?: InputMaybe<Scalars['Boolean']['input']>;
-  countryId: Scalars['String']['input'];
+  country: CountryInput;
   endDay?: InputMaybe<Scalars['Int']['input']>;
   endDescription?: InputMaybe<Scalars['String']['input']>;
   endMonth?: InputMaybe<Scalars['Int']['input']>;
   endSignificance?: InputMaybe<Scalars['Float']['input']>;
   endYear?: InputMaybe<Scalars['Int']['input']>;
-  groupId?: InputMaybe<Scalars['Int']['input']>;
+  group?: InputMaybe<GroupInput>;
   imageCredit?: InputMaybe<Scalars['String']['input']>;
   imageUrl?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -205,8 +330,8 @@ export type PostInput = {
   startMonth?: InputMaybe<Scalars['Int']['input']>;
   startSignificance?: InputMaybe<Scalars['Float']['input']>;
   startYear: Scalars['Int']['input'];
-  subjects: Array<Scalars['ID']['input']>;
-  type: Scalars['String']['input'];
+  subjects: Array<SubjectInput>;
+  type: PostType;
 };
 
 export type PostType =
@@ -215,23 +340,20 @@ export type PostType =
   | 'period'
   | 'person';
 
-export type PostWithLists = {
-  __typename?: 'PostWithLists';
-  allCountries: Array<CountrySummary>;
-  allGroups: Array<Group>;
-  allSubjects: Array<Subject>;
-  post: Post;
-};
-
 export type Query = {
   __typename?: 'Query';
+  formLists: FormLists;
   getCivilisation: Array<Post>;
   getPopulation: Scalars['BigInt']['output'];
-  getPost: PostWithLists;
+  getPost: Post;
   getSignificant?: Maybe<SignificantPost>;
-  getUser?: Maybe<User>;
-  pendingEdits: Array<EditSuggestion>;
+  pendingCreatedPosts: CreatedPostsResponse;
+  pendingEdits: PendingEditsResponse;
+  pendingStats: PendingReviewStats;
   timeline: TimelineResponse;
+  userLikes: Array<Like>;
+  userPosts: Array<Post>;
+  userStats: UserStatsResponse;
 };
 
 
@@ -259,18 +381,59 @@ export type QueryGetSignificantArgs = {
 };
 
 
-export type QueryGetUserArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
 export type QueryTimelineArgs = {
   cursor?: InputMaybe<Scalars['ID']['input']>;
   filter?: InputMaybe<FilterInput>;
 };
 
+
+export type QueryUserLikesArgs = {
+  userId: Scalars['Int']['input'];
+};
+
+
+export type QueryUserPostsArgs = {
+  userId: Scalars['Int']['input'];
+};
+
+
+export type QueryUserStatsArgs = {
+  userId: Scalars['Int']['input'];
+};
+
+export type ReviewChange = {
+  __typename?: 'ReviewChange';
+  from?: Maybe<Scalars['JSON']['output']>;
+  kind: ReviewChangeKind;
+  label: Scalars['String']['output'];
+  to?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type ReviewChangeKind =
+  | 'boolean'
+  | 'entity'
+  | 'entityList'
+  | 'image'
+  | 'longText'
+  | 'number'
+  | 'text';
+
+export type ReviewEntityValue = {
+  __typename?: 'ReviewEntityValue';
+  continent?: Maybe<Continent>;
+  icon?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name: Scalars['String']['output'];
+};
+
+export type ReviewStatus =
+  | 'approved'
+  | 'pending'
+  | 'rejected';
+
 export type SignificantPost = {
   __typename?: 'SignificantPost';
+  cdnId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -278,9 +441,26 @@ export type SignificantPost = {
 
 export type Subject = {
   __typename?: 'Subject';
+  createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   posts: Array<Post>;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type SubjectInput = {
+  id: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+};
+
+export type Summary = {
+  __typename?: 'Summary';
+  createdAt: Scalars['String']['output'];
+  endYear: Scalars['Int']['output'];
+  headline: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  startYear: Scalars['Int']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type TimelineResponse = {
@@ -291,13 +471,15 @@ export type TimelineResponse = {
 
 export type User = {
   __typename?: 'User';
+  createdAt: Scalars['String']['output'];
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  likes: Array<Like>;
   moderatedEdits: Array<EditSuggestion>;
-  posts: Array<Post>;
+  moderatedPosts: Array<CreatedPost>;
   role: UserRole;
   suggestedEdits: Array<EditSuggestion>;
+  suggestedPosts: Array<CreatedPost>;
+  updatedAt: Scalars['String']['output'];
   username: Scalars['String']['output'];
 };
 
@@ -306,6 +488,21 @@ export type UserRole =
   | 'BOT'
   | 'MODERATOR'
   | 'USER';
+
+export type UserStats = {
+  __typename?: 'UserStats';
+  favouriteEra?: Maybe<Scalars['String']['output']>;
+  favouriteGroup?: Maybe<GroupSummary>;
+  mostLikedPost?: Maybe<Post>;
+};
+
+export type UserStatsResponse = {
+  __typename?: 'UserStatsResponse';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  stats: UserStats;
+  username: Scalars['String']['output'];
+};
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -338,13 +535,20 @@ export type DeletePostMutationVariables = Exact<{
 
 export type DeletePostMutation = { __typename?: 'Mutation', deletePost: boolean };
 
+export type CreatePostSuggestionMutationVariables = Exact<{
+  input: PostInput;
+}>;
+
+
+export type CreatePostSuggestionMutation = { __typename?: 'Mutation', createPostSuggestion: { __typename?: 'CreatedPost', id: number, status: ReviewStatus, data: any, createdAt: string, updatedAt: string, suggestedBy: { __typename?: 'User', id: string, username: string } } };
+
 export type TimelineQueryVariables = Exact<{
   cursor?: InputMaybe<Scalars['ID']['input']>;
   filter?: InputMaybe<FilterInput>;
 }>;
 
 
-export type TimelineQuery = { __typename?: 'Query', timeline: { __typename?: 'TimelineResponse', nextCursor?: string | null, posts: Array<{ __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, cdnId?: string | null, imageCredit?: string | null, sourceUrl?: string | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', name: string, icon: string } | null, user: { __typename?: 'User', username: string, id: string } }> } };
+export type TimelineQuery = { __typename?: 'Query', timeline: { __typename?: 'TimelineResponse', nextCursor?: string | null, posts: Array<{ __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, cdnId?: string | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', name: string, icon: string } | null, user: { __typename?: 'User', id: string, username: string } }> } };
 
 export type GetPopulationQueryVariables = Exact<{
   start: Scalars['Int']['input'];
@@ -354,38 +558,67 @@ export type GetPopulationQueryVariables = Exact<{
 export type GetPopulationQuery = { __typename?: 'Query', getPopulation: any };
 
 export type GetSignificantQueryVariables = Exact<{
-  start: Scalars['Int']['input'];
-  end: Scalars['Int']['input'];
+  startYear: Scalars['Int']['input'];
+  endYear: Scalars['Int']['input'];
   filter?: InputMaybe<FilterInput>;
 }>;
 
 
-export type GetSignificantQuery = { __typename?: 'Query', getSignificant?: { __typename?: 'SignificantPost', id: string, name: string, imageUrl?: string | null } | null };
+export type GetSignificantQuery = { __typename?: 'Query', getSignificant?: { __typename?: 'SignificantPost', id: string, name: string, imageUrl?: string | null, cdnId?: string | null } | null };
 
 export type GetCivilisationQueryVariables = Exact<{
-  start: Scalars['Int']['input'];
-  end: Scalars['Int']['input'];
+  startYear: Scalars['Int']['input'];
+  endYear: Scalars['Int']['input'];
   filter?: InputMaybe<FilterInput>;
 }>;
 
 
-export type GetCivilisationQuery = { __typename?: 'Query', getCivilisation: Array<{ __typename?: 'Post', id: string, name: string, startYear: number, endYear: number, startSignificance: number, group?: { __typename?: 'Group', id: number } | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent } }> };
+export type GetCivilisationQuery = { __typename?: 'Query', getCivilisation: Array<{ __typename?: 'Post', id: string, name: string, startYear: number, endYear: number, startSignificance: number, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, group?: { __typename?: 'Group', id: number } | null }> };
 
-export type GetPostQueryVariables = Exact<{
+export type GetPostWithFormListsQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type GetPostQuery = { __typename?: 'Query', getPost: { __typename?: 'PostWithLists', post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, civilisation?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', name: string, icon: string, id: number } | null }, allCountries: Array<{ __typename?: 'CountrySummary', name: string, continent: Continent }>, allSubjects: Array<{ __typename?: 'Subject', id: string, name: string }>, allGroups: Array<{ __typename?: 'Group', id: number, name: string }> } };
+export type GetPostWithFormListsQuery = { __typename?: 'Query', getPost: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, civilisation?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', id: number, name: string, icon: string } | null }, formLists: { __typename?: 'FormLists', allCountries: Array<{ __typename?: 'CountrySummary', name: string, continent: Continent }>, allSubjects: Array<{ __typename?: 'Subject', id: string, name: string }>, allGroups: Array<{ __typename?: 'Group', id: number, name: string }> } };
 
-export type GetUserQueryVariables = Exact<{
-  id: Scalars['Int']['input'];
+export type GetFormListsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFormListsQuery = { __typename?: 'Query', formLists: { __typename?: 'FormLists', allCountries: Array<{ __typename?: 'CountrySummary', name: string, continent: Continent }>, allSubjects: Array<{ __typename?: 'Subject', id: string, name: string }>, allGroups: Array<{ __typename?: 'Group', id: number, name: string }> } };
+
+export type UserPostsQueryVariables = Exact<{
+  userId: Scalars['Int']['input'];
 }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', getUser?: { __typename?: 'User', id: string, username: string, posts: Array<{ __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, imageUrl?: string | null, cdnId?: string | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', icon: string } | null }>, likes: Array<{ __typename?: 'Like', post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, imageUrl?: string | null, cdnId?: string | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', icon: string } | null } }> } | null };
+export type UserPostsQuery = { __typename?: 'Query', userPosts: Array<{ __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, cdnId?: string | null, civilisation?: boolean | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', icon: string } | null, user: { __typename?: 'User', id: string, username: string, createdAt: string, role: UserRole } }> };
+
+export type UserLikesQueryVariables = Exact<{
+  userId: Scalars['Int']['input'];
+}>;
+
+
+export type UserLikesQuery = { __typename?: 'Query', userLikes: Array<{ __typename?: 'Like', post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, cdnId?: string | null, civilisation?: boolean | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', icon: string } | null, user: { __typename?: 'User', id: string, username: string, createdAt: string, role: UserRole } } }> };
+
+export type UserStatsQueryVariables = Exact<{
+  userId: Scalars['Int']['input'];
+}>;
+
+
+export type UserStatsQuery = { __typename?: 'Query', userStats: { __typename?: 'UserStatsResponse', id: number, username: string, createdAt: string, stats: { __typename?: 'UserStats', favouriteEra?: string | null, mostLikedPost?: { __typename?: 'Post', id: string, name: string, likes: number, cdnId?: string | null, imageUrl?: string | null, liked?: boolean | null } | null, favouriteGroup?: { __typename?: 'GroupSummary', name: string, icon?: string | null } | null } } };
+
+export type PendingCreatedPostsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PendingCreatedPostsQuery = { __typename?: 'Query', pendingCreatedPosts: { __typename?: 'CreatedPostsResponse', createdPosts: Array<{ __typename?: 'PendingCreatedPostReview', id: number, data: any, createdAt: string, updatedAt: string, suggestedBy: { __typename?: 'User', id: string, username: string } }> } };
+
+export type PendingStatsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PendingStatsQuery = { __typename?: 'Query', pendingStats: { __typename?: 'PendingReviewStats', pending: number, approved: number, rejected: number } };
 
 export type PendingEditsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PendingEditsQuery = { __typename?: 'Query', pendingEdits: Array<{ __typename?: 'EditSuggestion', id: number, status: string, data: any, createdAt: string, suggestedBy: { __typename?: 'User', id: string, username: string }, post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, sourceUrl?: string | null, imageCredit?: string | null, imageUrl?: string | null, cdnId?: string | null, civilisation?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', name: string, icon: string, id: number } | null } }> };
+export type PendingEditsQuery = { __typename?: 'Query', pendingEdits: { __typename?: 'PendingEditsResponse', edits: Array<{ __typename?: 'PendingEditReview', id: number, hasImageChanges: boolean, suggestedBy: { __typename?: 'User', id: string, username: string }, post: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, cdnId?: string | null, civilisation?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', id: number, name: string, icon: string } | null }, changes: { __typename?: 'PendingEditChanges', name?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, type?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, startYear?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, startMonth?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, startDay?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, endYear?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, endMonth?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, endDay?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, startDescription?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, endDescription?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, startSignificance?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, endSignificance?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, civilisation?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, country?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, group?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, subjects?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, imageUrl?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, imageCredit?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null, sourceUrl?: { __typename?: 'ReviewChange', label: string, kind: ReviewChangeKind, from?: any | null, to?: any | null } | null } }> } };

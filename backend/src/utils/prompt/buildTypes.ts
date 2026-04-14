@@ -1,4 +1,4 @@
-import { Filter } from "../generatePosts";
+import { Filter } from "../botPost/generatePosts";
 
 const TYPE_RULES: Record<string, string> = {
   person: `- "person": historically significant individual; startYear = birth, endYear = death.`,
@@ -14,6 +14,6 @@ export function buildTypes(filter: Filter) {
 
   return {
     options: allowedTypes.join(" | "),
-    rules: allowedTypes.map(t => TYPE_RULES[t]).join("\n"),
+    rules: allowedTypes.map((t) => TYPE_RULES[t]).join("\n"),
   };
 }

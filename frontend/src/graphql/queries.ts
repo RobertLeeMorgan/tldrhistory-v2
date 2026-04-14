@@ -18,9 +18,9 @@ export const TIMELINE_QUERY = gql`
         startSignificance
         endSignificance
         imageUrl
-        cdnId
         imageCredit
         sourceUrl
+        cdnId
         country {
           name
           continent
@@ -34,8 +34,8 @@ export const TIMELINE_QUERY = gql`
           icon
         }
         user {
-          username
           id
+          username
         }
         likes
         liked
@@ -52,37 +52,156 @@ export const POPULATION_QUERY = gql`
 `;
 
 export const SIGNIFICANT_QUERY = gql`
-  query GetSignificant($start: Int!, $end: Int!, $filter: FilterInput) {
-    getSignificant(startYear: $start, endYear: $end, filter: $filter) {
+  query GetSignificant($startYear: Int!, $endYear: Int!, $filter: FilterInput) {
+    getSignificant(startYear: $startYear, endYear: $endYear, filter: $filter) {
       id
       name
       imageUrl
+      cdnId
     }
   }
 `;
 
 export const CIVILISATION_QUERY = gql`
-  query GetCivilisation($start: Int!, $end: Int!, $filter: FilterInput) {
-    getCivilisation(startYear: $start, endYear: $end, filter: $filter) {
+  query GetCivilisation(
+    $startYear: Int!
+    $endYear: Int!
+    $filter: FilterInput
+  ) {
+    getCivilisation(startYear: $startYear, endYear: $endYear, filter: $filter) {
       id
       name
       startYear
       endYear
       startSignificance
-      group {
-        id
-      }
       country {
         name
         continent
+      }
+      group {
+        id
       }
     }
   }
 `;
 
 export const GET_POST = gql`
-  query GetPost($id: Int!) {
+  query GetPostWithFormLists($id: Int!) {
     getPost(id: $id) {
+      id
+      name
+      type
+      startDescription
+      endDescription
+      startYear
+      startMonth
+      startDay
+      endYear
+      endMonth
+      endDay
+      startSignificance
+      endSignificance
+      imageUrl
+      imageCredit
+      sourceUrl
+      civilisation
+      country {
+        name
+        continent
+      }
+      subjects {
+        id
+        name
+      }
+      group {
+        id
+        name
+        icon
+      }
+    }
+    formLists {
+      allCountries {
+        name
+        continent
+      }
+      allSubjects {
+        id
+        name
+      }
+      allGroups {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const GET_FORM_LISTS = gql`
+  query GetFormLists {
+    formLists {
+      allCountries {
+        name
+        continent
+      }
+      allSubjects {
+        id
+        name
+      }
+      allGroups {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const USER_POSTS = gql`
+  query UserPosts($userId: Int!) {
+    userPosts(userId: $userId) {
+      id
+      name
+      type
+      startDescription
+      endDescription
+      startYear
+      startMonth
+      startDay
+      endYear
+      endMonth
+      endDay
+      startSignificance
+      endSignificance
+      imageUrl
+      imageCredit
+      sourceUrl
+      cdnId
+      civilisation
+      country {
+        name
+        continent
+      }
+      subjects {
+        id
+        name
+      }
+      group {
+        icon
+      }
+      user {
+        id
+        username
+        createdAt
+        role
+      }
+      likes
+      liked
+    }
+  }
+`;
+
+export const USER_LIKES = gql`
+  query UserLikes($userId: Int!) {
+    userLikes(userId: $userId) {
       post {
         id
         name
@@ -100,6 +219,7 @@ export const GET_POST = gql`
         imageUrl
         imageCredit
         sourceUrl
+        cdnId
         civilisation
         country {
           name
@@ -110,61 +230,83 @@ export const GET_POST = gql`
           name
         }
         group {
-          name
           icon
-          id
         }
-      }
-      allCountries {
-        name
-        continent
-      }
-      allSubjects {
-        id
-        name
-      }
-      allGroups {
-        id
-        name
+        user {
+          id
+          username
+          createdAt
+          role
+        }
+        likes
+        liked
       }
     }
   }
 `;
 
-export const GET_USER = gql`
-  query GetUser($id: Int!) {
-    getUser(id: $id) {
+export const USER_STATS = gql`
+  query UserStats($userId: Int!) {
+    userStats(userId: $userId) {
       id
       username
-      posts {
-        id
-        name
-        type
-        startDescription
-        endDescription
-        startYear
-        startMonth
-        startDay
-        endYear
-        endMonth
-        endDay
-        country {
-          name
-          continent
-        }
-        subjects {
+      createdAt
+      stats {
+        mostLikedPost {
           id
           name
+          likes
+          cdnId
+          imageUrl
+          liked
         }
-        group {
+        favouriteEra
+        favouriteGroup {
+          name
           icon
         }
-        imageUrl
-        cdnId
-        likes
-        liked
       }
-      likes {
+    }
+  }
+`;
+
+export const PENDING_CREATED_POSTS_QUERY = gql`
+  query PendingCreatedPosts {
+    pendingCreatedPosts {
+      createdPosts {
+        id
+        data
+        createdAt
+        updatedAt
+        suggestedBy {
+          id
+          username
+        }
+      }
+    }
+  }
+`;
+
+export const PENDING_STATS_QUERY = gql`
+  query PendingStats {
+    pendingStats {
+      pending
+      approved
+      rejected
+    }
+  }
+`;
+
+export const PENDING_EDITS_QUERY = gql`
+  query PendingEdits {
+    pendingEdits {
+      edits {
+        id
+        suggestedBy {
+          id
+          username
+        }
+        hasImageChanges
         post {
           id
           name
@@ -177,6 +319,13 @@ export const GET_USER = gql`
           endYear
           endMonth
           endDay
+          startSignificance
+          endSignificance
+          imageUrl
+          imageCredit
+          sourceUrl
+          cdnId
+          civilisation
           country {
             name
             continent
@@ -186,60 +335,128 @@ export const GET_USER = gql`
             name
           }
           group {
+            id
+            name
             icon
           }
-          imageUrl
-          cdnId
-          likes
-          liked
+        }
+        changes {
+          name {
+            label
+            kind
+            from
+            to
+          }
+          type {
+            label
+            kind
+            from
+            to
+          }
+          startYear {
+            label
+            kind
+            from
+            to
+          }
+          startMonth {
+            label
+            kind
+            from
+            to
+          }
+          startDay {
+            label
+            kind
+            from
+            to
+          }
+          endYear {
+            label
+            kind
+            from
+            to
+          }
+          endMonth {
+            label
+            kind
+            from
+            to
+          }
+          endDay {
+            label
+            kind
+            from
+            to
+          }
+          startDescription {
+            label
+            kind
+            from
+            to
+          }
+          endDescription {
+            label
+            kind
+            from
+            to
+          }
+          startSignificance {
+            label
+            kind
+            from
+            to
+          }
+          endSignificance {
+            label
+            kind
+            from
+            to
+          }
+          civilisation {
+            label
+            kind
+            from
+            to
+          }
+          country {
+            label
+            kind
+            from
+            to
+          }
+          group {
+            label
+            kind
+            from
+            to
+          }
+          subjects {
+            label
+            kind
+            from
+            to
+          }
+          imageUrl {
+            label
+            kind
+            from
+            to
+          }
+          imageCredit {
+            label
+            kind
+            from
+            to
+          }
+          sourceUrl {
+            label
+            kind
+            from
+            to
+          }
         }
       }
-    }
-  }
-`;
-
-export const PENDING_EDITS_QUERY = gql`
-  query PendingEdits {
-    pendingEdits {
-      id
-      status
-      data
-      suggestedBy {
-        id
-        username
-      }
-      post {
-        id
-        name
-        type
-        startDescription
-        endDescription
-        startYear
-        startMonth
-        startDay
-        endYear
-        endMonth
-        endDay
-        sourceUrl
-        imageCredit
-        country {
-          name
-          continent
-        }
-        subjects {
-          id
-          name
-        }
-        group {
-          name
-          icon
-          id
-        }
-        imageUrl
-        cdnId
-        civilisation
-      }
-      createdAt
     }
   }
 `;

@@ -38,7 +38,7 @@
     "jsonwebtoken": "^9.0.2",
     "node-cache": "^5.1.2",
     "openai": "^6.9.0",
-    "p-queue": "^9.0.0",
+    "p-queue": "6.6.2",
     "prisma": "^6.19.0",
     "sharp": "^0.34.5",
     "zod": "^4.1.12"
@@ -54,5 +54,8 @@
     "@types/node": "^24.10.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "p-queue": "6.6.2"
   }
 }

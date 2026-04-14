@@ -1,15 +1,5 @@
 import type { InputHTMLAttributes } from "react";
-
-export interface TimelineFilter {
-  type: string[];
-  subject: string[];
-  continent: string[];
-  yearStart?: number | undefined;
-  yearEnd?: number | undefined;
-  search?: string;
-  sortBy?: boolean;
-  group: number
-}
+import type { TimelineFilter } from "../../features/filter/components/TimelineFilter";
 
 export interface DrawerInputProps 
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChange" | "value"> {
@@ -33,6 +23,7 @@ export interface DrawerCheckboxProps {
 export interface DrawerCollapseProps {
   title: string;
   children: React.ReactNode;
+  count?: number;
 }
 
 export interface DrawerProps {

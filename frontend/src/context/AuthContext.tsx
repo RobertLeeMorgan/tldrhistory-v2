@@ -11,85 +11,68 @@ interface AuthState {
 
 interface AuthContextType {
   isAuth: AuthState;
-  login: (token: string, user: { id: string; username: string; role: string }) => void;
-  logout: (expired?: boolean) => void;
+  login: (
+    token: string,
+    user: { id: string; username: string; role: string },
+    showToast?: boolean
+  ) => void;
+  logout: (expired?: boolean) => Promise<void>;
   loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const emptyAuth: AuthState = {
+  token: null,
+  id: null,
+  username: null,
+  role: null,
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuth, setIsAuth] = useState<AuthState>({
-    token: null,
-    id: null,
-    username: null,
-    role: null,
-  });
+  const [isAuth, setIsAuth] = useState<AuthState>(emptyAuth);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
 
-  const logoutTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hasSessionRef = useRef(false); // true if user ever logged in
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasSessionRef = useRef(false);
+  const logoutInFlightRef = useRef(false);
 
-  // --- decode expiry from JWT ---
+  const clearRefreshTimer = () => {
+    if (refreshTimer.current) {
+      clearTimeout(refreshTimer.current);
+      refreshTimer.current = null;
+    }
+  };
+
   const getTokenExpiry = (token: string): number | null => {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.exp ? payload.exp * 1000 : null;
+      if (!payload.exp) return null;
+      const expiry = payload.exp * 1000;
+      return expiry > Date.now() ? expiry : null;
     } catch {
       return null;
     }
   };
 
-  // --- schedule auto logout ---
-  const scheduleLogout = (expiresAt: number) => {
-    const timeout = expiresAt - Date.now();
-    if (timeout <= 0) {
-      handleExpiredSession();
-      return;
-    }
-    if (logoutTimer.current) clearTimeout(logoutTimer.current);
-    logoutTimer.current = setTimeout(handleExpiredSession, timeout);
-  };
+  const logout = async (expired = false) => {
+    if (logoutInFlightRef.current) return;
+    if (!hasSessionRef.current && !isAuth.token) return;
 
-  const handleExpiredSession = () => {
-    setAccessToken(null);
-    setIsAuth({ token: null, id: null, username: null, role: null });
-
-    if (hasSessionRef.current) {
-      addToast({
-        message: "Session expired, please log in again.",
-        type: "error",
-      });
-      hasSessionRef.current = false;
-    }
-  };
-
-  // --- login ---
-  function login(token: string, user: { id: string; username: string; role: string }) {
-    hasSessionRef.current = true;
-    setAccessToken(token);
-    setIsAuth({ token, id: user.id, username: user.username, role: user.role });
-
-    const expiresAt = getTokenExpiry(token);
-    if (expiresAt) scheduleLogout(expiresAt);
-
-    addToast({ message: "Welcome back!", type: "success" });
-  }
-
-  // --- logout ---
-  async function logout(expired = false) {
+    logoutInFlightRef.current = true;
     hasSessionRef.current = false;
-    setAccessToken(null);
-    setIsAuth({ token: null, id: null, username: null, role: null });
 
-    if (logoutTimer.current) clearTimeout(logoutTimer.current);
+    clearRefreshTimer();
+    setAccessToken(null);
+    setIsAuth(emptyAuth);
 
     try {
-      await fetch("/api/logout", { method: "POST", credentials: "include" });
-    } catch {
-      // ignore errors
-    }
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {}
 
     if (expired) {
       addToast({
@@ -97,41 +80,108 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         type: "error",
       });
     }
-  }
 
-  // --- initial token refresh ---
+    logoutInFlightRef.current = false;
+  };
+
+  const login = (
+    token: string,
+    user: { id: string; username: string; role: string },
+    showToast = true
+  ) => {
+    hasSessionRef.current = true;
+    setAccessToken(token);
+    setIsAuth({
+      token,
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    });
+
+    const expiresAt = getTokenExpiry(token);
+    if (expiresAt) {
+      scheduleRefresh(expiresAt);
+    }
+
+    if (showToast) {
+      addToast({ message: "Welcome back!", type: "success" });
+    }
+  };
+
+  const silentRefresh = async () => {
+    try {
+      const res = await fetch("/api/refresh", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Refresh failed");
+
+      const data = await res.json();
+
+      if (data.token) {
+        login(data.token, data.user, false);
+      } else {
+        throw new Error("No token returned");
+      }
+    } catch {
+      await logout(true);
+    }
+  };
+
+  const scheduleRefresh = (expiresAt: number) => {
+    clearRefreshTimer();
+
+    const timeout = Math.max(expiresAt - Date.now() - 30_000, 0);
+    refreshTimer.current = setTimeout(() => {
+      void silentRefresh();
+    }, timeout);
+  };
+
   useEffect(() => {
+    let mounted = true;
+
     const initializeAuth = async () => {
       try {
-        const res = await fetch("/api/refresh", { method: "POST", credentials: "include" });
+        const res = await fetch("/api/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
 
-        if (!res.ok) {
-          setIsAuth({ token: null, id: null, username: null, role: null });
-          return;
-        }
+        if (!res.ok) return;
 
         const data = await res.json();
-        login(data.token, data.user);
+
+        if (mounted && data.token) {
+          login(data.token, data.user, false);
+        }
       } catch {
-        setIsAuth({ token: null, id: null, username: null, role: null });
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
-    initializeAuth();
+    const handleForcedLogout = () => {
+      void logout(true);
+    };
 
-    // global listener for forced logout
-    const handler = () => logout(true);
-    window.addEventListener("auth:logout", handler);
+    void initializeAuth();
+    window.addEventListener("auth:logout", handleForcedLogout);
 
     return () => {
-      window.removeEventListener("auth:logout", handler);
-      if (logoutTimer.current) clearTimeout(logoutTimer.current);
+      mounted = false;
+      window.removeEventListener("auth:logout", handleForcedLogout);
+      clearRefreshTimer();
     };
   }, []);
 
-  return <AuthContext.Provider value={{ isAuth, login, logout, loading }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ isAuth, login, logout, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

@@ -1,4 +1,4 @@
-import { Filter } from "../generatePosts";
+import { Filter } from "../botPost/generatePosts";
 
 export function buildConditions(filter: Filter, theme: string) {
   const parts: string[] = [];

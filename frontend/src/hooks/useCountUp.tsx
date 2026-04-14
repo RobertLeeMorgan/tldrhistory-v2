@@ -1,47 +1,54 @@
 import { useMotionValue, useTransform, animate } from "framer-motion";
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from "react";
 
-export function useCountAnimation(value: any) {
+export function useCountAnimation(value: number) {
   const motionValue = useMotionValue(value);
-  const rounded = useTransform(motionValue, latest => Math.floor(latest));
+  const rounded = useTransform(motionValue, (latest) => Math.floor(latest));
 
   useEffect(() => {
     const controls = animate(motionValue, value, {
       duration: 1,
       ease: "easeOut",
     });
-    return controls.stop;
-  }, [value]);
+
+    return () => controls.stop();
+  }, [motionValue, value]);
 
   return rounded;
 }
 
-export const TextSwap = ({ text, className }: { text: string; className?: string }) => {
+export function TextSwap({
+  text,
+  className,
+}: {
+  text: string;
+  className?: string;
+}) {
   const [display, setDisplay] = useState(text);
   const progress = useMotionValue(0);
 
   useEffect(() => {
-    const oldText = display;
-    const newText = text;
+    const previous = display;
+    let controls: { stop: () => void } | undefined;
 
-    animate(progress, 0, {
-      duration: oldText.length * 0.02,
+    controls = animate(progress, 0, {
+      duration: Math.max(previous.length * 0.02, 0.08),
       ease: "linear",
       onUpdate: (v) => {
-        const length = Math.floor(v);
-        setDisplay(oldText.slice(0, length));
+        setDisplay(previous.slice(0, Math.floor(v)));
       },
       onComplete: () => {
-        animate(progress, newText.length, {
-          duration: newText.length * 0.02,
+        controls = animate(progress, text.length, {
+          duration: Math.max(text.length * 0.02, 0.08),
           ease: "linear",
           onUpdate: (v) => {
-            const length = Math.floor(v);
-            setDisplay(newText.slice(0, length));
-          }
+            setDisplay(text.slice(0, Math.floor(v)));
+          },
         });
-      }
+      },
     });
+
+    return () => controls?.stop();
   }, [text]);
 
   return (
@@ -50,4 +57,4 @@ export const TextSwap = ({ text, className }: { text: string; className?: string
       <span className="opacity-0">▌</span>
     </span>
   );
-};
+}
