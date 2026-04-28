@@ -21,8 +21,8 @@ import { graphqlGeneralLimiter, graphqlAuthLimiter } from "./server/rateLimit";
 import authRoutes from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
 
-import dotenv from "dotenv";
-dotenv.config();
+// import dotenv from "dotenv";
+// dotenv.config();
 
 const app = express();
 
