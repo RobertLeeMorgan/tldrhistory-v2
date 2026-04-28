@@ -27,5 +27,5 @@
      "rootDirs": [".", "./.react-router/types"]
   },
   "include": ["app", "src", "react-router.config.ts",  "**/*",
-    ".react-router/types/**/*"]
+    ".react-router/types/**/*", "../backend/public/build"]
 }

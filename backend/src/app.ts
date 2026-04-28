@@ -20,6 +20,7 @@ import { createRequestHandler } from "@react-router/express";
 import { graphqlGeneralLimiter, graphqlAuthLimiter } from "./server/rateLimit";
 import authRoutes from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
+import crypto from "crypto";
 
 // import dotenv from "dotenv";
 // dotenv.config();
@@ -39,6 +40,13 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use((req, res, next) => {
+  (res as any).locals = (res as any).locals || {};
+  (res as any).locals.cspNonce = crypto.randomBytes(16).toString("base64");
+  next();
+});
+
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -49,13 +57,19 @@ app.use(
           "https://tldrhistory-v2.onrender.com",
           "https://www.tldrhistory.xyz",
         ],
-        imgSrc: ["'self'", "data:", "https://upload.wikimedia.org"],
-        scriptSrc: ["'self'"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https://cdn.tldrhistory.xyz",
+          "https://upload.wikimedia.org",
+        ],
+     scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
       },
     },
   }),
 );
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(timeoutMiddleware(15000));
