@@ -56,27 +56,69 @@ enum ReviewStatus {
   rejected 
 }
 
+enum AuthTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
 /// Models
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique @db.VarChar(20)
-  email     String   @unique @db.VarChar(80)
-  password  String   @db.VarChar(100)
-  role      UserRole @default(USER)
+  id              Int          @id @default(autoincrement())
+  username        String       @unique @db.VarChar(20)
+  email           String       @unique @db.VarChar(80)
+  password        String       @db.VarChar(100)
+  role            UserRole     @default(USER)
+  
+  emailVerifiedAt DateTime?
 
-  likes     Like[]
-  posts     Post[]
+  likes           Like[]
+  posts           Post[]
 
-  refreshTokens RefreshToken[]
+  refreshTokens   RefreshToken[]
+  authTokens      AuthToken[]
 
-  suggestedPosts CreatedPost[] @relation("SuggestedCreatedPosts")
-  moderatedPosts CreatedPost[] @relation("ModeratedCreatedPosts")
-  suggestedEdits EditSuggestion[] @relation("SuggestedEdits")
-  moderatedEdits EditSuggestion[] @relation("ModeratedEdits")
+  suggestedPosts  CreatedPost[] @relation("SuggestedCreatedPosts")
+  moderatedPosts  CreatedPost[] @relation("ModeratedCreatedPosts")
+  suggestedEdits  EditSuggestion[] @relation("SuggestedEdits")
+  moderatedEdits  EditSuggestion[] @relation("ModeratedEdits")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  savedFilters    SavedFilter[]
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model SavedFilter {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  name        String   @db.VarChar(50)
+  state       Json
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@unique([userId, name])
+}
+
+model AuthToken {
+  id        String         @id @default(cuid())
+  userId    Int
+  type      AuthTokenType
+  tokenHash String         @db.VarChar(255)
+  expiresAt DateTime
+  usedAt    DateTime?
+  
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime       @default(now())
+
+  @@unique([userId, type])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@index([usedAt])
 }
 
 

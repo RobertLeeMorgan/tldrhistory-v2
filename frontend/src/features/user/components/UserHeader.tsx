@@ -1,15 +1,18 @@
 import HeaderContainer from "../../../components/ui/HeaderContainer";
+import { MdVerifiedUser } from "react-icons/md";
 
 type HeaderProps = {
-  memberSince: String;
+  memberSince?: String;
   user?: String;
   isLoading: boolean;
+  verified?: String | null;
 };
 
 export default function UserHeader({
   memberSince,
   user,
   isLoading,
+  verified,
 }: HeaderProps) {
   const isNotFound = !isLoading && !user;
 
@@ -17,21 +20,24 @@ export default function UserHeader({
     <HeaderContainer>
       <div className="relative z-10 h-full flex flex-col justify-center sm:py-6.5 text-center">
         {/* Title */}
-        <h2 className="font-serif text-xl xs:text-2xl md:text-3xl lg:text-4xl font-extrabold uppercase text-stone-100 text-shadow-lg">
+        <h1 className="font-serif text-xl xs:text-2xl md:text-3xl lg:text-4xl font-extrabold uppercase text-stone-100 text-shadow-lg">
           {isLoading ? (
             <span className="loading loading-spinner loading-md"></span>
           ) : isNotFound ? (
             "User Not Found"
           ) : (
-            user
+            <span className="inline-flex items-center gap-2">
+              <span>{user}</span>
+              {verified && <sup className="text-xs sm:text-sm md:text-md lg:text-lg text-gold"><MdVerifiedUser /></sup>}
+            </span>
           )}
-        </h2>
+        </h1>
 
         {/* Subtitle */}
         {!isNotFound && (
-          <h3 className="text-xs sm:text-md md:text-lg text-stone-200/90 mt-1 uppercase font-serif ">
+          <h2 className="text-xs sm:text-md md:text-lg text-stone-200/90 mt-1 uppercase font-serif ">
             {isLoading ? "—" : `— Since ${memberSince} —`}
-          </h3>
+          </h2>
         )}
       </div>
     </HeaderContainer>

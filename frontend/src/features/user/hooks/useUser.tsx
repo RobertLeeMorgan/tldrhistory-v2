@@ -1,4 +1,4 @@
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { queryOptions, useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import { graphqlRequest } from "../../../lib/graphql";
 import { USER_POSTS, USER_LIKES, USER_STATS } from "../../../graphql/queries";
 import type {
@@ -38,16 +38,21 @@ export function useUserLikesQuery(
   });
 }
 
-export function useUserStatsQuery(
-  variables: UserStatsQueryVariables,
-  options?: Omit<UseQueryOptions<UserStatsQuery>, "queryKey" | "queryFn">
-) {
-  return useQuery<UserStatsQuery>({
+export function getUserStatsQueryOptions(variables: UserStatsQueryVariables) {
+  return queryOptions({
     queryKey: ["userStats", variables.userId],
     queryFn: () =>
-      graphqlRequest<UserStatsQuery, UserStatsQueryVariables>(USER_STATS, variables),
+      graphqlRequest<UserStatsQuery, UserStatsQueryVariables>(
+        USER_STATS,
+        variables
+      ),
     staleTime: 1000 * 60 * 30,
+  });
+}
+
+export function useUserStatsQuery(variables: UserStatsQueryVariables) {
+  return useQuery({
+    ...getUserStatsQueryOptions(variables),
     placeholderData: (prev) => prev,
-    ...options,
   });
 }

@@ -2,7 +2,6 @@
 @plugin "daisyui" {
 }
 
-@import "tailwindcss";
 @theme {
   --breakpoint-xs: 30rem;
 
@@ -16,10 +15,15 @@
   --color-stats-secondary: #1b1715;
 
   --color-drawer: #1b1715;
-
   --color-overlay: #221814;
-
   --color-base: #d6d3d2;
+}
+
+:root {
+  --color-base-100: #1c1917;
+  --color-base-200: #141210;
+  --color-base-300: #0c0a09;
+  --color-base-content: #e7e5e4;
 }
 
 :root {
@@ -56,6 +60,8 @@ html {
 
 html,
 body {
+  margin: 0;
+  min-height: 100%;
   background-color: var(--color-base);
 }
 

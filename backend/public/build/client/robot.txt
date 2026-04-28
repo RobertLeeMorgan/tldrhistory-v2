@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /register
+Disallow: /review-suggestions
+Disallow: /articles/create
+Disallow: /articles/edit/*
+
+Sitemap: https://tldrhistory.xyz/sitemap.xml

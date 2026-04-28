@@ -1,21 +1,24 @@
 import { createContext, useState, useContext, useEffect, useRef } from "react";
 import { useToast } from "./ToastContext";
 import { setAccessToken } from "../lib/api";
+import {
+  registerAuthHandlers,
+  clearAuthHandlers,
+  fetchRefreshSession,
+  type AuthUser,
+} from "../lib/authSession";
 
 interface AuthState {
   token: string | null;
   id: string | null;
   username: string | null;
   role: string | null;
+  emailVerifiedAt: string | null;
 }
 
 interface AuthContextType {
   isAuth: AuthState;
-  login: (
-    token: string,
-    user: { id: string; username: string; role: string },
-    showToast?: boolean
-  ) => void;
+  login: (token: string, user: AuthUser, showToast?: boolean) => void;
   logout: (expired?: boolean) => Promise<void>;
   loading: boolean;
 }
@@ -27,6 +30,7 @@ const emptyAuth: AuthState = {
   id: null,
   username: null,
   role: null,
+  emailVerifiedAt: null,
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -53,6 +57,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return expiry > Date.now() ? expiry : null;
     } catch {
       return null;
+    }
+  };
+
+  const scheduleRefresh = (expiresAt: number) => {
+    clearRefreshTimer();
+
+    const timeout = Math.max(expiresAt - Date.now() - 30_000, 0);
+    refreshTimer.current = setTimeout(() => {
+      void silentRefresh();
+    }, timeout);
+  };
+
+  const applySession = (token: string, user: AuthUser, showToast = true) => {
+    hasSessionRef.current = true;
+    setAccessToken(token);
+    setIsAuth({
+      token,
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      emailVerifiedAt: user.emailVerifiedAt,
+    });
+
+    const expiresAt = getTokenExpiry(token);
+    if (expiresAt) {
+      scheduleRefresh(expiresAt);
+    }
+
+    if (showToast) {
+      addToast({ message: "Welcome back!", type: "success" });
     }
   };
 
@@ -84,76 +118,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logoutInFlightRef.current = false;
   };
 
-  const login = (
-    token: string,
-    user: { id: string; username: string; role: string },
-    showToast = true
-  ) => {
-    hasSessionRef.current = true;
-    setAccessToken(token);
-    setIsAuth({
-      token,
-      id: user.id,
-      username: user.username,
-      role: user.role,
-    });
-
-    const expiresAt = getTokenExpiry(token);
-    if (expiresAt) {
-      scheduleRefresh(expiresAt);
-    }
-
-    if (showToast) {
-      addToast({ message: "Welcome back!", type: "success" });
-    }
+  const login = (token: string, user: AuthUser, showToast = true) => {
+    applySession(token, user, showToast);
   };
 
   const silentRefresh = async () => {
     try {
-      const res = await fetch("/api/refresh", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!res.ok) throw new Error("Refresh failed");
-
-      const data = await res.json();
-
-      if (data.token) {
-        login(data.token, data.user, false);
-      } else {
-        throw new Error("No token returned");
-      }
+      const data = await fetchRefreshSession();
+      applySession(data.token, data.user, false);
     } catch {
       await logout(true);
     }
   };
 
-  const scheduleRefresh = (expiresAt: number) => {
-    clearRefreshTimer();
-
-    const timeout = Math.max(expiresAt - Date.now() - 30_000, 0);
-    refreshTimer.current = setTimeout(() => {
-      void silentRefresh();
-    }, timeout);
-  };
-
   useEffect(() => {
     let mounted = true;
 
+    registerAuthHandlers({
+      applySession,
+      logout,
+    });
+
     const initializeAuth = async () => {
       try {
-        const res = await fetch("/api/refresh", {
-          method: "POST",
-          credentials: "include",
-        });
+        const data = await fetchRefreshSession();
 
-        if (!res.ok) return;
-
-        const data = await res.json();
-
-        if (mounted && data.token) {
-          login(data.token, data.user, false);
+        if (mounted) {
+          applySession(data.token, data.user, false);
         }
       } catch {
       } finally {
@@ -174,6 +165,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mounted = false;
       window.removeEventListener("auth:logout", handleForcedLogout);
       clearRefreshTimer();
+      clearAuthHandlers();
     };
   }, []);
 

@@ -7,6 +7,8 @@ import * as MutationEdits from "./mutation/edits";
 import * as MutationDelete from "./mutation/delete";
 import * as MutationLikePosts from "./mutation/likePost";
 import * as QuerySuggestions from "./query/suggestions";
+import * as QuerySaveFilter from "./query/saveFilter";
+import * as MutationSaveFilter from "./mutation/saveFilter";
 
 export const resolvers = {
   Query: {
@@ -14,6 +16,7 @@ export const resolvers = {
     ...QueryStats,
     ...QueryUser,
     ...QuerySuggestions,
+    ...QuerySaveFilter
   },
   Mutation: {
     ...MutationAuth,
@@ -21,5 +24,6 @@ export const resolvers = {
     ...MutationEdits,
     ...MutationDelete,
     ...MutationLikePosts,
+    ...MutationSaveFilter
   },
 };

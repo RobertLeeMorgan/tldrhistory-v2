@@ -1,7 +1,15 @@
-import { createContext, useState, useContext, useEffect } from "react";
-import type { ReactNode } from "react";
-import { HISTORICAL_RANGES } from "../utils/historicalRanges";
+import {
+  createContext,
+  useState,
+  useContext,
+  useMemo,
+  useCallback,
+  type ReactNode,
+  useEffect,
+} from "react";
 import type { IconType } from "react-icons";
+import { RANGE_SETS, type EraView, parseView } from "../utils/rangeViews";
+import { useSearchParams } from "react-router";
 
 interface EraContextType {
   startYear: number;
@@ -9,76 +17,101 @@ interface EraContextType {
   label: string;
   eraIndex: number;
   Icon: IconType;
-  setEra: (rangeIndex: number) => void;
+  headline: string;
   dataStartYear: number;
   setDataStartYear: (year: number) => void;
-  headline: string
+  view: EraView;
+  setView: (view: EraView) => void;
+  setEra: (rangeIndex: number) => void;
 }
 
 const EraContext = createContext<EraContextType | undefined>(undefined);
 
 export const EraProvider = ({ children }: { children: ReactNode }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const current = HISTORICAL_RANGES[currentIndex];
-
-  const [dataStartYear, setDataStartYearState] = useState(
-    HISTORICAL_RANGES[0].start
-  );
-
-  const setEra = (rangeIndex: number) => {
-    if (
-      rangeIndex < 0 ||
-      rangeIndex >= HISTORICAL_RANGES.length
-    ) {
-      return;
-    }
-
-    setCurrentIndex((prevIndex) =>
-      prevIndex !== rangeIndex ? rangeIndex : prevIndex
-    );
-  };
-
-  const setDataStartYear = (year: number) => {
-    if (typeof year !== "number" || Number.isNaN(year)) return;
-
-    const clamped = Math.max(
-      current.start,
-      Math.min(year, current.end)
-    );
-
-    setDataStartYearState((prev) =>
-      prev !== clamped ? clamped : prev
-    );
-  };
+  const [searchParams] = useSearchParams();
+  const [dataStartYear, setDataStartYearState] = useState(-300000);
+  const [view, setViewState] = useState<EraView>("global");
 
   useEffect(() => {
-    setDataStartYearState((prev) => {
-      const clamped = Math.max(
-        current.start,
-        Math.min(prev, current.end)
-      );
-      return clamped;
-    });
-  }, [currentIndex, current.start, current.end]);
+    const urlView = parseView(searchParams.get("v"));
+    if (!urlView) return;
 
-  return (
-    <EraContext.Provider
-      value={{
-        startYear: current.start,
-        endYear: current.end,
-        label: current.label,
-        eraIndex: currentIndex,
-        headline: current.headline,
-        Icon: current.icon,
-        setEra,
-        dataStartYear,
-        setDataStartYear,
-      }}
-    >
-      {children}
-    </EraContext.Provider>
+    setViewState(urlView);
+
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("v");
+
+    const nextSearch = nextParams.toString();
+    const nextUrl =
+      window.location.pathname +
+      (nextSearch ? `?${nextSearch}` : "") +
+      window.location.hash;
+
+    window.history.replaceState(window.history.state, "", nextUrl);
+  }, []);
+
+  const ranges = RANGE_SETS[view];
+
+  const eraIndex = useMemo(() => {
+    const idx = ranges.findIndex(
+      (range) => dataStartYear >= range.start && dataStartYear <= range.end,
+    );
+    return idx === -1 ? 0 : idx;
+  }, [ranges, dataStartYear]);
+
+  const current = ranges[eraIndex] ?? ranges[0];
+
+  const setDataStartYear = useCallback((year: number) => {
+    if (typeof year !== "number" || Number.isNaN(year)) return;
+    setDataStartYearState((prev) => (prev !== year ? year : prev));
+  }, []);
+
+  const setView = useCallback((nextView: EraView) => {
+    setViewState(nextView);
+  }, []);
+
+  const setEra = useCallback(
+    (rangeIndex: number) => {
+      const range = ranges[rangeIndex];
+      if (!range) return;
+
+      setDataStartYearState((prev) => {
+        const nextYear = Math.max(range.start, Math.min(prev, range.end));
+        return prev !== nextYear ? nextYear : prev;
+      });
+    },
+    [ranges],
   );
+
+  const value = useMemo(
+    () => ({
+      startYear: current.start,
+      endYear: current.end,
+      label: current.label,
+      eraIndex,
+      headline: current.headline,
+      Icon: current.icon,
+      dataStartYear,
+      setDataStartYear,
+      view,
+      setView,
+      setEra,
+    }),
+    [
+      current.start,
+      current.end,
+      current.label,
+      current.headline,
+      current.icon,
+      eraIndex,
+      dataStartYear,
+      setDataStartYear,
+      view,
+      setEra,
+    ],
+  );
+
+  return <EraContext.Provider value={value}>{children}</EraContext.Provider>;
 };
 
 export const useEra = () => {

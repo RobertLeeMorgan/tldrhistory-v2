@@ -1,20 +1,12 @@
-import { Outlet } from "react-router-dom";
 import Nav from "../components/ui/Nav";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
-import { prefetchTimeline } from "../features/timeline/hooks/prefetchTimeline";
-import { DEFAULT_TIMELINE_FILTER } from "../features/filter/components/TimelineFilter";
+import Background from "../components/ui/Background";
+import { Outlet } from "react-router";
 
 export default function RootLayout() {
-  useEffect(() => {
-    void prefetchTimeline({
-      filter: DEFAULT_TIMELINE_FILTER,
-      viewerKey: "anonymous",
-    });
-  }, []);
-
   return (
     <div className="min-h-screen w-full relative">
+      <Background />
       <Nav />
       <motion.div
         className="flex-1 relative z-10 w-full"
@@ -22,7 +14,7 @@ export default function RootLayout() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.25 }}
       >
-        <Outlet />
+         <Outlet />
       </motion.div>
     </div>
   );

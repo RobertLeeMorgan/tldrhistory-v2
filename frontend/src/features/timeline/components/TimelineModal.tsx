@@ -4,7 +4,7 @@ import Actions from "../../../components/modal/ModalActions";
 import CardFooter from "../../../components/cards/CardFooter";
 import ModalHeader from "../../../components/modal/ModalHeader";
 import ModalDescription from "../../../components/modal/ModalDescription";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import ModalShell from "../../../components/modal/ModalShell";
 import ModalCloseButton from "../../../components/modal/ModalCloseButton";
 

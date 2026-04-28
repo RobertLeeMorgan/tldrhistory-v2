@@ -3,13 +3,18 @@ import { Context } from "./user";
 import { queryFilters } from "../../../utils/filters/queryFilters";
 import { filterSchema } from "../../../validators/filterSchema";
 import { timelinePostSelect } from "../../../utils/timelineSelect";
-import { encodeCursor, decodeCursor, buildCursorWhere } from "../../../utils/cursor";
+import {
+  encodeCursor,
+  decodeCursor,
+  buildCursorWhere,
+} from "../../../utils/cursor";
 
 const TIMELINE_PAGE_SIZE = 15;
 
 type TimelineArgs = {
   cursor?: string | null;
   filter?: unknown;
+  viewerId?: string;
 };
 
 type DbPost = {
@@ -25,11 +30,10 @@ type LikeRow = {
   postId: number;
 };
 
-
 export async function timeline(
   _: unknown,
-  { cursor, filter: rawFilter }: TimelineArgs,
-  ctx: Context
+  { cursor, filter: rawFilter, viewerId }: TimelineArgs,
+  ctx: Context,
 ) {
   const filter = await filterSchema.parseAsync(rawFilter ?? {});
   const parsedCursor = cursor ? decodeCursor(cursor) : null;
@@ -55,11 +59,14 @@ export async function timeline(
     select: timelinePostSelect,
   });
 
+  const effectiveUserId =
+    ctx.user?.id ?? (viewerId !== "anonymous" ? Number(viewerId!) : null);
+
   const likedPostIds: LikeRow[] =
-    ctx.user && dbPosts.length > 0
+    effectiveUserId && dbPosts.length > 0
       ? await prisma.like.findMany({
           where: {
-            userId: ctx.user.id,
+            userId: effectiveUserId,
             postId: { in: dbPosts.map((post) => post.id) },
           },
           select: {

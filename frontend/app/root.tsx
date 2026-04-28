@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { LinksFunction } from "react-router";
-import { Links, Meta, Outlet, Scripts } from "react-router";
+import { Links, Meta, Scripts } from "react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../src/lib/queryClient";
 import { AuthProvider } from "../src/context/AuthContext";
@@ -52,9 +52,7 @@ export default function App() {
   return (
     <AppProviders>
       <ScrollManager />
-      <RootLayout>
-        <Outlet />
-      </RootLayout>
+      <RootLayout />
     </AppProviders>
   );
 }

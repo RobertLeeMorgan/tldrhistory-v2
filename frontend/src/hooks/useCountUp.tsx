@@ -52,9 +52,14 @@ export function TextSwap({
   }, [text]);
 
   return (
-    <span className={className}>
-      {display}
-      <span className="opacity-0">▌</span>
+    <span
+      className={`
+    relative inline-block leading-none min-h-[1em] 
+     truncate w-full
+    ${className ?? ""}
+  `}
+    >
+      {display || "\u00A0"}
     </span>
   );
 }

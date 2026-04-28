@@ -65,10 +65,12 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
         description={label}
         figure={<Icon className="w-8 md:w-10 lg:w-16 h-auto text-gold/95" />}
       >
-        {isLoading || populationValue == null ? (
+        {isLoading ? (
           <span className="loading loading-spinner loading-lg m-auto"></span>
-        ) : (
+        ) : populationValue != null ? (
           <motion.div className="truncate">{formattedPopulation}</motion.div>
+        ) : (
+          <motion.div className="truncate">—</motion.div>
         )}
       </StatBlock>
 

@@ -3,7 +3,6 @@ import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
 import path from "path";
-import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { ApolloServer } from "@apollo/server";
 import {
@@ -15,30 +14,18 @@ import { resolvers } from "./schema/resolvers/index";
 import GraphQLJSON from "graphql-type-json";
 import { GraphQLBigInt } from "graphql-scalars";
 import { AuthUser } from "./schema/resolvers/query/user";
-import { timeoutMiddleware } from "./utils/timeoutMiddleware";
+import { pathToFileURL } from "url";
+import { timeoutMiddleware } from "./server/timeoutMiddleware";
+import { createRequestHandler } from "@react-router/express";
+import { graphqlGeneralLimiter, graphqlAuthLimiter } from "./server/rateLimit";
 import authRoutes from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
 
+import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
 
-// Middleware
-helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      connectSrc: [
-        "'self'",
-        "https://tldrhistory-v2.onrender.com",
-        "https://www.tldrhistory.xyz",
-      ],
-      imgSrc: ["'self'", "data:", "https://upload.wikimedia.org"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-    },
-  },
-});
 app.use(compression());
 app.use(
   cors({
@@ -49,20 +36,34 @@ app.use(
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }),
+);
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: [
+          "'self'",
+          "https://tldrhistory-v2.onrender.com",
+          "https://www.tldrhistory.xyz",
+        ],
+        imgSrc: ["'self'", "data:", "https://upload.wikimedia.org"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+      },
+    },
   }),
 );
 app.use(express.json());
-app.use(timeoutMiddleware(15000));
-app.use(express.static(path.join(__dirname, "public/dist")));
 app.use(cookieParser());
+app.use(timeoutMiddleware(15000));
 
-app.get(/.*/, (_req, res) => {
-  res.sendFile(path.join(__dirname, "public/dist", "index.html"));
-});
-
+app.use("/graphql", graphqlGeneralLimiter);
+app.use("/graphql", graphqlAuthLimiter);
 app.use("/api", authRoutes);
 
-// Apollo GraphQL
 const server = new ApolloServer({
   typeDefs,
   resolvers: {
@@ -105,7 +106,31 @@ const server = new ApolloServer({
     }),
   );
 
-  // Error handling
+  const clientBuildPath = path.resolve(process.cwd(), "public/build/client");
+  const serverBuildPath = path.resolve(
+    process.cwd(),
+    "public/build/server/index.js",
+  );
+
+  const serverBuild = await import(pathToFileURL(serverBuildPath).href);
+
+  app.use(
+    "/assets",
+    express.static(path.join(clientBuildPath, "assets"), {
+      immutable: true,
+      maxAge: "1y",
+    }),
+  );
+
+  app.use(express.static(clientBuildPath, { maxAge: "1h" }));
+
+app.all(
+  "/{*splat}",
+  createRequestHandler({
+    build: serverBuild,
+  }),
+);
+
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.statusCode || 500;
     res.status(status).json({ message: err.message, data: err.data });

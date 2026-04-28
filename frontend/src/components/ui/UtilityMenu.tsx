@@ -4,48 +4,54 @@ import type { Transition } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { hasActiveState } from "../../utils/filterUtils";
 import { IoIosAdd } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { IoMdShare } from "react-icons/io";
+import { Link } from "react-router";
 import { useTimelineFilter } from "../../context/FilterContext";
 import { DEFAULT_TIMELINE_FILTER } from "../../features/filter/components/TimelineFilter";
+import { useToast } from "../../context/ToastContext";
+import { useEra } from "../../context/EraContext";
+import { getGroupSlugFromId } from "../../utils/groupLookup";
+import { filterToSearchParams } from "../../features/filter/components/timelineFilterParams";
 
-export default function UtilityMenu() {
+type UtilityMenuProps = {
+  onOpenDrawer: () => void;
+};
+
+export default function UtilityMenu({ onOpenDrawer }: UtilityMenuProps) {
+  const { view, setView } = useEra();
   const { filter, patchFilter, resetFilter } = useTimelineFilter();
+  const { addToast } = useToast();
 
   const [searchInput, setSearchInput] = useState(filter.search ?? "");
   const [active, setActive] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setSearchInput(filter.search ?? "");
-  }, [filter.search]);
-
-  useEffect(() => {
-    const id = setTimeout(() => {
+    const id = window.setTimeout(() => {
       const nextSearch = searchInput.trim() || undefined;
-
-      if (filter.search === nextSearch) return;
-
-      patchFilter({ search: nextSearch });
+      if (nextSearch !== filter.search) {
+        patchFilter({ search: nextSearch }, { replace: true });
+      }
     }, 300);
 
-    return () => clearTimeout(id);
+    return () => window.clearTimeout(id);
   }, [searchInput, filter.search, patchFilter]);
+
+  useEffect(() => {
+    if (active) inputRef.current?.focus();
+  }, [active]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setActive(false);
+        if (!searchInput.trim()) setActive(false);
       }
     }
 
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    if (active) inputRef.current?.focus();
-  }, [active]);
+  }, [searchInput]);
 
   const hasActiveFilters = hasActiveState(filter);
 
@@ -65,11 +71,52 @@ export default function UtilityMenu() {
     transition: { type: "spring", stiffness: 300, damping: 20 },
   };
 
+ async function handleShare() {
+    const params = filterToSearchParams(filter, new URLSearchParams());
+
+    if (view !== "global") {
+      params.set("v", view);
+    }
+
+    const slug = getGroupSlugFromId(filter.group);
+    const pathname = slug ? `/timeline/${slug}` : "/timeline";
+
+    const shareUrl = new URL(
+      `${pathname}${params.toString() ? `?${params.toString()}` : ""}`,
+      window.location.origin,
+    ).toString();
+
+    try {
+      if (
+        typeof navigator !== "undefined" &&
+        typeof navigator.clipboard?.writeText === "function" &&
+        window.isSecureContext
+      ) {
+        await navigator.clipboard.writeText(shareUrl);
+        addToast({
+          message: "Share link copied to clipboard",
+          type: "success",
+        });
+        return;
+      }
+
+      addToast({
+        message: "Clipboard not available",
+        type: "error",
+      });
+    } catch {
+      addToast({
+        message: "Failed to copy link",
+        type: "error",
+      });
+    }
+  }
+
   return (
     <motion.div
       ref={menuRef}
       layout
-      className="flex flex-col mx-1 gap-2 sm:gap-4 py-2 sm:flex-row sm:gap-6 sm:mx-0 sm:py-0 sm:px-4 bg-gradient-to-br from-stone-800/90 to-stone-900/90 backdrop-blur-lg border border-stone-900 rounded-3xl"
+      className="flex flex-col mx-1 gap-2 py-2 sm:flex-row sm:mx-0 sm:gap-6 sm:px-4 sm:py-0 bg-gradient-to-br from-stone-800/90 to-stone-900/90 backdrop-blur-lg border border-stone-900 rounded-3xl"
     >
       <motion.div
         layout
@@ -79,7 +126,7 @@ export default function UtilityMenu() {
         }}
       >
         <div
-          className={`${filter.search ? "text-gold" : "text-stone-200"} rounded-xl hover:bg-stone-700 p-2 cursor-pointer`}
+          className={`${searchInput ? "text-gold" : "text-stone-200"} rounded-xl hover:bg-stone-700 p-2 cursor-pointer`}
         >
           <SearchIcon />
         </div>
@@ -94,19 +141,19 @@ export default function UtilityMenu() {
           className="bg-transparent outline-none text-sm text-stone-200 placeholder:text-stone-500 flex-1"
           animate={{
             opacity: active ? 1 : 0,
-            maxWidth: active ? 200 : 0,
-            paddingLeft: active ? "0.5rem" : 0,
-            paddingRight: active ? "0.5rem" : 0,
+            width: active ? 200 : 0,
+            marginLeft: active ? 4 : 0,
           }}
           style={{ overflow: "hidden" }}
           transition={{ duration: 0.2, ease: "easeOut" }}
         />
       </motion.div>
 
-      <motion.label
+      <motion.button
+        type="button"
         className={`${filterCount > 0 ? "text-gold" : "text-stone-200"} rounded-xl hover:bg-stone-700 p-2 cursor-pointer relative`}
         aria-label="Filter timeline"
-        htmlFor="my-drawer"
+        onClick={onOpenDrawer}
         {...hoverAnim}
       >
         <FilterIcon />
@@ -124,15 +171,27 @@ export default function UtilityMenu() {
             </motion.span>
           )}
         </AnimatePresence>
-      </motion.label>
+      </motion.button>
 
       <motion.button
         className={`${filter.sortBy ? "text-stone-200" : "text-gold"} rounded-xl hover:bg-stone-700 p-2 cursor-pointer`}
         aria-label="Sort"
-        onClick={() => patchFilter({ sortBy: !filter.sortBy })}
+        onClick={() =>
+          patchFilter({ sortBy: !filter.sortBy }, { replace: true })
+        }
         {...hoverAnim}
       >
         <SortIcon />
+      </motion.button>
+
+      <motion.button
+        type="button"
+        className="text-stone-200 rounded-xl hover:bg-stone-700 hover:text-gold p-2 cursor-pointer"
+        aria-label="Share current timeline view"
+        onClick={handleShare}
+        {...hoverAnim}
+      >
+        <IoMdShare className="w-5 h-5" />
       </motion.button>
 
       <motion.div
@@ -141,7 +200,7 @@ export default function UtilityMenu() {
         className="rounded-xl text-gold hover:bg-stone-700"
       >
         <Link
-          to="/create"
+          to="/articles/create"
           aria-label="Create post"
           className="text-gold shadow-sm"
         >
@@ -155,7 +214,8 @@ export default function UtilityMenu() {
             className="rounded-xl hover:bg-stone-700 p-2 cursor-pointer text-gold"
             type="button"
             onClick={() => {
-              resetFilter();
+              setView("global")
+              resetFilter({ replace: true });
               setSearchInput("");
             }}
             aria-label="Reset filters"

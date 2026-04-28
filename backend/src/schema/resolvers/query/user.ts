@@ -104,6 +104,7 @@ export async function userStats(_: unknown, { userId }: { userId: number }) {
           id: true,
           username: true,
           createdAt: true,
+          emailVerifiedAt: true
         },
       }),
       prisma.post.findFirst({

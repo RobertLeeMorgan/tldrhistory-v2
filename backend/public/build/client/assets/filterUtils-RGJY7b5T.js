@@ -1,0 +1,1 @@
+import{D as a}from"./EraContext-BMDm5JL1.js";const e=t=>t.group!==a.group||t.type.length>0||t.subject.length>0||t.continent.length>0||t.yearStart!==a.yearStart||t.yearEnd!==a.yearEnd,c=t=>e(t)||!!t.search?.trim();export{c as h};

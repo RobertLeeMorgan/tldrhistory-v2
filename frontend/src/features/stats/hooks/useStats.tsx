@@ -17,7 +17,12 @@ import type {
 // Civilisation
 export function useCivilisationQuery(variables: GetCivilisationQueryVariables) {
   return useQuery<GetCivilisationQuery>({
-    queryKey: ["civilisation", variables],
+    queryKey: [
+  "civilisation",
+  variables.startYear,
+  variables.endYear,
+  JSON.stringify(variables.filter ?? null),
+],
     queryFn: () =>
       graphqlRequest<GetCivilisationQuery, GetCivilisationQueryVariables>(
         CIVILISATION_QUERY,

@@ -40,54 +40,446 @@ export const collapseData = [
 export const themes = {
   title: "Theme",
   options: [
-    { value: 5, slug: "ancient-china", labelText: "Ancient China", name: "group" },
-    { value: 1, slug: "ancient-egypt", labelText: "Ancient Egypt", name: "group" },
-    { value: 2, slug: "ancient-greece", labelText: "Ancient Greece", name: "group" },
-    { value: 20, slug: "ancient-india", labelText: "Ancient India", name: "group" },
-    { value: 3, slug: "ancient-rome", labelText: "Ancient Rome", name: "group" },
-    { value: 19, slug: "andean-civilizations", labelText: "Andean Civilizations", name: "group" },
-    { value: 24, slug: "baroque", labelText: "Baroque", name: "group" },
-    { value: 41, slug: "black-history", labelText: "Black History", name: "group" },
-    { value: 12, slug: "byzantine-empire", labelText: "Byzantine Empire", name: "group" },
-    { value: 26, slug: "classical-japan", labelText: "Classical Japan", name: "group" },
-    { value: 39, slug: "cold-war", labelText: "Cold War", name: "group" },
-    { value: 30, slug: "colonial-brazil", labelText: "Colonial and Imperial Brazil", name: "group" },
-    { value: 45, slug: "colonial-north-america", labelText: "Colonial North America", name: "group" },
-    { value: 37, slug: "colonial-southeast-asia", labelText: "Colonial Southeast Asia", name: "group" },
-    { value: 29, slug: "colonial-spanish-america", labelText: "Colonial Spanish America", name: "group" },
-    { value: 23, slug: "early-islamic-period", labelText: "Early Islamic Period", name: "group" },
-    { value: 35, slug: "early-modern-europe", labelText: "Early Modern Europe", name: "group" },
-    { value: 46, slug: "early-republic", labelText: "Early Republic", name: "group" },
-    { value: 42, slug: "feminism", labelText: "Feminism", name: "group" },
-    { value: 27, slug: "feudal-japan", labelText: "Feudal Japan", name: "group" },
-    { value: 47, slug: "gilded-age", labelText: "Gilded Age", name: "group" },
-    { value: 40, slug: "globalization", labelText: "Globalization", name: "group" },
-    { value: 22, slug: "imperial-china", labelText: "Imperial China", name: "group" },
-    { value: 14, slug: "industrial-revolution", labelText: "Industrial Revolution", name: "group" },
-    { value: 8, slug: "islamic-golden-age", labelText: "Islamic Golden Age", name: "group" },
-    { value: 6, slug: "medieval-europe", labelText: "Medieval Europe", name: "group" },
-    { value: 18, slug: "mesoamerica", labelText: "Mesoamerica", name: "group" },
-    { value: 4, slug: "mesopotamia", labelText: "Mesopotamia", name: "group" },
-    { value: 48, slug: "modern-china", labelText: "Modern China", name: "group" },
-    { value: 15, slug: "modern-era", labelText: "Modern Era", name: "group" },
-    { value: 28, slug: "modern-japan", labelText: "Modern Japan", name: "group" },
-    { value: 11, slug: "mongol-empire", labelText: "Mongol Empire", name: "group" },
-    { value: 16, slug: "ottoman-empire", labelText: "Ottoman Empire", name: "group" },
-    { value: 21, slug: "persian-empire", labelText: "Persian Empire", name: "group" },
-    { value: 25, slug: "pirates", labelText: "Pirates", name: "group" },
-    { value: 34, slug: "polynesia-oceania", labelText: "Polynesia and Oceania", name: "group" },
-    { value: 44, slug: "post-independence-south-america", labelText: "Post-Independence South America", name: "group" },
-    { value: 43, slug: "pre-columbian-brazil", labelText: "Pre-Columbian Brazil", name: "group" },
-    { value: 10, slug: "precolonial-north-america", labelText: "Precolonial North America", name: "group" },
-    { value: 31, slug: "precolonial-southeast-asia", labelText: "Precolonial Southeast Asia", name: "group" },
-    { value: 49, slug: "prehistory", labelText: "Prehistory", name: "group" },
-    { value: 36, slug: "reformation-religious-wars", labelText: "Reformation and Religious Wars", name: "group" },
-    { value: 7, slug: "renaissance", labelText: "Renaissance", name: "group" },
-    { value: 33, slug: "silk-road", labelText: "Silk Road", name: "group" },
-    { value: 17, slug: "sub-saharan-kingdoms", labelText: "Sub-Saharan Kingdoms", name: "group" },
-    { value: 38, slug: "enlightenment", labelText: "The Enlightenment", name: "group" },
-    { value: 9, slug: "viking-age", labelText: "Viking Age", name: "group" },
-    { value: 32, slug: "west-african-empires", labelText: "West African Empires", name: "group" },
-    { value: 50, slug: "wwii", labelText: "WWII", name: "group" },
+    {
+      value: 5,
+      slug: "ancient-china",
+      labelText: "Ancient China",
+      name: "group",
+      fallbackYears: [-2100, 220],
+      fallbackHeadline:
+        "Dynasties, philosophy, warfare, and the foundations of imperial rule",
+    },
+    {
+      value: 1,
+      slug: "ancient-egypt",
+      labelText: "Ancient Egypt",
+      name: "group",
+      fallbackYears: [-3100, -30],
+      fallbackHeadline:
+        "Dynasties, pharaohs, religion, and life along the Nile",
+    },
+    {
+      value: 2,
+      slug: "ancient-greece",
+      labelText: "Ancient Greece",
+      name: "group",
+      fallbackYears: [-800, -146],
+      fallbackHeadline:
+        "City-states, philosophy, warfare, and the classical Mediterranean world",
+    },
+    {
+      value: 20,
+      slug: "ancient-india",
+      labelText: "Ancient India",
+      name: "group",
+      fallbackYears: [-2500, 550],
+      fallbackHeadline:
+        "Early civilizations, empires, religions, and intellectual traditions of South Asia",
+    },
+    {
+      value: 3,
+      slug: "ancient-rome",
+      labelText: "Ancient Rome",
+      name: "group",
+      fallbackYears: [-753, 476],
+      fallbackHeadline:
+        "Republic, empire, conquest, and the transformation of the Mediterranean",
+    },
+    {
+      value: 19,
+      slug: "andean-civilizations",
+      labelText: "Andean Civilizations",
+      name: "group",
+      fallbackYears: [-3000, 1572],
+      fallbackHeadline:
+        "States, roads, ritual life, and power in the Andes from Caral to the Inca",
+    },
+    {
+      value: 24,
+      slug: "baroque",
+      labelText: "Baroque",
+      name: "group",
+      fallbackYears: [1600, 1750],
+      fallbackHeadline:
+        "Art, religion, monarchy, and spectacle in the early modern world",
+    },
+    {
+      value: 41,
+      slug: "black-history",
+      labelText: "Black History",
+      name: "group",
+      fallbackYears: [1500, 2025],
+      fallbackHeadline:
+        "Resistance, culture, emancipation, civil rights, and global Black history",
+    },
+    {
+      value: 12,
+      slug: "byzantine-empire",
+      labelText: "Byzantine Empire",
+      name: "group",
+      fallbackYears: [330, 1453],
+      fallbackHeadline:
+        "Emperors, Orthodoxy, war, and the eastern continuation of Rome",
+    },
+    {
+      value: 26,
+      slug: "classical-japan",
+      labelText: "Classical Japan",
+      name: "group",
+      fallbackYears: [794, 1185],
+      fallbackHeadline:
+        "Court culture, literature, religion, and aristocratic rule in early Japan",
+    },
+    {
+      value: 39,
+      slug: "cold-war",
+      labelText: "Cold War",
+      name: "group",
+      fallbackYears: [1947, 1991],
+      fallbackHeadline:
+        "Ideological rivalry, proxy conflicts, nuclear tension, and global realignment",
+    },
+    {
+      value: 30,
+      slug: "colonial-brazil",
+      labelText: "Colonial and Imperial Brazil",
+      name: "group",
+      fallbackYears: [1500, 1889],
+      fallbackHeadline:
+        "Colonization, slavery, monarchy, and the making of Brazil",
+    },
+    {
+      value: 45,
+      slug: "colonial-north-america",
+      labelText: "Colonial North America",
+      name: "group",
+      fallbackYears: [1492, 1776],
+      fallbackHeadline:
+        "Settlement, empire, trade, conflict, and the roots of new nations",
+    },
+    {
+      value: 37,
+      slug: "colonial-southeast-asia",
+      labelText: "Colonial Southeast Asia",
+      name: "group",
+      fallbackYears: [1500, 1945],
+      fallbackHeadline:
+        "Empire, trade, resistance, and colonial rule across Southeast Asia",
+    },
+    {
+      value: 29,
+      slug: "colonial-spanish-america",
+      labelText: "Colonial Spanish America",
+      name: "group",
+      fallbackYears: [1492, 1825],
+      fallbackHeadline:
+        "Conquest, viceroyalties, extraction, conversion, and colonial society",
+    },
+    {
+      value: 23,
+      slug: "early-islamic-period",
+      labelText: "Early Islamic Period",
+      name: "group",
+      fallbackYears: [610, 1258],
+      fallbackHeadline:
+        "Revelation, caliphates, expansion, and the formation of Islamic civilization",
+    },
+    {
+      value: 35,
+      slug: "early-modern-europe",
+      labelText: "Early Modern Europe",
+      name: "group",
+      fallbackYears: [1450, 1789],
+      fallbackHeadline:
+        "States, commerce, religion, science, and empire in a changing Europe",
+    },
+    {
+      value: 46,
+      slug: "early-republic",
+      labelText: "Early Republic",
+      name: "group",
+      fallbackYears: [1776, 1828],
+      fallbackHeadline:
+        "Founding, constitutions, expansion, and politics in the early United States",
+    },
+    {
+      value: 42,
+      slug: "feminism",
+      labelText: "Feminism",
+      name: "group",
+      fallbackYears: [1792, 2025],
+      fallbackHeadline:
+        "Ideas, movements, rights, and struggles for gender equality across eras",
+    },
+    {
+      value: 27,
+      slug: "feudal-japan",
+      labelText: "Feudal Japan",
+      name: "group",
+      fallbackYears: [1185, 1868],
+      fallbackHeadline:
+        "Shoguns, samurai, warfare, and order in medieval and early modern Japan",
+    },
+    {
+      value: 47,
+      slug: "gilded-age",
+      labelText: "Gilded Age",
+      name: "group",
+      fallbackYears: [1870, 1900],
+      fallbackHeadline:
+        "Industry, inequality, migration, labor, and politics in a transforming society",
+    },
+    {
+      value: 40,
+      slug: "globalization",
+      labelText: "Globalization",
+      name: "group",
+      fallbackYears: [1800, 2025],
+      fallbackHeadline:
+        "Trade, technology, empire, finance, and the growing interconnection of the world",
+    },
+    {
+      value: 22,
+      slug: "imperial-china",
+      labelText: "Imperial China",
+      name: "group",
+      fallbackYears: [221, 1912],
+      fallbackHeadline:
+        "Dynasties, administration, culture, and statecraft across imperial China",
+    },
+    {
+      value: 14,
+      slug: "industrial-revolution",
+      labelText: "Industrial Revolution",
+      name: "group",
+      fallbackYears: [1760, 1914],
+      fallbackHeadline:
+        "Factories, machines, labor, cities, and the remaking of modern life",
+    },
+    {
+      value: 8,
+      slug: "islamic-golden-age",
+      labelText: "Islamic Golden Age",
+      name: "group",
+      fallbackYears: [750, 1258],
+      fallbackHeadline:
+        "Scholarship, science, medicine, and culture across the Islamic world",
+    },
+    {
+      value: 6,
+      slug: "medieval-europe",
+      labelText: "Medieval Europe",
+      name: "group",
+      fallbackYears: [500, 1500],
+      fallbackHeadline:
+        "Kings, faith, warfare, peasants, and power in the medieval West",
+    },
+    {
+      value: 18,
+      slug: "mesoamerica",
+      labelText: "Mesoamerica",
+      name: "group",
+      fallbackYears: [-2000, 1521],
+      fallbackHeadline:
+        "Cities, rituals, agriculture, and empires in ancient Mesoamerica",
+    },
+    {
+      value: 4,
+      slug: "mesopotamia",
+      labelText: "Mesopotamia",
+      name: "group",
+      fallbackYears: [-3500, -539],
+      fallbackHeadline:
+        "Cities, kings, writing, and law between the Tigris and Euphrates",
+    },
+    {
+      value: 48,
+      slug: "modern-china",
+      labelText: "Modern China",
+      name: "group",
+      fallbackYears: [1912, 2025],
+      fallbackHeadline:
+        "Revolution, war, socialism, reform, and China’s modern transformation",
+    },
+    {
+      value: 15,
+      slug: "modern-era",
+      labelText: "Modern Era",
+      name: "group",
+      fallbackYears: [1800, 2025],
+      fallbackHeadline:
+        "Industry, empire, ideology, war, and the shaping of the contemporary world",
+    },
+    {
+      value: 28,
+      slug: "modern-japan",
+      labelText: "Modern Japan",
+      name: "group",
+      fallbackYears: [1868, 2025],
+      fallbackHeadline:
+        "Reform, empire, war, reconstruction, and economic transformation",
+    },
+    {
+      value: 11,
+      slug: "mongol-empire",
+      labelText: "Mongol Empire",
+      name: "group",
+      fallbackYears: [1206, 1368],
+      fallbackHeadline:
+        "Conquest, mobility, exchange, and empire across Eurasia",
+    },
+    {
+      value: 16,
+      slug: "ottoman-empire",
+      labelText: "Ottoman Empire",
+      name: "group",
+      fallbackYears: [1299, 1922],
+      fallbackHeadline:
+        "Sultans, conquest, administration, and imperial life across three continents",
+    },
+    {
+      value: 21,
+      slug: "persian-empire",
+      labelText: "Persian Empire",
+      name: "group",
+      fallbackYears: [-550, 651],
+      fallbackHeadline:
+        "Kingship, empire, religion, and power from Achaemenids to Sasanians",
+    },
+    {
+      value: 25,
+      slug: "pirates",
+      labelText: "Pirates",
+      name: "group",
+      fallbackYears: [1650, 1730],
+      fallbackHeadline:
+        "Raiders, sailors, empires, and law on the early modern seas",
+    },
+    {
+      value: 34,
+      slug: "polynesia-oceania",
+      labelText: "Polynesia and Oceania",
+      name: "group",
+      fallbackYears: [-1500, 2025],
+      fallbackHeadline:
+        "Voyaging, settlement, exchange, and colonial encounters across the Pacific",
+    },
+    {
+      value: 44,
+      slug: "post-independence-south-america",
+      labelText: "Post-Independence South America",
+      name: "group",
+      fallbackYears: [1810, 2025],
+      fallbackHeadline:
+        "Republics, reform, conflict, and nation-building after independence",
+    },
+    {
+      value: 43,
+      slug: "pre-columbian-brazil",
+      labelText: "Pre-Columbian Brazil",
+      name: "group",
+      fallbackYears: [-12000, 1500],
+      fallbackHeadline:
+        "Peoples, lifeways, exchange, and societies before European colonization",
+    },
+    {
+      value: 10,
+      slug: "precolonial-north-america",
+      labelText: "Precolonial North America",
+      name: "group",
+      fallbackYears: [-12000, 1492],
+      fallbackHeadline:
+        "Peoples, trade, migration, and societies before European conquest",
+    },
+    {
+      value: 31,
+      slug: "precolonial-southeast-asia",
+      labelText: "Precolonial Southeast Asia",
+      name: "group",
+      fallbackYears: [-500, 1500],
+      fallbackHeadline:
+        "Kingdoms, trade, religion, and cultural exchange before colonial rule",
+    },
+    {
+      value: 49,
+      slug: "prehistory",
+      labelText: "Prehistory",
+      name: "group",
+      fallbackYears: [-300000, -3500],
+      fallbackHeadline:
+        "Human origins, migration, tools, ritual, and life before written records",
+    },
+    {
+      value: 36,
+      slug: "reformation-religious-wars",
+      labelText: "Reformation and Religious Wars",
+      name: "group",
+      fallbackYears: [1517, 1648],
+      fallbackHeadline:
+        "Faith, power, reform, and conflict in early modern Europe",
+    },
+    {
+      value: 7,
+      slug: "renaissance",
+      labelText: "Renaissance",
+      name: "group",
+      fallbackYears: [1350, 1600],
+      fallbackHeadline:
+        "Art, learning, humanism, and cultural renewal in Europe and beyond",
+    },
+    {
+      value: 33,
+      slug: "silk-road",
+      labelText: "Silk Road",
+      name: "group",
+      fallbackYears: [-130, 1453],
+      fallbackHeadline:
+        "Trade, travel, religion, and exchange across Afro-Eurasia",
+    },
+    {
+      value: 17,
+      slug: "sub-saharan-kingdoms",
+      labelText: "Sub-Saharan Kingdoms",
+      name: "group",
+      fallbackYears: [300, 1900],
+      fallbackHeadline:
+        "Kingship, trade, faith, and state formation across sub-Saharan Africa",
+    },
+    {
+      value: 38,
+      slug: "enlightenment",
+      labelText: "The Enlightenment",
+      name: "group",
+      fallbackYears: [1685, 1815],
+      fallbackHeadline:
+        "Reason, reform, science, and political thought in the Atlantic world",
+    },
+    {
+      value: 9,
+      slug: "viking-age",
+      labelText: "Viking Age",
+      name: "group",
+      fallbackYears: [793, 1066],
+      fallbackHeadline:
+        "Raids, trade, exploration, and state formation in the Norse world",
+    },
+    {
+      value: 32,
+      slug: "west-african-empires",
+      labelText: "West African Empires",
+      name: "group",
+      fallbackYears: [300, 1600],
+      fallbackHeadline:
+        "Gold, trade, scholarship, and imperial power in West Africa",
+    },
+    {
+      value: 50,
+      slug: "wwii",
+      labelText: "WWII",
+      name: "group",
+      fallbackYears: [1939, 1945],
+      fallbackHeadline:
+        "Global war, occupation, genocide, resistance, and a remade world order",
+    },
   ],
 } as const;

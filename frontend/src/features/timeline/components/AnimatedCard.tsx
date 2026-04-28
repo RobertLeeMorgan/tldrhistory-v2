@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 interface AnimatedCardProps {
   post: Post;
-  width: number;
+  width?: number;
   onClick: (p: Post) => void;
 }
 
@@ -24,8 +24,8 @@ const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
 
     return (
       <motion.div
-        style={{ width }}
         ref={ref}
+        style={{ width }}
         onClick={handleClick}
         data-post-id={post.id}
         data-start-year={post.startYear}

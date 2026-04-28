@@ -22,7 +22,10 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+     "rootDirs": [".", "./.react-router/types"]
   },
-  "include": ["src", "src/components/map/WorldMap.tsx"]
+  "include": ["app", "src", "react-router.config.ts",  "**/*",
+    ".react-router/types/**/*"]
 }

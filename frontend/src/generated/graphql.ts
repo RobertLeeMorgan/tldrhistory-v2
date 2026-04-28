@@ -16,8 +16,9 @@ export type Scalars = {
   JSON: { input: any; output: any; }
 };
 
-export type AuthPayload = {
-  __typename?: 'AuthPayload';
+export type AuthResponse = {
+  __typename?: 'AuthResponse';
+  needsEmailVerification?: Maybe<Scalars['Boolean']['output']>;
   token: Scalars['String']['output'];
   user: User;
 };
@@ -65,6 +66,16 @@ export type CreatedPost = {
 export type CreatedPostsResponse = {
   __typename?: 'CreatedPostsResponse';
   createdPosts: Array<PendingCreatedPostReview>;
+};
+
+export type DeleteSavedFilterInput = {
+  id: Scalars['Int']['input'];
+};
+
+export type EditSavedFilterInput = {
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  state?: InputMaybe<SavedFilterStateInput>;
 };
 
 export type EditSuggestion = {
@@ -133,14 +144,21 @@ export type Mutation = {
   approveEdit: Scalars['Boolean']['output'];
   createPostSuggestion: CreatedPost;
   deletePost: Scalars['Boolean']['output'];
+  deleteSavedFilter: SavedFilter;
+  editSavedFilter: SavedFilter;
   editTimeline: Post;
+  forgotPassword: VerifyResponse;
   likePost: Post;
-  login: AuthPayload;
+  login: AuthResponse;
   postTimeline: Post;
-  register: AuthPayload;
+  register: AuthResponse;
   rejectCreatedPost: Scalars['Boolean']['output'];
   rejectEdit: Scalars['Boolean']['output'];
+  resendVerificationEmail: VerifyResponse;
+  resetPassword: AuthResponse;
+  saveFilter: SavedFilter;
   suggestEdit: EditSuggestion;
+  verifyEmail: VerifyResponse;
 };
 
 
@@ -164,9 +182,24 @@ export type MutationDeletePostArgs = {
 };
 
 
+export type MutationDeleteSavedFilterArgs = {
+  input: DeleteSavedFilterInput;
+};
+
+
+export type MutationEditSavedFilterArgs = {
+  input: EditSavedFilterInput;
+};
+
+
 export type MutationEditTimelineArgs = {
   id: Scalars['Int']['input'];
   input: PostInput;
+};
+
+
+export type MutationForgotPasswordArgs = {
+  email: Scalars['String']['input'];
 };
 
 
@@ -203,9 +236,25 @@ export type MutationRejectEditArgs = {
 };
 
 
+export type MutationResetPasswordArgs = {
+  password: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
+
+export type MutationSaveFilterArgs = {
+  input: SaveFilterInput;
+};
+
+
 export type MutationSuggestEditArgs = {
   input: PostInput;
   postId: Scalars['Int']['input'];
+};
+
+
+export type MutationVerifyEmailArgs = {
+  token: Scalars['String']['input'];
 };
 
 export type PendingCreatedPostReview = {
@@ -350,10 +399,11 @@ export type Query = {
   pendingCreatedPosts: CreatedPostsResponse;
   pendingEdits: PendingEditsResponse;
   pendingStats: PendingReviewStats;
+  savedFilters: Array<SavedFilter>;
   timeline: TimelineResponse;
   userLikes: Array<Like>;
   userPosts: Array<Post>;
-  userStats: UserStatsResponse;
+  userStats?: Maybe<UserStatsResponse>;
 };
 
 
@@ -384,6 +434,7 @@ export type QueryGetSignificantArgs = {
 export type QueryTimelineArgs = {
   cursor?: InputMaybe<Scalars['ID']['input']>;
   filter?: InputMaybe<FilterInput>;
+  viewerId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -431,6 +482,45 @@ export type ReviewStatus =
   | 'pending'
   | 'rejected';
 
+export type SaveFilterInput = {
+  name: Scalars['String']['input'];
+  state: SavedFilterStateInput;
+};
+
+export type SavedFilter = {
+  __typename?: 'SavedFilter';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  state: SavedFilterState;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type SavedFilterState = {
+  __typename?: 'SavedFilterState';
+  continent: Array<Continent>;
+  group?: Maybe<Scalars['Int']['output']>;
+  search?: Maybe<Scalars['String']['output']>;
+  sortBy: Scalars['Boolean']['output'];
+  subject: Array<Scalars['String']['output']>;
+  type: Array<PostType>;
+  view?: Maybe<Scalars['String']['output']>;
+  yearEnd: Scalars['Int']['output'];
+  yearStart: Scalars['Int']['output'];
+};
+
+export type SavedFilterStateInput = {
+  continent: Array<Continent>;
+  group?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy: Scalars['Boolean']['input'];
+  subject: Array<Scalars['String']['input']>;
+  type: Array<PostType>;
+  view?: InputMaybe<Scalars['String']['input']>;
+  yearEnd: Scalars['Int']['input'];
+  yearStart: Scalars['Int']['input'];
+};
+
 export type SignificantPost = {
   __typename?: 'SignificantPost';
   cdnId?: Maybe<Scalars['String']['output']>;
@@ -473,6 +563,7 @@ export type User = {
   __typename?: 'User';
   createdAt: Scalars['String']['output'];
   email: Scalars['String']['output'];
+  emailVerifiedAt?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   moderatedEdits: Array<EditSuggestion>;
   moderatedPosts: Array<CreatedPost>;
@@ -499,9 +590,16 @@ export type UserStats = {
 export type UserStatsResponse = {
   __typename?: 'UserStatsResponse';
   createdAt: Scalars['String']['output'];
+  emailVerifiedAt?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   stats: UserStats;
   username: Scalars['String']['output'];
+};
+
+export type VerifyResponse = {
+  __typename?: 'VerifyResponse';
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
 };
 
 export type LoginMutationVariables = Exact<{
@@ -510,7 +608,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, username: string, email: string, role: UserRole } } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthResponse', token: string, needsEmailVerification?: boolean | null, user: { __typename?: 'User', id: string, username: string, email: string, role: UserRole, emailVerifiedAt?: string | null } } };
 
 export type RegisterMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -519,7 +617,34 @@ export type RegisterMutationVariables = Exact<{
 }>;
 
 
-export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, username: string, email: string, role: UserRole } } };
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'AuthResponse', token: string, needsEmailVerification?: boolean | null, user: { __typename?: 'User', id: string, username: string, email: string, role: UserRole, emailVerifiedAt?: string | null } } };
+
+export type VerifyEmailMutationVariables = Exact<{
+  token: Scalars['String']['input'];
+}>;
+
+
+export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __typename?: 'VerifyResponse', success: boolean, message: string } };
+
+export type ResendVerificationEmailMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ResendVerificationEmailMutation = { __typename?: 'Mutation', resendVerificationEmail: { __typename?: 'VerifyResponse', success: boolean, message: string } };
+
+export type ForgotPasswordMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type ForgotPasswordMutation = { __typename?: 'Mutation', forgotPassword: { __typename?: 'VerifyResponse', success: boolean, message: string } };
+
+export type ResetPasswordMutationVariables = Exact<{
+  token: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+}>;
+
+
+export type ResetPasswordMutation = { __typename?: 'Mutation', resetPassword: { __typename?: 'AuthResponse', token: string, needsEmailVerification?: boolean | null, user: { __typename?: 'User', id: string, username: string, email: string, role: UserRole, emailVerifiedAt?: string | null } } };
 
 export type LikePostMutationVariables = Exact<{
   postId: Scalars['Int']['input'];
@@ -542,9 +667,31 @@ export type CreatePostSuggestionMutationVariables = Exact<{
 
 export type CreatePostSuggestionMutation = { __typename?: 'Mutation', createPostSuggestion: { __typename?: 'CreatedPost', id: number, status: ReviewStatus, data: any, createdAt: string, updatedAt: string, suggestedBy: { __typename?: 'User', id: string, username: string } } };
 
+export type SaveFilterMutationVariables = Exact<{
+  input: SaveFilterInput;
+}>;
+
+
+export type SaveFilterMutation = { __typename?: 'Mutation', saveFilter: { __typename?: 'SavedFilter', id: number, name: string, createdAt: string, updatedAt: string, state: { __typename?: 'SavedFilterState', search?: string | null, sortBy: boolean, type: Array<PostType>, subject: Array<string>, continent: Array<Continent>, yearStart: number, yearEnd: number, group?: number | null, view?: string | null } } };
+
+export type EditSavedFilterMutationVariables = Exact<{
+  input: EditSavedFilterInput;
+}>;
+
+
+export type EditSavedFilterMutation = { __typename?: 'Mutation', editSavedFilter: { __typename?: 'SavedFilter', id: number, name: string, createdAt: string, updatedAt: string, state: { __typename?: 'SavedFilterState', search?: string | null, sortBy: boolean, type: Array<PostType>, subject: Array<string>, continent: Array<Continent>, yearStart: number, yearEnd: number, group?: number | null, view?: string | null } } };
+
+export type DeleteSavedFilterMutationVariables = Exact<{
+  input: DeleteSavedFilterInput;
+}>;
+
+
+export type DeleteSavedFilterMutation = { __typename?: 'Mutation', deleteSavedFilter: { __typename?: 'SavedFilter', id: number, name: string } };
+
 export type TimelineQueryVariables = Exact<{
   cursor?: InputMaybe<Scalars['ID']['input']>;
   filter?: InputMaybe<FilterInput>;
+  viewerId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -606,7 +753,7 @@ export type UserStatsQueryVariables = Exact<{
 }>;
 
 
-export type UserStatsQuery = { __typename?: 'Query', userStats: { __typename?: 'UserStatsResponse', id: number, username: string, createdAt: string, stats: { __typename?: 'UserStats', favouriteEra?: string | null, mostLikedPost?: { __typename?: 'Post', id: string, name: string, likes: number, cdnId?: string | null, imageUrl?: string | null, liked?: boolean | null } | null, favouriteGroup?: { __typename?: 'GroupSummary', name: string, icon?: string | null } | null } } };
+export type UserStatsQuery = { __typename?: 'Query', userStats?: { __typename?: 'UserStatsResponse', id: number, username: string, emailVerifiedAt?: string | null, createdAt: string, stats: { __typename?: 'UserStats', favouriteEra?: string | null, mostLikedPost?: { __typename?: 'Post', id: string, name: string, likes: number, cdnId?: string | null, imageUrl?: string | null, liked?: boolean | null } | null, favouriteGroup?: { __typename?: 'GroupSummary', name: string, icon?: string | null } | null } } | null };
 
 export type PendingCreatedPostsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -617,6 +764,11 @@ export type PendingStatsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type PendingStatsQuery = { __typename?: 'Query', pendingStats: { __typename?: 'PendingReviewStats', pending: number, approved: number, rejected: number } };
+
+export type SavedFiltersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SavedFiltersQuery = { __typename?: 'Query', savedFilters: Array<{ __typename?: 'SavedFilter', id: number, name: string, createdAt: string, updatedAt: string, state: { __typename?: 'SavedFilterState', search?: string | null, sortBy: boolean, type: Array<PostType>, subject: Array<string>, continent: Array<Continent>, yearStart: number, yearEnd: number, group?: number | null, view?: string | null } }> };
 
 export type PendingEditsQueryVariables = Exact<{ [key: string]: never; }>;
 

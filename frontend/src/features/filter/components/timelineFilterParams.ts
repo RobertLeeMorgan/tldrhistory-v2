@@ -19,7 +19,7 @@ function parseStringArray(value: string | null): string[] {
 export function searchParamsToPartialFilter(
   searchParams: URLSearchParams,
 ): Partial<TimelineFilter> {
-  const search = searchParams.get("q")?.trim() || undefined;
+  const search = searchParams.get("q") || undefined;
   const yearStart = parseNumber(searchParams.get("ys"));
   const yearEnd = parseNumber(searchParams.get("ye"));
 
@@ -42,8 +42,20 @@ export function searchParamsToPartialFilter(
   };
 }
 
-export function filterToSearchParams(filter: TimelineFilter): URLSearchParams {
-  const params = new URLSearchParams();
+export function filterToSearchParams(
+  filter: TimelineFilter,
+  existingSearchParams?: URLSearchParams,
+): URLSearchParams {
+  const params = new URLSearchParams(existingSearchParams);
+
+  // Clear only filter-owned params first
+  params.delete("t");
+  params.delete("s");
+  params.delete("c");
+  params.delete("ys");
+  params.delete("ye");
+  params.delete("q");
+  params.delete("o");
 
   if (filter.type.length) {
     params.set("t", filter.type.join(","));
@@ -71,8 +83,8 @@ export function filterToSearchParams(filter: TimelineFilter): URLSearchParams {
     }
   }
 
-  if (filter.search?.trim()) {
-    params.set("q", filter.search.trim());
+  if (filter.search) {
+    params.set("q", filter.search);
   }
 
   if (filter.sortBy !== DEFAULT_TIMELINE_FILTER.sortBy) {

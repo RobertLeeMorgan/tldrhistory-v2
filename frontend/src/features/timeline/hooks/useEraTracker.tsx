@@ -1,5 +1,4 @@
 import { useEffect, useRef, type RefObject } from "react";
-import { HISTORICAL_RANGES } from "../../../utils/historicalRanges";
 import { useEra } from "../../../context/EraContext";
 import type { Post } from "../../../generated/graphql";
 
@@ -7,9 +6,8 @@ export function useEraTracker(
   posts: Post[],
   postRefs: Map<string, RefObject<HTMLDivElement | null>>
 ) {
-  const { setEra, setDataStartYear } = useEra();
+  const { setDataStartYear } = useEra();
 
-  const currentEraRef = useRef<number | null>(null);
   const currentYearRef = useRef<number | null>(null);
   const lastIndexRef = useRef(0);
   const lastScrollYRef = useRef(0);
@@ -20,7 +18,6 @@ export function useEraTracker(
     if (!posts.length) return;
 
     lastIndexRef.current = 0;
-    currentEraRef.current = null;
     currentYearRef.current = null;
 
     const update = () => {
@@ -61,15 +58,6 @@ export function useEraTracker(
       const topPost = posts[index];
       if (!topPost) return;
 
-      const newEraIndex = HISTORICAL_RANGES.findIndex(
-        (r) => topPost.startYear >= r.start && topPost.startYear <= r.end
-      );
-
-      if (newEraIndex !== -1 && currentEraRef.current !== newEraIndex) {
-        currentEraRef.current = newEraIndex;
-        setEra(newEraIndex);
-      }
-
       if (currentYearRef.current !== topPost.startYear) {
         currentYearRef.current = topPost.startYear;
         setDataStartYear(topPost.startYear);
@@ -88,9 +76,7 @@ export function useEraTracker(
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
-      }
+      if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current);
     };
-  }, [posts, postRefs, setEra, setDataStartYear]);
+  }, [posts, postRefs, setDataStartYear]);
 }

@@ -1,8 +1,8 @@
 import { gql } from "graphql-request";
 
 export const TIMELINE_QUERY = gql`
-  query Timeline($cursor: ID, $filter: FilterInput) {
-    timeline(cursor: $cursor, filter: $filter) {
+  query Timeline($cursor: ID, $filter: FilterInput, $viewerId: String) {
+    timeline(cursor: $cursor, filter: $filter, viewerId: $viewerId) {
       posts {
         id
         name
@@ -250,6 +250,7 @@ export const USER_STATS = gql`
     userStats(userId: $userId) {
       id
       username
+      emailVerifiedAt
       createdAt
       stats {
         mostLikedPost {
@@ -293,6 +294,28 @@ export const PENDING_STATS_QUERY = gql`
       pending
       approved
       rejected
+    }
+  }
+`;
+
+export const SAVED_FILTERS_QUERY = gql`
+  query SavedFilters {
+    savedFilters {
+      id
+      name
+      state {
+        search
+        sortBy
+        type
+        subject
+        continent
+        yearStart
+        yearEnd
+        group
+        view
+      }
+      createdAt
+      updatedAt
     }
   }
 `;

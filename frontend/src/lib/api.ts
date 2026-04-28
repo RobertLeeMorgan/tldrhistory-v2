@@ -1,4 +1,6 @@
 import axios from "axios";
+import { getGraphqlUrl } from "./api-origin";
+import { refreshAndApplySession } from "./authSession";
 
 let accessToken: string | null = null;
 
@@ -6,8 +8,10 @@ export function setAccessToken(token: string | null) {
   accessToken = token;
 }
 
+const isServer = typeof window === "undefined";
+
 const api = axios.create({
-  baseURL: "/graphql",
+  baseURL: isServer ? getGraphqlUrl() : "/graphql",
   timeout: 10000,
   withCredentials: true,
 });
@@ -38,37 +42,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-async function refreshAccessToken() {
-  const res = await fetch("/api/refresh", {
-    method: "POST",
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Refresh failed");
-  }
-
-  const data = await res.json();
-
-  if (!data?.token) {
-    throw new Error("No refresh token returned");
-  }
-
-  setAccessToken(data.token);
-  return data.token as string;
-}
-
 api.interceptors.response.use(
   async (response) => {
+
     const originalRequest = response.config as typeof response.config & {
       _retry?: boolean;
     };
 
     const graphQLErrors = response.data?.errors;
-    const hasUnauthenticatedError = Array.isArray(graphQLErrors)
-      && graphQLErrors.some(
-        (e: any) => e.extensions?.code === "UNAUTHENTICATED"
-      );
+    const hasUnauthenticatedError =
+      Array.isArray(graphQLErrors) &&
+      graphQLErrors.some((e: any) => e.extensions?.code === "UNAUTHENTICATED");
 
     if (!hasUnauthenticatedError || originalRequest._retry) {
       return response;
@@ -92,7 +76,7 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const token = await refreshAccessToken();
+      const token = await refreshAndApplySession();
       processQueue(null, token);
 
       originalRequest.headers = originalRequest.headers ?? {};
@@ -108,6 +92,10 @@ api.interceptors.response.use(
     }
   },
   async (error) => {
+    if (isServer) {
+      return Promise.reject(error);
+    }
+
     const originalRequest = error.config as typeof error.config & {
       _retry?: boolean;
     };
@@ -136,7 +124,7 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const token = await refreshAccessToken();
+      const token = await refreshAndApplySession();
       processQueue(null, token);
 
       originalRequest.headers = originalRequest.headers ?? {};

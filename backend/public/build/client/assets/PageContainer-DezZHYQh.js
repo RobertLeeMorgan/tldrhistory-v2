@@ -1,0 +1,1 @@
+import{p as t}from"./chunk-OE4NN4TA-D45wUbcD.js";import{m as e}from"./proxy-DZXW7wcI.js";function r({children:i}){return t.jsx(e.div,{className:"flex flex-col min-h-screen items-center justify-center overflow-hidden",initial:{opacity:0},animate:{opacity:1},transition:{duration:.2},children:i})}export{r as P};

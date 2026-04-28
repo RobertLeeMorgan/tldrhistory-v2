@@ -1,17 +1,14 @@
 import type { Config } from "@react-router/dev/config";
+import { themes } from "./src/utils/drawerValues";
 
 export default {
   ssr: true,
-  async prerender() {
-    const res = await fetch(`${process.env.VITE_API_URL}/seo/groups`);
-    const groups: Array<{ slug: string }> = await res.json();
-
+  async prerender({ getStaticPaths }) {
+    const slugs = themes.options.map((group: any) => group.slug);
+    
     return [
-      "/timeline",
-      "/terms",
-      "/privacy",
-      "/cookies",
-      ...groups.map((g) => `/timeline/${g.slug}`),
+      ...getStaticPaths(),
+      ...slugs.map((slug: string) => `/timeline/${slug}`),
     ];
   },
 } satisfies Config;

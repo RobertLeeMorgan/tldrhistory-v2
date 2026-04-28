@@ -9,10 +9,10 @@ import {
   useNavigate,
   useParams,
   useSearchParams,
-} from "react-router-dom";
+} from "react-router";
 import type { TimelineFilter } from "../features/filter/components/TimelineFilter";
 import { DEFAULT_TIMELINE_FILTER } from "../features/filter/components/TimelineFilter";
-import { filterToSearchParams, searchParamsToPartialFilter } from "../features/filter/components/TimelineFilterParams";
+import { filterToSearchParams, searchParamsToPartialFilter } from "../features/filter/components/timelineFilterParams";
 import { getGroupIdFromSlug, getGroupSlugFromId } from "../utils/groupLookup";
 
 type SetFilterOptions = {
@@ -35,7 +35,7 @@ const TimelineFilterContext =
 function normalizeFilter(filter: TimelineFilter): TimelineFilter {
   return {
     ...filter,
-    search: filter.search?.trim() || undefined,
+    search: filter.search || undefined,
     sortBy: filter.sortBy ?? DEFAULT_TIMELINE_FILTER.sortBy,
     type: filter.type ?? [],
     subject: filter.subject ?? [],
@@ -71,43 +71,43 @@ export function TimelineFilterProvider({ children }: { children: ReactNode }) {
     });
   }, [searchParams, groupSlug]);
 
-  const setFilter = useCallback(
-    (next: TimelineFilter, options: SetFilterOptions = DEFAULT_OPTIONS) => {
-      const normalized = normalizeFilter(next);
-      const pathname = buildPath(normalized.group);
-      const search = filterToSearchParams(normalized).toString();
+ const setFilter = useCallback(
+  (next: TimelineFilter, options: SetFilterOptions = DEFAULT_OPTIONS) => {
+    const normalized = normalizeFilter(next);
+    const pathname = buildPath(normalized.group);
+    const search = filterToSearchParams(normalized, searchParams).toString();  // ← Pass searchParams
 
-      navigate(
-        {
-          pathname,
-          search: search ? `?${search}` : "",
-        },
-        { replace: options.replace ?? true }
-      );
-    },
-    [navigate]
-  );
+    navigate(
+      {
+        pathname,
+        search: search ? `?${search}` : "",
+      },
+      { replace: options.replace ?? true }
+    );
+  },
+  [navigate, searchParams]
+);
 
-  const patchFilter = useCallback(
-    (patch: Partial<TimelineFilter>, options: SetFilterOptions = DEFAULT_OPTIONS) => {
-      const next = normalizeFilter({
-        ...filter,
-        ...patch,
-      });
+const patchFilter = useCallback(
+  (patch: Partial<TimelineFilter>, options: SetFilterOptions = DEFAULT_OPTIONS) => {
+    const next = normalizeFilter({
+      ...filter,
+      ...patch,
+    });
 
-      const pathname = buildPath(next.group);
-      const search = filterToSearchParams(next).toString();
+    const pathname = buildPath(next.group);
+    const search = filterToSearchParams(next, searchParams).toString();  // ← Pass searchParams
 
-      navigate(
-        {
-          pathname,
-          search: search ? `?${search}` : "",
-        },
-        { replace: options.replace ?? true }
-      );
-    },
-    [filter, navigate]
-  );
+    navigate(
+      {
+        pathname,
+        search: search ? `?${search}` : "",
+      },
+      { replace: options.replace ?? true }
+    );
+  },
+  [filter, navigate, searchParams]
+);
 
   const resetFilter = useCallback(
     (options: SetFilterOptions = DEFAULT_OPTIONS) => {

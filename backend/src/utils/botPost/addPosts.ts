@@ -1,8 +1,8 @@
-import { AIOutput } from "../services/ai/types";
-import prisma from "../server/client";
+import { AIOutput } from "../../services/ai/types";
+import prisma from "../../server/client";
 import type { User } from "@prisma/client";
-import { Context } from "../schema/resolvers/query/user";
-import { postSchema } from "../validators/postSchema";
+import { Context } from "../../schema/resolvers/query/user";
+import { postSchema } from "../../validators/postSchema";
 
 export async function addPosts(
   aiPost: AIOutput[number] & {

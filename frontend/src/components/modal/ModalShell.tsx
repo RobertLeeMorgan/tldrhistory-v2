@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { createPortal } from "react-dom";
 
@@ -17,14 +17,19 @@ export default function ModalShell({
   panelClassName = "",
   overlayClassName = "",
 }: ModalShellProps) {
-  const modalRoot = document.getElementById("modal-root");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [open]);
+  }, [open, mounted]);
 
   useEffect(() => {
     if (!open) return;
@@ -37,7 +42,7 @@ export default function ModalShell({
     return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
 
-  if (!open || !modalRoot) return null;
+  if (!mounted || !open) return null;
 
   return createPortal(
     <motion.div
@@ -59,6 +64,6 @@ export default function ModalShell({
         {children}
       </motion.div>
     </motion.div>,
-    modalRoot,
+    document.body,
   );
 }

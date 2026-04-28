@@ -1,4 +1,4 @@
-import prisma from "../server/client";
+import prisma from "../../server/client";
 import bcrypt from "bcrypt";
 
 export async function createBot() {

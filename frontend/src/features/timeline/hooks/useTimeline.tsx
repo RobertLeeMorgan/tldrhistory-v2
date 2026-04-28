@@ -1,61 +1,69 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { graphqlRequest } from "../../../lib/graphql";
-import { TIMELINE_QUERY } from "../../../graphql/queries";
-import type {
-  Post,
-  TimelineQueryVariables,
-  TimelineResponse,
-} from "../../../generated/graphql";
 import { useMemo } from "react";
+import type { Post, TimelineQueryVariables } from "../../../generated/graphql";
 import { useAuth } from "../../../context/AuthContext";
+import { timelineInfiniteQueryOptions } from "./timelineQuery";
+import type { timelineLoader } from "./timelineLoader";
+import { useLoaderData } from "react-router";
 
 interface UseTimelineOptions {
   filter?: TimelineQueryVariables["filter"];
-  initialCursor?: string | null;
 }
 
 const EMPTY_POSTS: Post[] = [];
 
-export default function useTimeline({
-  filter,
-  initialCursor = null,
-}: UseTimelineOptions = {}) {
+export default function useTimeline({ filter }: UseTimelineOptions = {}) {
   const { isAuth } = useAuth();
-
   const viewerKey = isAuth.id ?? "anonymous";
 
-  const query = useInfiniteQuery({
-    queryKey: ["timeline", "list", filter, viewerKey],
-    queryFn: async ({ pageParam = initialCursor }) => {
-      const data = await graphqlRequest<
-        { timeline: TimelineResponse },
-        TimelineQueryVariables
-      >(TIMELINE_QUERY, {
-         cursor: pageParam ?? undefined,
-        filter,
-      });
+  const { initialData } = useLoaderData() as Awaited<
+    ReturnType<typeof timelineLoader>
+  >;
 
-      if (!data?.timeline) throw new Error("No timeline data returned");
-      return data.timeline;
-    },
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-    initialPageParam: initialCursor,
+  const query = useInfiniteQuery({
+    ...timelineInfiniteQueryOptions({
+      filter,
+      viewerKey,
+    }),
+    initialData:
+      viewerKey === "anonymous" && initialData
+        ? {
+            pages: [initialData],
+            pageParams: [],
+          }
+        : undefined,
     placeholderData: (previousData, previousQuery) => {
-      const [, previousFilter, previousViewerKey] =
-        (previousQuery?.queryKey as [string, typeof filter, string]) ?? [];
+      const previousKey = previousQuery?.queryKey as
+        | readonly [
+            string,
+            string,
+            TimelineQueryVariables["filter"] | null,
+            string,
+          ]
+        | undefined;
+
+      const previousFilter = previousKey?.[2] ?? null;
+      const previousViewerKey = previousKey?.[3];
+      const currentFilter = filter ?? null;
 
       const isSameFilter =
-        JSON.stringify(previousFilter) === JSON.stringify(filter);
+        JSON.stringify(previousFilter) === JSON.stringify(currentFilter);
+
+      const isViewerTransition =
+        previousViewerKey === "anonymous" && viewerKey !== "anonymous";
 
       const isSameViewer = previousViewerKey === viewerKey;
 
-      return isSameFilter && isSameViewer ? previousData : undefined;
+      return isSameFilter && (isSameViewer || isViewerTransition)
+        ? previousData
+        : undefined;
     },
-    staleTime: 1000 * 60 * 30,
+    staleTime: 30_000,
+    refetchOnMount: viewerKey === "anonymous" ? false : "always",
   });
 
   const posts = useMemo(
-    () => query.data?.pages.flatMap((p) => p.posts) ?? EMPTY_POSTS,
+    () => query.data?.pages.flatMap((page) => page.posts) ?? EMPTY_POSTS,
     [query.data],
   );
 

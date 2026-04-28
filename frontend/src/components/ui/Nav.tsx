@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router";
 import { useToast } from "../../context/ToastContext";
 import { useAuth } from "../../context/AuthContext";
 import { RomanHelmet, UserIcon } from "../../icons/icons";
@@ -21,7 +21,7 @@ export default function Nav() {
         message: "You are logged out, bye for now!",
         type: "info",
       });
-      navigate("/");
+      navigate("/timeline");
     } catch (error) {
       console.error(error);
     }
@@ -33,12 +33,12 @@ export default function Nav() {
         {/* Left: title */}
         <div className="navbar-start text-stone-700">
           <Link
-            to="/"
-            aria-label="home"
+            to="/timeline"
+            aria-label="timeline"
             className="w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18 lg:w-20 lg:h-20 flex place-content-center items-center rounded-full cursor-pointer pointer-events-auto"
           >
             <img
-              src="/tldr-logo.png"
+              src="/tldr-logo-512.png"
               alt="TLDR History logo"
               className="w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18 lg:w-20 lg:h-20 flex place-content-center items-center justify-center hover:bg-stone-900 rounded-full transition-colors duration-300"
             />
@@ -107,7 +107,7 @@ export default function Nav() {
                           : "hidden"
                       }`}
                     >
-                      <Link to="/create" aria-label="Create Article">
+                      <Link to="/articles/create" aria-label="Create Article">
                         Create Article
                       </Link>
                     </li>

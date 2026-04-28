@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { LIKE_POST } from "../../graphql/mutations";
 import { useMutation } from "@tanstack/react-query";
@@ -22,6 +22,11 @@ export default function CardFooter({ post }: CardFooterProps) {
 
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post.likes);
+
+  useEffect(() => {
+    setLiked(post.liked);
+    setLikesCount(post.likes);
+  }, [post.liked, post.likes]);
 
   const likePostMutation = useMutation({
     mutationFn: (variables: LikePostMutationVariables) =>

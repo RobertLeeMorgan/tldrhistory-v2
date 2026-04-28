@@ -18,24 +18,14 @@ type CivilisationArgs = {
   filter?: any;
 };
 
-function buildRangeWhere(
-  startYear: number,
-  endYear: number,
-  filter?: any
-) {
+function buildRangeWhere(startYear: number, endYear: number, filter?: any) {
   return queryFilters(filter, {
     startYear: { gte: startYear, lte: endYear },
-    OR: [
-      { startSignificance: { gt: 0 } },
-      { endSignificance: { gt: 0 } },
-    ],
+    OR: [{ startSignificance: { gt: 0 } }, { endSignificance: { gt: 0 } }],
   });
 }
 
-export async function getPopulation(
-  _: unknown,
-  { start }: PopulationArgs
-) {
+export async function getPopulation(_: unknown, { start }: PopulationArgs) {
   const year = Number(start);
   if (!Number.isInteger(year)) {
     throw new GraphQLError("Invalid year", {
@@ -59,11 +49,11 @@ export async function getPopulation(
 
 export async function getSignificant(
   _: unknown,
-  { startYear, endYear, filter }: SignificantArgs
+  { startYear, endYear, filter }: SignificantArgs,
 ) {
   const parsedStart = Number(startYear);
   const parsedEnd = Number(endYear);
-  
+
   if (!Number.isInteger(parsedStart) || !Number.isInteger(parsedEnd)) {
     throw new GraphQLError("Invalid year range", {
       extensions: { code: "BAD_USER_INPUT" },
@@ -119,34 +109,40 @@ export async function getCivilisation(
     });
   }
 
+  const filterWhere = queryFilters(filter);
+
   const where = {
-    civilisation: true,
-    subjects: {
-      some: {
-        name: { in: ["culture", "military"] },
-      },
-    },
-    OR: [
+    AND: [
       {
-        startYear: { lte: parsedEnd },
-        AND: [
-          { endYear: { gte: parsedStart } },
-          { OR: [{ endYear: { gte: parsedStart } }, { endYear: 0 }] },
-        ],
-        startSignificance: { gt: 0 },
+        civilisation: true,
       },
       {
-        startYear: { lte: parsedEnd },
-        AND: [
-          { endYear: { gte: parsedStart } },
-          { OR: [{ endYear: { gte: parsedStart } }, { endYear: 0 }] },
-        ],
-        endSignificance: { gt: 0 },
+        subjects: {
+          some: {
+            name: { in: ["culture", "military"] },
+          },
+        },
       },
+      {
+        OR: [
+          {
+            startYear: { lte: parsedEnd },
+            endYear: { gte: parsedStart },
+          },
+          {
+            startYear: { lte: parsedEnd },
+            endYear: 0,
+          },
+        ],
+      },
+      {
+        OR: [
+          { startSignificance: { gt: 0 } },
+          { endSignificance: { gt: 0 } },
+        ],
+      },
+      filterWhere,
     ],
-    ...queryFilters(filter, {
-      startYear: { gte: parsedStart, lte: parsedEnd },
-    }),
   };
 
   return prisma.post.findMany({

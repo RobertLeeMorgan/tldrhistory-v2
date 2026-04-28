@@ -112,6 +112,7 @@ export const typeDefs = gql`
     username: String!
     email: String!
     role: UserRole!
+    emailVerifiedAt: String
     suggestedPosts: [CreatedPost!]!
     moderatedPosts: [CreatedPost!]!
     suggestedEdits: [EditSuggestion!]!
@@ -131,6 +132,7 @@ export const typeDefs = gql`
     id: Int!
     username: String!
     createdAt: String!
+    emailVerifiedAt: String
   }
 
   type Like {
@@ -217,9 +219,15 @@ export const typeDefs = gql`
     updatedAt: String!
   }
 
-  type AuthPayload {
+  type AuthResponse {
     token: String!
     user: User!
+    needsEmailVerification: Boolean
+  }
+
+  type VerifyResponse {
+    success: Boolean!
+    message: String!
   }
 
   type FormLists {
@@ -331,11 +339,62 @@ export const typeDefs = gql`
     edits: [PendingEditReview!]!
   }
 
+type SavedFilterState {
+  search: String
+  sortBy: Boolean!
+  type: [PostType!]!
+  subject: [String!]!
+  continent: [Continent!]!
+  yearStart: Int!
+  yearEnd: Int!
+  group: Int
+  view: String
+}
+
+input SavedFilterStateInput {
+  search: String
+  sortBy: Boolean!
+  type: [PostType!]!
+  subject: [String!]!
+  continent: [Continent!]!
+  yearStart: Int!
+  yearEnd: Int!
+  group: Int
+  view: String
+}
+
+type SavedFilter {
+  id: Int!
+  name: String!
+  state: SavedFilterState!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input SaveFilterInput {
+  name: String!
+  state: SavedFilterStateInput!
+}
+
+input EditSavedFilterInput {
+  id: Int!
+  name: String
+  state: SavedFilterStateInput
+}
+
+input DeleteSavedFilterInput {
+  id: Int!
+}
+
   type Query {
-    timeline(cursor: ID, filter: FilterInput): TimelineResponse!
+    timeline(
+      cursor: ID
+      filter: FilterInput
+      viewerId: String
+    ): TimelineResponse!
     userPosts(userId: Int!): [Post!]!
     userLikes(userId: Int!): [Like!]!
-    userStats(userId: Int!): UserStatsResponse!
+    userStats(userId: Int!): UserStatsResponse
     getPost(id: Int!): Post!
     getPopulation(start: Int!): BigInt!
     getSignificant(
@@ -352,11 +411,20 @@ export const typeDefs = gql`
     pendingCreatedPosts: CreatedPostsResponse!
     pendingStats: PendingReviewStats!
     formLists: FormLists!
+    savedFilters: [SavedFilter!]!
   }
 
   type Mutation {
-    register(username: String!, email: String!, password: String!): AuthPayload!
-    login(email: String!, password: String!): AuthPayload!
+    register(
+      username: String!
+      email: String!
+      password: String!
+    ): AuthResponse!
+    login(email: String!, password: String!): AuthResponse!
+    verifyEmail(token: String!): VerifyResponse!
+    forgotPassword(email: String!): VerifyResponse!
+    resendVerificationEmail: VerifyResponse!
+    resetPassword(token: String!, password: String!): AuthResponse!
 
     postTimeline(input: PostInput!): Post!
     editTimeline(id: Int!, input: PostInput!): Post!
@@ -370,5 +438,9 @@ export const typeDefs = gql`
     createPostSuggestion(input: PostInput!): CreatedPost!
     approveCreatedPost(id: Int!): Boolean!
     rejectCreatedPost(id: Int!): Boolean!
+
+    saveFilter(input: SaveFilterInput!): SavedFilter!
+    editSavedFilter(input: EditSavedFilterInput!): SavedFilter!
+    deleteSavedFilter(input: DeleteSavedFilterInput!): SavedFilter!
   }
 `;
