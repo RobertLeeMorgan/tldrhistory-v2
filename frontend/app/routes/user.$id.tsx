@@ -20,7 +20,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const apiOrigin = new URL(request.url).origin;
 
   const data = await queryClient.ensureQueryData(
-    getUserStatsQueryOptions({ userId, apiOrigin })
+    getUserStatsQueryOptions({ userId, apiOrigin }),
   );
 
   return { userStats: data?.userStats };
@@ -70,11 +70,23 @@ export default function User() {
         isLoading={isLoading}
         verified={stats?.emailVerifiedAt}
       />
+      <UserStats stats={stats?.stats} isLoading={isLoading} />
 
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-[2fr_1fr] bg-base">
+      <main
+        className="
+          relative z-10
+          sm:pr-[min(34vw,420px)]
+          md:pr-[min(32vw,440px)]
+          lg:pr-[min(30vw,460px)]
+                  pt-[8rem]
+          sm:pt-[var(--header-height-sm)]
+          md:pt-[var(--header-height-md)]
+          lg:pt-[var(--header-height-lg)]
+        "
+      >
+        <div className="fixed inset-0 z-0 bg-base" />
         <UserTimeline userId={userId} />
-        <UserStats stats={stats?.stats} isLoading={isLoading} />
-      </div>
+      </main>
     </>
   );
 }

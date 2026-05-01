@@ -25,7 +25,7 @@ export default function TimelineTabs({
       aria-selected={ariaSelected}
       aria-controls={ariaControls}
       id={id}
-      className={`pb-2 px-2 text-base sm:text-lg transition ${
+      className={`pb-2 px-2 text-base sm:text-lg transition z-50 ${
         active
           ? "border-b-3 border-gold font-bold text-gold"
           : "font-semibold text-stone-400 hover:text-stone-500"

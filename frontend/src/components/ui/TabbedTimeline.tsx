@@ -102,7 +102,7 @@ export default function TabbedTimeline<T extends string, Item>({
               {items.map((item, index) => (
                 <div
                   key={getItemKey(item, index)}
-                  className="card shadow-lg shadow-black/40"
+                  className="card shadow-lg shadow-stone-950/40"
                 >
                   {renderCard(item)}
                 </div>

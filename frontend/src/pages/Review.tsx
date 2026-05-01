@@ -11,14 +11,30 @@ export default function Review() {
   return (
     <>
       <ReviewHeader />
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-[2fr_1fr] bg-base">
+          <main
+        className="
+          relative z-10
+          pt-[8rem]
+          sm:pt-[var(--header-height-sm)]
+          md:pt-[var(--header-height-md)]
+          lg:pt-[var(--header-height-lg)]
+
+          pb-32
+          sm:pb-6
+
+          sm:pr-[min(34vw,420px)]
+          md:pr-[min(32vw,440px)]
+          lg:pr-[min(30vw,460px)]
+        "
+      >
+        <div className="fixed inset-0 z-0 bg-base" />
         <ReviewTimeline />
         <ReviewStats
           isLoading={isLoading}
           stats={stats ?? defaultStats}
           pendingCount={stats?.pending ?? 0}
         />
-      </div>
+      </main>
     </>
   );
 }
