@@ -41,9 +41,7 @@ class RateLimitAbortError extends Error {
 function stopAllWork() {
   shouldStop = true;
   queue.pause();
-  for (const controller of activeControllers) {
-    controller.abort();
-  }
+  for (const controller of activeControllers) controller.abort();
 }
 
 function getImageKey(url: string) {
@@ -92,9 +90,7 @@ async function sleep(ms: number) {
 }
 
 async function fetchImage(url: string) {
-  if (shouldStop) {
-    throw new RateLimitAbortError();
-  }
+  if (shouldStop) throw new RateLimitAbortError();
 
   const controller = new AbortController();
   activeControllers.add(controller);
@@ -124,7 +120,11 @@ async function fetchImage(url: string) {
   }
 }
 
-async function rejectImage(postId: number) {
+async function rejectImage(postId: number, reason?: string) {
+  if (reason) {
+    console.warn(`Rejecting image for post ${postId}: ${reason}`);
+  }
+
   await prisma.post.update({
     where: { id: postId },
     data: {
@@ -137,65 +137,93 @@ async function rejectImage(postId: number) {
   });
 }
 
-async function processPost(post: any) {
-  if (shouldStop) throw new RateLimitAbortError();
-  if (!post.imageUrl || post.cdnUrl) return;
-
-  const originalUrl = post.imageUrl;
+async function resolveImageSource(originalUrl: string, postId: number) {
   const normalizedUrl = normalizeWikimediaUrl(originalUrl);
 
-  let finalSourceUrl: string | null = null;
-  let finalResponse: Response | null = null;
-
   const firstRes = await fetchImage(originalUrl);
-
   if (firstRes.ok) {
-    finalSourceUrl = originalUrl;
-    finalResponse = firstRes;
-  } else if (
+    return { finalSourceUrl: originalUrl, finalResponse: firstRes };
+  }
+
+  if (
     firstRes.status === 404 &&
     normalizedUrl &&
     normalizedUrl !== originalUrl
   ) {
     await sleep(2000);
-
     const secondRes = await fetchImage(normalizedUrl);
 
     if (secondRes.ok) {
-      finalSourceUrl = normalizedUrl;
-      finalResponse = secondRes;
-    } else if (secondRes.status === 404) {
-      await rejectImage(post.id);
-      return;
-    } else {
-      throw new Error(
-        `Unexpected status ${secondRes.status} for normalized URL`,
-      );
+      return { finalSourceUrl: normalizedUrl, finalResponse: secondRes };
     }
-  } else if (firstRes.status === 404) {
-    await rejectImage(post.id);
-    return;
-  } else {
-    throw new Error(`Unexpected status ${firstRes.status} for original URL`);
+
+    if (secondRes.status === 404) {
+      await rejectImage(
+        postId,
+        "both original and normalized Wikimedia URLs returned 404",
+      );
+      return null;
+    }
+
+    throw new Error(
+      `Unexpected status ${secondRes.status} for normalized URL ${normalizedUrl}`,
+    );
   }
 
-  if (!finalSourceUrl || !finalResponse) {
-    throw new Error(`No valid image source for post ${post.id}`);
+  if (firstRes.status === 404) {
+    await rejectImage(postId, "original image URL returned 404");
+    return null;
   }
 
+  throw new Error(
+    `Unexpected status ${firstRes.status} for original URL ${originalUrl}`,
+  );
+}
+
+async function processPost(post: any) {
+  if (shouldStop) throw new RateLimitAbortError();
+  if (!post.imageUrl || post.cdnUrl) return;
+
+  const resolved = await resolveImageSource(post.imageUrl, post.id);
+  if (!resolved) return;
+
+  const { finalSourceUrl, finalResponse } = resolved;
   const key = getImageKey(finalSourceUrl);
   const cdnUrl = `${PUBLIC_URL}/${key}`;
 
   const exists = await existsInR2(key);
 
   if (!exists) {
+    const contentType = finalResponse.headers.get("content-type") ?? "";
+
+    if (!contentType.startsWith("image/")) {
+      throw new Error(
+        `Non-image response for post ${post.id}: ${contentType} (${finalSourceUrl})`,
+      );
+    }
+
+    if (contentType.includes("svg")) {
+      await rejectImage(post.id, `unsupported SVG source: ${finalSourceUrl}`);
+      return;
+    }
+
     const arrayBuffer = await finalResponse.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const processed = await sharp(buffer)
-      .resize({ height: 230, withoutEnlargement: true })
-      .webp({ quality: 80 })
-      .toBuffer();
+    let processed: Buffer;
+
+    try {
+      processed = await sharp(buffer)
+        .resize({ height: 230, withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toBuffer();
+    } catch (err) {
+      throw new Error(
+        `Sharp failed for post ${post.id} (${finalSourceUrl}, content-type: ${contentType}, bytes: ${buffer.length}): ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
+    }
 
     await s3.send(
       new PutObjectCommand({
@@ -227,18 +255,28 @@ async function main() {
     },
   });
 
+  console.log(`Processing ${posts.length} posts`);
+
+  let processed = 0;
+
   for (const post of posts) {
-    queue
-      .add(async () => {
+    queue.add(async () => {
+      try {
         await processPost(post);
-      })
-      .catch((err) => {
+      } catch (err) {
         if (err instanceof RateLimitAbortError) throw err;
-        throw err;
-      });
+        console.error(`Failed post ${post.id}:`, err);
+      } finally {
+        processed++;
+        if (processed % 10 === 0) {
+          console.log(`Progress: ${processed}/${posts.length}`);
+        }
+      }
+    });
   }
 
   await queue.onIdle();
+  console.log("Migration complete");
 }
 
 main().catch((err) => {

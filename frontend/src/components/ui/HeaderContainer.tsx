@@ -4,7 +4,17 @@ type HeaderProps = {
 
 export default function HeaderContainer({ children }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 shadow-lg shadow-stone-950/30 backdrop-blur-sm overflow-hidden border-b border-stone-800 sm:h-[var(--header-height-sm)] md:h-[var(--header-height-md)] lg:h-[var(--header-height-lg)] w-full px-2 h-[8rem]">
+    <header
+      className="
+        fixed top-0 left-0 w-full z-40
+        shadow-lg shadow-stone-950/30
+        backdrop-blur-sm overflow-hidden border-b border-stone-800
+        h-[8rem]
+        sm:h-[var(--header-height-sm)]
+        md:h-[var(--header-height-md)]
+        lg:h-[var(--header-height-lg)]
+      "
+    >
       <img
         src="/bg-home.webp"
         alt="Era background"

@@ -2,10 +2,13 @@ import { api } from "./api";
 
 export async function graphqlRequest<T, V = Record<string, never>>(
   query: string,
-  variables?: V
+  variables?: V,
+  apiOrigin?: string
 ): Promise<T> {
   try {
-    const res = await api.post("", { query, variables });
+    const url = apiOrigin ? `${apiOrigin}/graphql` : "";
+
+    const res = await api.post(url, { query, variables });
 
     if (res.data?.errors?.length) {
       throw new Error(res.data.errors[0].message);

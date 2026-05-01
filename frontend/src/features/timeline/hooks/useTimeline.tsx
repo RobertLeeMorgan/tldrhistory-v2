@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import type { Post, TimelineQueryVariables } from "../../../generated/graphql";
 import { useAuth } from "../../../context/AuthContext";
@@ -14,7 +14,7 @@ const EMPTY_POSTS: Post[] = [];
 
 export default function useTimeline({ filter }: UseTimelineOptions = {}) {
   const { isAuth } = useAuth();
-  const viewerKey = isAuth.id ?? "anonymous";
+   const viewerKey = isAuth.id != null ? String(isAuth.id) : "anonymous";
 
   const { initialData } = useLoaderData() as Awaited<
     ReturnType<typeof timelineLoader>
@@ -25,39 +25,41 @@ export default function useTimeline({ filter }: UseTimelineOptions = {}) {
       filter,
       viewerKey,
     }),
-    initialData:
-      viewerKey === "anonymous" && initialData
-        ? {
-            pages: [initialData],
-            pageParams: [],
-          }
-        : undefined,
-    placeholderData: (previousData, previousQuery) => {
-      const previousKey = previousQuery?.queryKey as
-        | readonly [
-            string,
-            string,
-            TimelineQueryVariables["filter"] | null,
-            string,
-          ]
-        | undefined;
+initialData:
+  viewerKey === "anonymous" && initialData
+    ? {
+        pages: [initialData],
+        pageParams: [null],
+      }
+    : undefined,
+    placeholderData: keepPreviousData
+    // (previousData, previousQuery) => {
+    //   const previousKey = previousQuery?.queryKey as
+    //     | readonly [
+    //         string,
+    //         string,
+    //         TimelineQueryVariables["filter"] | null,
+    //         string,
+    //       ]
+    //     | undefined;
 
-      const previousFilter = previousKey?.[2] ?? null;
-      const previousViewerKey = previousKey?.[3];
-      const currentFilter = filter ?? null;
+    //   const previousFilter = previousKey?.[2] ?? null;
+    //   const previousViewerKey = previousKey?.[3];
+    //   const currentFilter = filter ?? null;
 
-      const isSameFilter =
-        JSON.stringify(previousFilter) === JSON.stringify(currentFilter);
+    //   const isSameFilter =
+    //     JSON.stringify(previousFilter) === JSON.stringify(currentFilter);
 
-      const isViewerTransition =
-        previousViewerKey === "anonymous" && viewerKey !== "anonymous";
+    //   const isViewerTransition =
+    //     previousViewerKey === "anonymous" && viewerKey !== "anonymous";
 
-      const isSameViewer = previousViewerKey === viewerKey;
+    //   const isSameViewer = previousViewerKey === viewerKey;
 
-      return isSameFilter && (isSameViewer || isViewerTransition)
-        ? previousData
-        : undefined;
-    },
+    //   return isSameFilter && (isSameViewer || isViewerTransition)
+    //     ? previousData
+    //     : undefined;
+    // }
+    ,
     staleTime: 30_000,
     refetchOnMount: viewerKey === "anonymous" ? false : "always",
   });

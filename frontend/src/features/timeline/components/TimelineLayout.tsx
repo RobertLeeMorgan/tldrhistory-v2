@@ -15,22 +15,37 @@ export default function TimelineLayout() {
   return (
     <>
       <TimelineHeader filter={filter} />
+      <TimelineStats filter={filter} />
 
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-[2fr_1fr] w-full bg-base">
-        <div className="flex flex-col relative">
-          <div className="p-4 sm:p-6">
-            <Outlet />
-          </div>
+      <main
+        className="
+          relative z-10
+          pt-[8rem]
+          sm:pt-[var(--header-height-sm)]
+          md:pt-[var(--header-height-md)]
+          lg:pt-[var(--header-height-lg)]
 
-          <div className="flex fixed z-40 right-0 top-1/2 -translate-y-1/10 sm:translate-y-0 sm:right-auto sm:top-auto sm:left-1/2 sm:-translate-x-1/2 sm:bottom-4">
-            <Suspense fallback={null}>
-              <UtilityMenu onOpenDrawer={() => setDrawerOpen(true)} />
-            </Suspense>
-          </div>
+          pb-32
+          sm:pb-6
+
+          sm:pr-[min(34vw,420px)]
+          md:pr-[min(32vw,440px)]
+          lg:pr-[min(30vw,460px)]
+        "
+      >
+        <div className="fixed inset-0 z-0 bg-base" />
+        <div className="relative z-10 p-4 sm:p-6">
+          <Outlet />
         </div>
 
-        <TimelineStats filter={filter} />
-      </div>
+        <div className="fixed z-40 right-1 bottom-[calc(7rem+env(safe-area-inset-bottom))] sm:right-auto sm:top-auto sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2">
+          <Suspense fallback={null}>
+            <AnimatePresence>
+              <UtilityMenu onOpenDrawer={() => setDrawerOpen(true)} />
+            </AnimatePresence>
+          </Suspense>
+        </div>
+      </main>
 
       <Suspense fallback={null}>
         <AnimatePresence>

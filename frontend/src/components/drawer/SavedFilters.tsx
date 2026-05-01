@@ -17,6 +17,8 @@ import { filterToSearchParams } from "../../features/filter/components/timelineF
 import { getGroupSlugFromId } from "../../utils/groupLookup";
 import { useEra } from "../../context/EraContext";
 import { parseView } from "../../utils/rangeViews";
+import { useAuth } from "../../context/AuthContext";
+import Button from "../ui/Button";
 
 type SavedFilter = SavedFiltersQuery["savedFilters"][number];
 
@@ -49,6 +51,7 @@ function isActiveSavedFilter(
 }
 
 export default function SavedFilters() {
+  const { isAuth } = useAuth();
   const { filter } = useTimelineFilter();
   const { view, setView } = useEra();
   const navigate = useNavigate();
@@ -183,6 +186,30 @@ export default function SavedFilters() {
 
   if (!savedFilters.length && !canCreate && !isCreating) {
     return null;
+  }
+
+  if (!isAuth.token) {
+    return (
+      <DrawerCollapse title="Saved Filters" count={0}>
+        <div className="p-4 text-center space-y-2">
+          <p className="text-sm text-stone-400">
+            Log in to save and manage your custom filters
+          </p>
+          <Button
+            primary
+            label="Log in"
+            onClick={() =>
+              navigate("/login", {
+                state: {
+                  from: `${location.pathname}${location.search}`,
+                },
+              })
+            }
+            loading="Redirecting..."
+          />
+        </div>
+      </DrawerCollapse>
+    );
   }
 
   return (

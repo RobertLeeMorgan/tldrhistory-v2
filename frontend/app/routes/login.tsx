@@ -79,61 +79,65 @@ export default function Login() {
 
   return (
     <PageContainer>
-      <div className="card border border-stone-900/70 bg-gradient-to-br from-stone-800 to-stone-900 w-full max-w-sm shadow-stone-950/40 shadow-xl text-center">
-        <form className="card-body" onSubmit={handleLogin}>
-          <h1 className="text-4xl font-serif font-semibold tracking-wide text-stone-200 pb-2">
-            Welcome Back!
-          </h1>
+      <div className="p-4">
+        <div className="card border border-stone-900/70 bg-gradient-to-br from-stone-800 to-stone-900 w-full max-w-sm shadow-stone-950/40 shadow-xl text-center">
+          <form className="card-body" onSubmit={handleLogin}>
+            <h1 className="text-4xl font-serif font-semibold tracking-wide text-stone-200 pb-2">
+              Welcome Back!
+            </h1>
 
-          <p className="hidden sm:block pb-6 text-stone-300/90 lg:text-lg">
-            Login to continue.
-          </p>
-          <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600 w-full">
-            <input
-              name="email"
-              type="email"
-              className="text-stone-200 caret-stone-200"
-              placeholder="mail@site.com"
-              aria-label="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              autoComplete="on"
+            <p className="hidden sm:block pb-6 text-stone-300/90 lg:text-lg">
+              Login to continue.
+            </p>
+            <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600 w-full">
+              <input
+                name="email"
+                type="email"
+                className="text-stone-200 caret-stone-200"
+                placeholder="mail@site.com"
+                aria-label="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                autoComplete="on"
+              />
+            </label>
+            {errors.email && (
+              <p className="text-error text-xs">{errors.email}</p>
+            )}
+
+            <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600 w-full">
+              <input
+                name="password"
+                type="password"
+                className="text-stone-200 caret-stone-200"
+                aria-label="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+              />
+            </label>
+            {errors.password && (
+              <p className="text-error text-xs">{errors.password}</p>
+            )}
+
+            <div className="mb-4 text-right">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-gold underline underline-offset-2"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <Button
+              isLoading={mutation.isPending}
+              primary
+              label="Login"
+              type="submit"
+              loading="Logging In..."
             />
-          </label>
-          {errors.email && <p className="text-error text-xs">{errors.email}</p>}
-
-          <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600 w-full">
-            <input
-              name="password"
-              type="password"
-              className="text-stone-200 caret-stone-200"
-              aria-label="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-            />
-          </label>
-          {errors.password && (
-            <p className="text-error text-xs">{errors.password}</p>
-          )}
-
-          <div className="mb-4 text-right">
-            <Link
-              to="/forgot-password"
-              className="text-sm text-gold underline underline-offset-2"
-            >
-              Forgot password?
-            </Link>
-          </div>
-
-          <Button
-            isLoading={mutation.isPending}
-            primary
-            label="Login"
-            type="submit"
-            loading="Logging In..."
-          />
-        </form>
+          </form>
+        </div>
       </div>
     </PageContainer>
   );

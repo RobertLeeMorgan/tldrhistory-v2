@@ -63,7 +63,7 @@ app.use(
           "https://cdn.tldrhistory.xyz",
           "https://upload.wikimedia.org",
         ],
-     scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
       },
     },
@@ -138,12 +138,12 @@ const server = new ApolloServer({
 
   app.use(express.static(clientBuildPath, { maxAge: "1h" }));
 
-app.all(
-  "/{*splat}",
-  createRequestHandler({
-    build: serverBuild,
-  }),
-);
+  app.all(
+    "/{*splat}",
+    createRequestHandler({
+      build: serverBuild,
+    }),
+  );
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.statusCode || 500;

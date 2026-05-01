@@ -10,6 +10,10 @@ import type {
   UserStatsQueryVariables,
 } from "../../../generated/graphql";
 
+type UserStatsQueryOptionsArgs = UserStatsQueryVariables & {
+  apiOrigin?: string;
+};
+
 export function useUserPostsQuery(
   variables: UserPostsQueryVariables,
   options?: Omit<UseQueryOptions<UserPostsQuery>, "queryKey" | "queryFn">
@@ -38,13 +42,17 @@ export function useUserLikesQuery(
   });
 }
 
-export function getUserStatsQueryOptions(variables: UserStatsQueryVariables) {
+export function getUserStatsQueryOptions({
+  apiOrigin,
+  ...variables
+}: UserStatsQueryOptionsArgs) {
   return queryOptions({
     queryKey: ["userStats", variables.userId],
     queryFn: () =>
       graphqlRequest<UserStatsQuery, UserStatsQueryVariables>(
         USER_STATS,
-        variables
+        variables,
+        apiOrigin
       ),
     staleTime: 1000 * 60 * 30,
   });

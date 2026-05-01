@@ -10,15 +10,17 @@ import {
 } from "../../src/features/user/hooks/useUser";
 import { queryClient } from "../../src/lib/queryClient";
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   const userId = Number(params.id);
 
   if (!Number.isFinite(userId) || userId <= 0) {
     throw new Response("Invalid user id", { status: 404 });
   }
 
+  const apiOrigin = new URL(request.url).origin;
+
   const data = await queryClient.ensureQueryData(
-    getUserStatsQueryOptions({ userId })
+    getUserStatsQueryOptions({ userId, apiOrigin })
   );
 
   return { userStats: data?.userStats };

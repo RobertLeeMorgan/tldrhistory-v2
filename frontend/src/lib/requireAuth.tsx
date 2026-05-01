@@ -1,10 +1,9 @@
-import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import PageContainer from "../components/ui/PageContainer";
 
 type RequireAuthProps = {
-  children: ReactNode;
+  children: React.ReactNode;
   requireRole?: Array<"ADMIN" | "MODERATOR" | "USER">;
   requireVerified?: boolean;
 };

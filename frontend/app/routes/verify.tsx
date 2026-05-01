@@ -11,6 +11,7 @@ import { useToast } from "../../src/context/ToastContext";
 import type { Route } from "./+types/verify";
 import { buildMeta } from "../../src/lib/seo";
 import { useAuth } from "../../src/context/AuthContext";
+import { refreshAndApplySession } from "../../src/lib/authSession";
 
 type ViewState = "prompt" | "verifying" | "success" | "invalid";
 
@@ -45,12 +46,12 @@ export default function VerifyEmail() {
   const [view, setView] = useState<ViewState>(token ? "verifying" : "prompt");
   const [message, setMessage] = useState("");
 
-useEffect(() => {
-  if (!token && isAuth.token && isAuth.emailVerifiedAt) {
-    setView("success");
-    setMessage("Your email is already verified.");
-  }
-}, [token, isAuth.token, isAuth.emailVerifiedAt]);
+  useEffect(() => {
+    if (!token && isAuth.token && isAuth.emailVerifiedAt) {
+      setView("success");
+      setMessage("Your email is already verified.");
+    }
+  }, [token, isAuth.token, isAuth.emailVerifiedAt]);
 
   useEffect(() => {
     return () => {
@@ -76,8 +77,10 @@ useEffect(() => {
     verifyMutation.mutate(
       { token },
       {
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
           if (data.verifyEmail.success) {
+            await refreshAndApplySession();
+
             setView("success");
             setMessage("Your email has been verified successfully.");
 
@@ -217,7 +220,7 @@ useEffect(() => {
                   />
                   <Button
                     label="Go back"
-                    onClick={() => navigate(from, { replace: true })}
+                    onClick={() => navigate("/timeline")}
                   />
                 </div>
               </div>
@@ -257,7 +260,7 @@ useEffect(() => {
                   />
                   <Button
                     label="Go back"
-                    onClick={() => navigate(from, { replace: true })}
+                    onClick={() => navigate("/timeline")}
                   />
                 </div>
               </div>

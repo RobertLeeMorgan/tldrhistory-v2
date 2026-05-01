@@ -39,7 +39,7 @@ router.post("/refresh", async (req, res) => {
 
       const user = await tx.user.findUnique({
         where: { id: decoded.id },
-        select: { id: true, email: true, username: true, role: true },
+        select: { id: true, email: true, username: true, role: true, emailVerifiedAt: true, },
       });
 
       if (!user) {

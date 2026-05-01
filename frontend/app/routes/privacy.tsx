@@ -19,7 +19,7 @@ export default function Privacy() {
         <h1 className="text-4xl font-serif font-semibold tracking-wide text-stone-200/86 text-shadow-sm mb-8 sm:mb-12 text-center">
           Privacy Policy
         </h1>
-        <div className="mx-auto flex max-w-2xl flex-col gap-4 rounded-xl border border-stone-900 bg-gradient-to-br from-stone-800 via-stone-900 to-stone-950 p-4 shadow-xl shadow-stone-950/40 sm:gap-5 sm:p-6">
+       <div className="mx-auto flex max-w-2xl flex-col gap-4 rounded-xl border border-stone-900 bg-gradient-to-br from-stone-800 via-stone-900 to-stone-950 p-4 shadow-xl shadow-stone-950/40 sm:gap-5 sm:p-6">
           <div className="space-y-5 text-sm leading-7 text-stone-300 sm:text-base sm:leading-8">
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-stone-400 sm:text-sm">
               Last updated April 11, 2026
@@ -1024,48 +1024,48 @@ export default function Privacy() {
               </p>
 
               <div className="overflow-x-auto rounded-2xl border border-stone-800 bg-stone-950/40">
-                <table className="min-w-full border-collapse text-left">
+                <table className="w-full border-collapse text-left">
                   <thead className="border-b border-stone-800 bg-stone-900/50">
                     <tr>
-                      <th className="px-4 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-stone-400 sm:px-6">
+                      <th className="px-2 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-stone-400 sm:px-6">
                         Category
                       </th>
-                      <th className="px-4 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-stone-400 sm:px-6">
+                      <th className="px-2 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-stone-400 sm:px-6">
                         Examples
                       </th>
-                      <th className="px-4 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-stone-400 sm:px-6">
+                      <th className="px-2 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-stone-400 sm:px-6">
                         Collected
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-stone-800">
+                  <tbody className="divide-y divide-stone-800 text-sm sm:text-base leading-6 sm:leading-8">
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         A. Identifiers
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Contact details, such as real name, alias, postal
                         address, telephone or mobile contact number, unique
                         personal identifier, online identifier, Internet
                         Protocol address, email address, and account name
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
-                        <span className="inline-flex rounded-full border border-gold bg-gold-hover px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stoene-200">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
+                        <span className="inline-flex rounded-full border border-gold bg-gold-hover px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-200">
                           YES
                         </span>
                       </td>
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         B. Personal information as defined in the California
                         Customer Records statute
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Name, contact information, education, employment,
                         employment history, and financial information
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>
@@ -1073,15 +1073,15 @@ export default function Privacy() {
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         C. Protected classification characteristics under state
                         or federal law
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Gender, age, date of birth, race and ethnicity, national
                         origin, marital status, and other demographic data
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>
@@ -1089,14 +1089,14 @@ export default function Privacy() {
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         D. Commercial information
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Transaction information, purchase history, financial
                         details, and payment information
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>
@@ -1104,13 +1104,13 @@ export default function Privacy() {
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         E. Biometric information
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Fingerprints and voiceprints
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>
@@ -1118,15 +1118,15 @@ export default function Privacy() {
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         F. Internet or other similar network activity
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Browsing history, search history, online behaviour,
                         interest data, and interactions with our and other
                         websites, applications, systems, and advertisements
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>
@@ -1134,13 +1134,13 @@ export default function Privacy() {
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         G. Geolocation data
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Device location
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>
@@ -1148,14 +1148,14 @@ export default function Privacy() {
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         H. Audio, electronic, sensory, or similar information
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Images and audio, video or call recordings created in
                         connection with our business activities
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>
@@ -1163,16 +1163,16 @@ export default function Privacy() {
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         I. Professional or employment-related information
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Business contact details in order to provide you our
                         Services at a business level or job title, work history,
                         and professional qualifications if you apply for a job
                         with us
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>
@@ -1180,13 +1180,13 @@ export default function Privacy() {
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         J. Education Information
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Student records and directory information
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>
@@ -1194,16 +1194,16 @@ export default function Privacy() {
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         K. Inferences drawn from collected personal information
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">
                         Inferences drawn from any of the collected personal
                         information listed above to create a profile or summary
                         about, for example, an individual’s preferences and
                         characteristics
                       </td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>
@@ -1211,11 +1211,11 @@ export default function Privacy() {
                     </tr>
 
                     <tr className="align-top">
-                      <td className="px-4 py-5 font-semibold text-stone-200 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 font-semibold text-stone-200 sm:px-6">
                         L. Sensitive personal information
                       </td>
-                      <td className="px-4 py-5 text-stone-300 sm:px-6">None</td>
-                      <td className="px-4 py-5 sm:px-6">
+                      <td className="px-2 sm:py-5 py-4 text-stone-300 sm:px-6">None</td>
+                      <td className="px-2 sm:py-5 py-4 sm:px-6">
                         <span className="inline-flex rounded-full border border-stone-700 bg-stone-800/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-300">
                           NO
                         </span>

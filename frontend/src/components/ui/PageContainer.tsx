@@ -7,7 +7,12 @@ type PageProps = {
 export default function PageContainer({ children }: PageProps) {
   return (
     <motion.div
-      className="flex flex-col min-h-screen items-center justify-center overflow-hidden"
+      className="
+        flex flex-col
+        min-h-[100dvh] sm:min-h-screen
+        items-center justify-center
+        overflow-x-hidden
+      "
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}

@@ -71,7 +71,7 @@ export default function UtilityMenu({ onOpenDrawer }: UtilityMenuProps) {
     transition: { type: "spring", stiffness: 300, damping: 20 },
   };
 
- async function handleShare() {
+  async function handleShare() {
     const params = filterToSearchParams(filter, new URLSearchParams());
 
     if (view !== "global") {
@@ -115,6 +115,9 @@ export default function UtilityMenu({ onOpenDrawer }: UtilityMenuProps) {
   return (
     <motion.div
       ref={menuRef}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       layout
       className="flex flex-col mx-1 gap-2 py-2 sm:flex-row sm:mx-0 sm:gap-6 sm:px-4 sm:py-0 bg-gradient-to-br from-stone-800/90 to-stone-900/90 backdrop-blur-lg border border-stone-900 rounded-3xl"
     >
@@ -214,7 +217,7 @@ export default function UtilityMenu({ onOpenDrawer }: UtilityMenuProps) {
             className="rounded-xl hover:bg-stone-700 p-2 cursor-pointer text-gold"
             type="button"
             onClick={() => {
-              setView("global")
+              setView("global");
               resetFilter({ replace: true });
               setSearchInput("");
             }}

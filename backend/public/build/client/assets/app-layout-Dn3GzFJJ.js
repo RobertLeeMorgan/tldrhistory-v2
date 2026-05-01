@@ -1,0 +1,1 @@
+import{w as t,x as p,p as r,O as a}from"./chunk-OE4NN4TA-D45wUbcD.js";import{E as n}from"./Error-P4ch0YjD.js";import"./Button-DKCewfr6.js";import"./PageContainer-BuDiT2Z2.js";import"./proxy-DZXW7wcI.js";const x=t(function(){return r.jsx(a,{})}),E=p(function(){return r.jsx(n,{})});export{E as ErrorBoundary,x as default};

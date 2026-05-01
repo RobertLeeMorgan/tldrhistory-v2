@@ -146,7 +146,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
               itemKey={(post) => post.id}
               columnGutter={24}
               columnWidth={350}
-              itemHeightEstimate={420}
+              itemHeightEstimate={400}
               onRender={maybeLoadMore}
               render={renderMasonryCard}
             />

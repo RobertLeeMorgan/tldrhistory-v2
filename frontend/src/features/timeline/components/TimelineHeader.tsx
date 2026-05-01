@@ -43,46 +43,46 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
     <HeaderContainer>
       <div className="relative z-10 h-full flex flex-col justify-center text-center">
         {sortedYears && (
-        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-  <div className="flex items-baseline justify-center min-w-[10rem]">
-    <div className="flex items-baseline gap-2 tabular-nums">
-      <div className="flex items-baseline gap-1 min-w-[5.8rem] justify-end">
-        <motion.span className="text-sm sm:text-base md:text-lg lg:text-xl leading-none tracking-tight text-stone-200/90 [font-variant-numeric:tabular-nums]">
-          {useCountAnimation(Math.abs(firstYear))}
-        </motion.span>
-        <span className="text-xs sm:text-sm md:text-md text-stone-300/70">
-          {formatYear(firstYear)}
-        </span>
-      </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+            <div className="flex items-baseline justify-center min-w-[8rem] sm:min-w-[9rem] md:min-w-[10rem] ">
+              <div className="flex items-baseline gap-2 tabular-nums">
+                <div className="flex items-baseline gap-1 min-w-[4.5rem] sm:min-w-[5rem] md:min-w-[5.8rem] justify-end">
+                  <motion.span className="text-sm sm:text-base md:text-lg lg:text-xl leading-none tracking-tight text-stone-200/90 [font-variant-numeric:tabular-nums]">
+                    {useCountAnimation(Math.abs(firstYear))}
+                  </motion.span>
+                  <span className="text-xs sm:text-sm md:text-md text-stone-300/70">
+                    {formatYear(firstYear)}
+                  </span>
+                </div>
 
-      <span className="text-xs sm:text-sm md:text-lg text-stone-300/70">
-        to
-      </span>
+                <span className="text-xs sm:text-sm md:text-lg text-stone-300/70">
+                  to
+                </span>
 
-      <div className="flex items-baseline gap-1 min-w-[5rem] justify-start">
-        <motion.span className="text-sm sm:text-base md:text-lg lg:text-xl leading-none tracking-tight text-stone-200/90 [font-variant-numeric:tabular-nums]">
-          {useCountAnimation(Math.abs(secondYear))}
-        </motion.span>
-        <span className="text-xs sm:text-sm md:text-md text-stone-300/70">
-          {formatYear(secondYear)}
-        </span>
-      </div>
-    </div>
-  </div>
+                <div className="flex items-baseline gap-1 min-w-[4rem] sm:min-w-[4.5rem] md:min-w-[5rem] justify-start">
+                  <motion.span className="text-sm sm:text-base md:text-lg lg:text-xl leading-none tracking-tight text-stone-200/90 [font-variant-numeric:tabular-nums]">
+                    {useCountAnimation(Math.abs(secondYear))}
+                  </motion.span>
+                  <span className="text-xs sm:text-sm md:text-md text-stone-300/70">
+                    {formatYear(secondYear)}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-  <select
-    id="timeline-view"
-    value={view}
-    onChange={(e) => setView(e.target.value as typeof view)}
-    className="select select-ghost select-sm w-32 shrink-0 text-xs sm:text-sm md:text-base text-stone-300 border border-stone-500/20 hover:bg-stone-900 rounded"
-  >
-    {VIEW_OPTIONS.map((option) => (
-      <option key={option.value} value={option.value}>
-        {option.label}
-      </option>
-    ))}
-  </select>
-</div>
+            <select
+              id="timeline-view"
+              value={view}
+              onChange={(e) => setView(e.target.value as typeof view)}
+              className="select select-ghost select-sm w-26 sm:w-32 shrink-0 text-xs sm:text-sm md:text-base text-stone-300 border border-stone-500/20 hover:bg-stone-900 rounded"
+            >
+              {VIEW_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
         )}
 
         <h1 className="font-serif text-xl xs:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-wide uppercase text-stone-100 text-shadow-lg">

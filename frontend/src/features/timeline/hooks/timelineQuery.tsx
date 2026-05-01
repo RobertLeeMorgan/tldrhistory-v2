@@ -29,6 +29,7 @@ export function timelineInfiniteQueryOptions(args: {
       >(TIMELINE_QUERY, {
         cursor: pageParam ?? undefined,
         filter,
+        viewerId: String(viewerKey),
       });
 
       if (!data?.timeline) {
