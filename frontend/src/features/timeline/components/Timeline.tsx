@@ -64,6 +64,22 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
     new Map<string, React.RefObject<HTMLDivElement | null>>(),
   );
 
+  useEffect(() => {
+    const validIds = new Set(safePosts.map((p) => p.id));
+
+    const staleIds: string[] = [];
+
+    for (const id of postRefs.current.keys()) {
+      if (!validIds.has(id)) {
+        staleIds.push(id);
+      }
+    }
+
+    for (const id of staleIds) {
+      postRefs.current.delete(id);
+    }
+  }, [safePosts]);
+
   const getPostRef = useCallback((id: string) => {
     let ref = postRefs.current.get(id);
     if (!ref) {
@@ -147,6 +163,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
               columnGutter={24}
               columnWidth={350}
               itemHeightEstimate={400}
+              maxColumnCount={2}
               onRender={maybeLoadMore}
               render={renderMasonryCard}
             />

@@ -109,32 +109,6 @@ const timeSlices = [
     to: "/timeline?ys=-550&ye=-400",
   },
   {
-    title: "Collapse Everywhere",
-    years: "around 1350",
-    blurb: "A global systemic shock, not just one region collapsing.",
-    detail:
-      "Black Death devastation, Mongol fragmentation, Yuan instability, and trade-network shock.",
-    to: "/timeline?ys=1340&ye=1399",
-  },
-  {
-    title: "Birth of the Modern World",
-    years: "1800–1820",
-    blurb:
-      "Modern politics, industry, and nationalism ignite while some regions remain more static.",
-    detail:
-      "French Revolution aftermath, Napoleonic Wars, Industrial Revolution acceleration, Latin American independence movements, and Tokugawa Japan still isolated.",
-    to: "/timeline?ys=1800&ye=1820",
-  },
-  {
-    title: "Total Global Crisis",
-    years: "1917–1920",
-    blurb:
-      "War, revolution, pandemic, and geopolitical reset in one tight window.",
-    detail:
-      "World War I ending, Russian Revolution, Spanish flu, and collapsing empires.",
-    to: "/timeline?ys=1917&ye=1920",
-  },
-  {
     title: "Parallel Superpowers",
     years: "70–220 CE",
     blurb:
@@ -190,7 +164,7 @@ const startHere = [
 export default function HomeRoute() {
   return (
     <PageContainer>
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
+      <section className="px-4 pt-20 pb-8 sm:px-6 lg:px-8">
         <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,1.2fr)_380px] lg:items-start">
           <div className="max-w-3xl rounded-3xl border border-stone-100/10 bg-stone-950/80 p-6 shadow-2xl shadow-black/30 backdrop-blur-md sm:p-8 lg:p-10">
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-gold">
@@ -291,7 +265,7 @@ export default function HomeRoute() {
       </section>
 
       <section className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
           <div className="rounded-3xl border border-stone-100/10 bg-stone-950/80 p-6 backdrop-blur-md sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold">
               Why this is different

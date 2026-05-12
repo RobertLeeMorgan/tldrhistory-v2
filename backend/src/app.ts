@@ -22,8 +22,8 @@ import authRoutes from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
 import crypto from "crypto";
 
-// import dotenv from "dotenv";
-// dotenv.config();
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 
