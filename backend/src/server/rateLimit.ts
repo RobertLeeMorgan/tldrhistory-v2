@@ -34,7 +34,6 @@ export const graphqlAuthLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => !isAuthMutation(req.body?.query),
-  keyGenerator: (req) => req.ip || "unknown",
   message: {
     errors: [
       {
@@ -42,5 +41,16 @@ export const graphqlAuthLimiter = rateLimit({
         extensions: { code: "RATE_LIMITED" },
       },
     ],
+  },
+});
+
+export const authApiLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: "Too many authentication requests. Please try again later.",
+    code: "RATE_LIMITED",
   },
 });

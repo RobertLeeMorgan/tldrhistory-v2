@@ -1,0 +1,117 @@
+name: Validate and deploy staging
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tldr-history-staging
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Build frontend image
+        run: docker build --pull -f frontend/Dockerfile -t tldr-history-frontend:ci ./frontend
+      - name: Build backend image
+        run: docker build --pull -f backend/Dockerfile -t tldr-history-backend:ci ./backend
+
+  publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      frontend_digest: ${{ steps.digests.outputs.frontend_digest }}
+      backend_digest: ${{ steps.digests.outputs.backend_digest }}
+      frontend_image: ${{ steps.names.outputs.frontend_image }}
+      backend_image: ${{ steps.names.outputs.backend_image }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Set image names
+        id: names
+        shell: bash
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          repository="${GITHUB_REPOSITORY#*/}"
+          repository="${repository,,}"
+          echo "frontend_image=ghcr.io/$owner/$repository-frontend" >> "$GITHUB_OUTPUT"
+          echo "backend_image=ghcr.io/$owner/$repository-backend" >> "$GITHUB_OUTPUT"
+      - name: Sign in to GHCR with workflow token
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      - name: Build and publish frontend image
+        env:
+          IMAGE: ${{ steps.names.outputs.frontend_image }}
+        run: |
+          docker buildx build --pull --platform linux/amd64 \
+            --tag "$IMAGE:$GITHUB_SHA" --push \
+            --metadata-file "$RUNNER_TEMP/frontend-metadata.json" ./frontend
+      - name: Build and publish backend image
+        env:
+          IMAGE: ${{ steps.names.outputs.backend_image }}
+        run: |
+          docker buildx build --pull --platform linux/amd64 \
+            --tag "$IMAGE:$GITHUB_SHA" --push \
+            --metadata-file "$RUNNER_TEMP/backend-metadata.json" ./backend
+      - name: Capture immutable image digests
+        id: digests
+        shell: bash
+        run: |
+          frontend="$(jq -er '.["containerimage.digest"]' "$RUNNER_TEMP/frontend-metadata.json")"
+          backend="$(jq -er '.["containerimage.digest"]' "$RUNNER_TEMP/backend-metadata.json")"
+          [[ "$frontend" =~ ^sha256:[0-9a-f]{64}$ ]]
+          [[ "$backend" =~ ^sha256:[0-9a-f]{64}$ ]]
+          echo "frontend_digest=$frontend" >> "$GITHUB_OUTPUT"
+          echo "backend_digest=$backend" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: publish
+    runs-on: ubuntu-24.04
+    environment: staging
+    steps:
+      - name: Prepare restricted SSH access
+        env:
+          DEPLOY_KEY: ${{ secrets.STAGING_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.STAGING_KNOWN_HOSTS }}
+        shell: bash
+        run: |
+          install -m 700 -d "$RUNNER_TEMP/tldr-deploy"
+          printf '%s\n' "$DEPLOY_KEY" > "$RUNNER_TEMP/tldr-deploy/id_ed25519"
+          chmod 600 "$RUNNER_TEMP/tldr-deploy/id_ed25519"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/tldr-deploy/known_hosts"
+          chmod 600 "$RUNNER_TEMP/tldr-deploy/known_hosts"
+      - name: Deploy approved image digests
+        env:
+          DEPLOY_HOST: ${{ secrets.STAGING_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.STAGING_DEPLOY_USER }}
+          FRONTEND_DIGEST: ${{ needs.publish.outputs.frontend_digest }}
+          BACKEND_DIGEST: ${{ needs.publish.outputs.backend_digest }}
+        shell: bash
+        run: |
+          [[ "$FRONTEND_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          [[ "$BACKEND_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          ssh -i "$RUNNER_TEMP/tldr-deploy/id_ed25519" \
+            -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$RUNNER_TEMP/tldr-deploy/known_hosts" \
+            -o ConnectTimeout=15 "$DEPLOY_USER@$DEPLOY_HOST" \
+            "deploy $FRONTEND_DIGEST $BACKEND_DIGEST"
+      - name: Verify uncached staging readiness
+        env:
+          STAGING_URL: ${{ vars.STAGING_URL }}
+        shell: bash
+        run: |
+          response="$(curl --fail --silent --show-error --retry 12 --retry-connrefused \
+            --retry-delay 5 --retry-all-errors --max-time 20 \
+            "$STAGING_URL/health/ready?release=$GITHUB_SHA")"
+          [[ "$response" == "tldr-history-ready" ]]

@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+node_modules
+build
+.react-router
+*.tsbuildinfo
+Dockerfile*
+docker-compose*
+.git
+.github
+2026-10-08T16_38Z.dir.tar.gz

@@ -196,6 +196,12 @@ PostgreSQL hosted on Render
 
 Designed with free-tier cold starts and rate limits in mind
 
+## VPS staging deployment
+
+The VPS path builds independent frontend and backend images from `frontend/Dockerfile` and `backend/Dockerfile`. The frontend serves React Router SSR and same-origin browser API calls; Caddy routes `/graphql`, `/api`, and `/health` to the backend. Render remains on the combined behavior unless `SERVE_FRONTEND=false` is explicitly set.
+
+The protected-main workflow publishes immutable GHCR digests and calls the restricted VPS deployment command. It does not run database migrations. See [the staging deployment handoff](docs/vps-staging.md) for required runtime configuration, infrastructure onboarding, data sanitization, restore checks and outstanding access/DNS requirements.
+
 ---
 
 ## 👤 Author

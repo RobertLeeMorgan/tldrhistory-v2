@@ -1,0 +1,11 @@
+.git
+.github
+2026-10-08T16_38Z.dir.tar.gz
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+**/dist
+**/build
+**/.react-router
+**/*.tsbuildinfo
