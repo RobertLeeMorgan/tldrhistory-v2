@@ -1,6 +1,14 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+const emailDeliveryMode = process.env.EMAIL_DELIVERY_MODE ?? 'resend';
+
+if (!['resend', 'disabled'].includes(emailDeliveryMode)) {
+  throw new Error('EMAIL_DELIVERY_MODE must be resend or disabled');
+}
+
+const resend = emailDeliveryMode === 'resend'
+  ? new Resend(process.env.RESEND_API_KEY!)
+  : null;
 
 const EMAIL_VERIFICATION_TEMPLATE_ID = 'email-verification';
 const PASSWORD_RESET_TEMPLATE_ID = 'reset-password';
@@ -14,6 +22,8 @@ export async function sendVerificationEmail({
   username: string;
   verificationUrl: string;
 }) {
+  if (!resend) return;
+
   const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString();
 
   await resend.emails.send({
@@ -38,6 +48,8 @@ export async function sendPasswordResetEmail({
   username: string;
   resetUrl: string;
 }) {
+  if (!resend) return;
+
   const expiry = new Date(Date.now() + 60 * 60 * 1000).toLocaleString();
 
   await resend.emails.send({

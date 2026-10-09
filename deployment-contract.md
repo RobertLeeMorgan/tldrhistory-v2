@@ -31,7 +31,7 @@ The restricted command accepts an application and an ordered list of digests mat
 
 The initial deployment mechanism supports any fixed number of image variables/services defined by an administrator. Routine releases cannot change networks, volumes, mounts, service commands, environment files or image repositories. No dynamic user-supplied paths or shell evaluation are allowed.
 
-Application workflows deploy from protected main only after tests/builds pass, use one concurrency group per application with `cancel-in-progress: false`, and never expose production credentials to PR jobs. Infrastructure and migrations stay manually controlled. See [CI/CD](ci-cd.md).
+Application workflows deploy from the protected default branch (`master` in this repository) only after tests/builds pass, use one concurrency group per application with `cancel-in-progress: false`, and never expose production credentials to PR jobs. Infrastructure and migrations stay manually controlled. See [CI/CD](ci-cd.md).
 
 ## TL;DR-specific pending work
 

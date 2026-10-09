@@ -3,7 +3,7 @@ name: Validate and deploy staging
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [master]
 
 permissions:
   contents: read
@@ -23,7 +23,7 @@ jobs:
         run: docker build --pull -f backend/Dockerfile -t tldr-history-backend:ci ./backend
 
   publish:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: validate
     runs-on: ubuntu-24.04
     permissions:
@@ -75,7 +75,7 @@ jobs:
           echo "backend_digest=$backend" >> "$GITHUB_OUTPUT"
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: publish
     runs-on: ubuntu-24.04
     environment: staging

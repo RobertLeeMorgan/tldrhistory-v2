@@ -9,6 +9,8 @@ import {
 } from "../../../lib/mail";
 import { assertEmailCooldown } from "../../../utils/throttle";
 
+const appOrigin = process.env.APP_ORIGIN ?? "https://tldrhistory.xyz";
+
 type AuthContext = {
   res: any;
   user?: {
@@ -94,7 +96,7 @@ export async function register(
   });
 
   const { rawToken } = await generateAuthToken(user.id, "EMAIL_VERIFICATION");
-  const verificationUrl = `https://tldrhistory.xyz/verify?token=${rawToken}`;
+  const verificationUrl = `${appOrigin}/verify?token=${rawToken}`;
 
   await sendVerificationEmail({
     to: user.email,
@@ -216,7 +218,7 @@ export async function forgotPassword(
   }
 
   const { rawToken } = await generateAuthToken(user.id, "PASSWORD_RESET");
-  const resetUrl = `https://tldrhistory.xyz/reset-password?token=${rawToken}`;
+  const resetUrl = `${appOrigin}/reset-password?token=${rawToken}`;
 
   await sendPasswordResetEmail({
     to: normalizedEmail,
@@ -323,7 +325,7 @@ export async function resendVerificationEmail(
   }
 
   const { rawToken } = await generateAuthToken(user.id, "EMAIL_VERIFICATION");
-  const verificationUrl = `https://tldrhistory.xyz/verify?token=${rawToken}`;
+  const verificationUrl = `${appOrigin}/verify?token=${rawToken}`;
 
   await sendVerificationEmail({
     to: user.email,
