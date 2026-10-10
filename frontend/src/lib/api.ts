@@ -33,6 +33,13 @@ function processQueue(error: unknown, token: string | null = null) {
 api.interceptors.request.use((config) => {
   config.headers = config.headers ?? {};
 
+  if (isServer && process.env.SSR_API_KEY) {
+    const target = new URL(config.url || "", config.baseURL);
+    if (target.origin === new URL(getGraphqlUrl()).origin) {
+      config.headers["X-TLDR-SSR-Key"] = process.env.SSR_API_KEY;
+    }
+  }
+
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   } else {
@@ -44,6 +51,7 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   async (response) => {
+    if (isServer) return response;
 
     const originalRequest = response.config as typeof response.config & {
       _retry?: boolean;

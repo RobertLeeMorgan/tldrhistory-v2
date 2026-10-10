@@ -8,6 +8,7 @@ import {
   sendPasswordResetEmail,
 } from "../../../lib/mail";
 import { assertEmailCooldown } from "../../../utils/throttle";
+import { registerSchema, passwordSchema, parseAuthInput } from "../../../validators/authSchema";
 
 const appOrigin = process.env.APP_ORIGIN ?? "https://tldrhistory.xyz";
 
@@ -52,8 +53,9 @@ export async function register(
   { email, password, username }: RegisterArgs,
   ctx: AuthContext,
 ) {
-  const normalizedEmail = email.trim().toLowerCase();
-  const normalizedUsername = username.trim();
+  const validated = parseAuthInput(registerSchema, { email, password, username });
+  const normalizedEmail = validated.email;
+  const normalizedUsername = validated.username;
 
   const existingUser = await prisma.user.findFirst({
     where: {
@@ -77,7 +79,7 @@ export async function register(
     });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 12);
+  const hashedPassword = await bcrypt.hash(validated.password, 12);
 
   const user = await prisma.user.create({
     data: {
@@ -237,6 +239,7 @@ export async function resetPassword(
   { token, password }: ResetPasswordArgs,
   ctx: AuthContext
 ) {
+  const validatedPassword = parseAuthInput(passwordSchema, password);
   const authToken = await findMatchingAuthToken(token, "PASSWORD_RESET");
 
   if (!authToken) {
@@ -245,7 +248,7 @@ export async function resetPassword(
     });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 12);
+  const hashedPassword = await bcrypt.hash(validatedPassword, 12);
 
   await prisma.$transaction([
     prisma.user.update({

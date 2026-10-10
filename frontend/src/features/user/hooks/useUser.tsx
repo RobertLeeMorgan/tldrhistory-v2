@@ -14,6 +14,10 @@ type UserStatsQueryOptionsArgs = UserStatsQueryVariables & {
   apiOrigin?: string;
 };
 
+export function fetchUserStats(variables: UserStatsQueryVariables, apiOrigin?: string) {
+  return graphqlRequest<UserStatsQuery, UserStatsQueryVariables>(USER_STATS, variables, apiOrigin);
+}
+
 export function useUserPostsQuery(
   variables: UserPostsQueryVariables,
   options?: Omit<UseQueryOptions<UserPostsQuery>, "queryKey" | "queryFn">
@@ -48,12 +52,7 @@ export function getUserStatsQueryOptions({
 }: UserStatsQueryOptionsArgs) {
   return queryOptions({
     queryKey: ["userStats", variables.userId],
-    queryFn: () =>
-      graphqlRequest<UserStatsQuery, UserStatsQueryVariables>(
-        USER_STATS,
-        variables,
-        apiOrigin
-      ),
+    queryFn: () => fetchUserStats(variables, apiOrigin),
     staleTime: 1000 * 60 * 30,
   });
 }
