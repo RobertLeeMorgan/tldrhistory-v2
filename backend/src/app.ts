@@ -22,7 +22,9 @@ import {
   authApiLimiter,
   graphqlAuthLimiter,
   graphqlGeneralLimiter,
+  graphqlSsrLimiter,
 } from "./server/rateLimit";
+import { rejectPersistedQueries, boundedOperation } from "./server/graphqlPolicy";
 import authRoutes from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
 import crypto from "crypto";
@@ -115,7 +117,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(timeoutMiddleware(15000));
 
+app.use("/graphql", rejectPersistedQueries);
 app.use("/graphql", graphqlGeneralLimiter);
+app.use("/graphql", graphqlSsrLimiter);
 app.use("/graphql", graphqlAuthLimiter);
 if (process.env.TRUST_PROXY === "1") {
   app.use("/api", authApiLimiter);
@@ -123,6 +127,8 @@ if (process.env.TRUST_PROXY === "1") {
 app.use("/api", authRoutes);
 
 const apolloServer = new ApolloServer({
+  persistedQueries: false,
+  validationRules: [boundedOperation],
   typeDefs,
   resolvers: {
     JSON: GraphQLJSON,

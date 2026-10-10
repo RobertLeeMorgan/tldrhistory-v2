@@ -6,7 +6,7 @@ export const registerSchema = z
     username: z
       .string()
       .min(3, "Username too short")
-      .max(30, "Username too long")
+      .max(20, "Username too long")
       .regex(/^[A-Za-z][A-Za-z0-9-]*$/, "Invalid username"),
     password: z
       .string()

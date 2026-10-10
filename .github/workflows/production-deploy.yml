@@ -1,0 +1,47 @@
+name: Deploy approved production release
+on:
+  workflow_dispatch:
+    inputs:
+      frontend_digest:
+        description: Approved frontend sha256 digest tested in staging
+        required: true
+      backend_digest:
+        description: Approved backend sha256 digest tested in staging
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: tldr-history-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Deploy immutable approved images
+        env:
+          DEPLOY_HOST: ${{ secrets.PRODUCTION_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.PRODUCTION_DEPLOY_USER }}
+          DEPLOY_KEY: ${{ secrets.PRODUCTION_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.PRODUCTION_KNOWN_HOSTS }}
+          FRONTEND_DIGEST: ${{ inputs.frontend_digest }}
+          BACKEND_DIGEST: ${{ inputs.backend_digest }}
+        shell: bash
+        run: |
+          [[ "$FRONTEND_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
+          [[ "$BACKEND_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
+          install -m 700 -d "$RUNNER_TEMP/deploy"
+          printf '%s\n' "$DEPLOY_KEY" > "$RUNNER_TEMP/deploy/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/deploy/known_hosts"
+          chmod 600 "$RUNNER_TEMP/deploy/"*
+          ssh -i "$RUNNER_TEMP/deploy/key" -o BatchMode=yes -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$RUNNER_TEMP/deploy/known_hosts" \
+            -o ConnectTimeout=15 "$DEPLOY_USER@$DEPLOY_HOST" "deploy $FRONTEND_DIGEST $BACKEND_DIGEST"
+      - name: Verify external readiness
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+        run: |
+          response="$(curl --proto '=https' --fail --silent --show-error --max-time 20 \
+            --retry 6 --retry-all-errors "$PRODUCTION_URL/health/ready?release=$GITHUB_RUN_ID")"
+          [[ "$response" == tldr-history-ready ]]

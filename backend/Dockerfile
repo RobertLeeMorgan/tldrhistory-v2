@@ -1,4 +1,4 @@
-FROM node:22.20.0-bookworm-slim AS build
+FROM node:22.23.3-bookworm-slim AS build
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 
@@ -9,9 +9,10 @@ RUN mkdir -p public
 COPY prisma ./prisma
 COPY tsconfig.json ./tsconfig.json
 COPY src ./src
-RUN npx prisma generate && npm run build && npm prune --omit=dev
+COPY tests ./tests
+RUN npx prisma generate && npm test && npm run build && npm prune --omit=dev
 
-FROM node:22.20.0-bookworm-slim AS runtime
+FROM node:22.23.3-bookworm-slim AS runtime
 ENV NODE_ENV=production PORT=5000 SERVE_FRONTEND=false
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*

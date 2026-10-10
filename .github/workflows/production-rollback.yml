@@ -1,0 +1,44 @@
+name: Recover or roll back production
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Confirm database compatibility before recover or rollback
+        type: choice
+        required: true
+        options: [recover, rollback]
+permissions:
+  contents: read
+concurrency:
+  group: tldr-history-production
+  cancel-in-progress: false
+jobs:
+  recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Execute restricted recovery
+        env:
+          DEPLOY_HOST: ${{ secrets.PRODUCTION_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.PRODUCTION_DEPLOY_USER }}
+          DEPLOY_KEY: ${{ secrets.PRODUCTION_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.PRODUCTION_KNOWN_HOSTS }}
+          OPERATION: ${{ inputs.operation }}
+        shell: bash
+        run: |
+          [[ "$OPERATION" == recover || "$OPERATION" == rollback ]]
+          install -m 700 -d "$RUNNER_TEMP/deploy"
+          printf '%s\n' "$DEPLOY_KEY" > "$RUNNER_TEMP/deploy/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/deploy/known_hosts"
+          chmod 600 "$RUNNER_TEMP/deploy/"*
+          ssh -i "$RUNNER_TEMP/deploy/key" -o BatchMode=yes -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$RUNNER_TEMP/deploy/known_hosts" \
+            -o ConnectTimeout=15 "$DEPLOY_USER@$DEPLOY_HOST" "$OPERATION"
+      - name: Verify external readiness
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+        run: |
+          response="$(curl --proto '=https' --fail --silent --show-error --max-time 20 \
+            --retry 6 --retry-all-errors "$PRODUCTION_URL/health/ready?recovery=$GITHUB_RUN_ID")"
+          [[ "$response" == tldr-history-ready ]]

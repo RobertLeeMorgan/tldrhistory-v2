@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "tsc -p tsconfig.json && node --test tests/security.test.cjs",
     "dev": "nodemon src/index.ts",
     "build": "tsc -b && cp -r public dist",
     "start": "node dist/index.js",
@@ -24,7 +24,6 @@
     "@aws-sdk/client-s3": "^3.1020.0",
     "@prisma/client": "^6.19.0",
     "@react-router/express": "^7.18.4",
-    "react-router": "7.18.4",
     "@tanstack/react-query": "^5.100.5",
     "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
@@ -55,8 +54,9 @@
     "prisma": "^6.19.0",
     "react-dom": "^19.2.5",
     "react-icons": "^5.6.0",
+    "react-router": "7.18.4",
     "resend": "^6.12.2",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.5",
     "topojson-client": "^3.1.0",
     "zod": "^4.1.12"
   },
