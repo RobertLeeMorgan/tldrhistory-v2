@@ -3,7 +3,7 @@ name: Validate and deploy staging
 on:
   pull_request:
   push:
-    branches: [master, infra/production-preparation]
+    branches: [master]
 
 permissions:
   contents: read

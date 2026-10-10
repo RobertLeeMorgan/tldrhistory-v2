@@ -17,7 +17,8 @@ RUN npx prisma generate \
     && npm prune --omit=dev --omit=peer \
     && test ! -d node_modules/prisma \
     && test ! -d node_modules/@prisma/config \
-    && test ! -d node_modules/deepmerge-ts
+    && test ! -d node_modules/deepmerge-ts \
+    && node -e "require('@prisma/client'); require('@react-router/express')"
 
 FROM node:22.23.3-bookworm-slim AS runtime
 ENV NODE_ENV=production PORT=5000 SERVE_FRONTEND=false

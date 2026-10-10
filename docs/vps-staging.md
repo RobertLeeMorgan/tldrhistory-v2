@@ -1,5 +1,29 @@
 # TL;DR History VPS staging handoff
 
+## Current commissioned state — 2026-10-10
+
+This section supersedes the pre-deployment wording retained below as historical
+handoff evidence. Staging is live at `https://staging.tldrhistory.xyz` through
+the VPS Caddy/PostgreSQL 18 platform. Its imported database is sanitised, email
+delivery is disabled, public R2 media is read-only, backup/restore and reboot
+recovery passed, and a Better Stack readiness monitor reports Up.
+
+The production-preparation branch adds server-side account/password validation,
+disables persisted GraphQL queries, bounds operations, separates authenticated
+SSR from public rate buckets, consumes refresh tokens atomically, and fails on
+mail-provider errors. Images use Node 22.23.3; Sharp is 0.35.5. The production
+frontend tree has zero npm findings. The backend build generates Prisma, then
+removes the vulnerable build-only Prisma CLI/config/deepmerge packages; its
+runtime tree reports zero findings and a disposable container liveness test
+passes. Four focused security tests run during every backend image build.
+
+Infrastructure now has an empty, separately credentialed production database,
+separate production networks/secrets/deployment identity and manual protected
+deploy/recovery workflows. A missing root-owned cutover gate deliberately blocks
+production deployment. Render, its database, production DNS and production R2
+objects remain unchanged. The exact final import/DNS sequence is maintained in
+the infrastructure repository's `docs/tldr-production-cutover.md`.
+
 ## Validation status
 
 Local Docker Desktop validation completed on 2026-10-09. No VPS configuration, DNS, Render database, or production R2 objects were accessed or changed.
