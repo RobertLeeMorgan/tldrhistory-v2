@@ -10,7 +10,14 @@ COPY prisma ./prisma
 COPY tsconfig.json ./tsconfig.json
 COPY src ./src
 COPY tests ./tests
-RUN npx prisma generate && npm test && npm run build && npm prune --omit=dev
+RUN npx prisma generate \
+    && npm test \
+    && npm run build \
+    && npm pkg delete devDependencies.prisma \
+    && npm prune --omit=dev --omit=peer \
+    && test ! -d node_modules/prisma \
+    && test ! -d node_modules/@prisma/config \
+    && test ! -d node_modules/deepmerge-ts
 
 FROM node:22.23.3-bookworm-slim AS runtime
 ENV NODE_ENV=production PORT=5000 SERVE_FRONTEND=false
