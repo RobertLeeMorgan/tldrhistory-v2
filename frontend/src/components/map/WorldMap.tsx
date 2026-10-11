@@ -232,13 +232,14 @@ export default function WorldMap({
         const entry = countryMap.get(d.properties.name.trim().toLowerCase());
         if (!entry) return;
 
-        select(tooltipRef.current)
-          .style("display", "block")
-          .html(
-            `<strong>${d.properties.name}</strong><br/>${entry.civs
-              .map((c: any) => c.name)
-              .join("<br/>")}`,
-          )
+        const tooltip = select(tooltipRef.current).style("display", "block");
+        tooltip.selectAll("*").remove();
+        tooltip.append("strong").text(d.properties.name);
+        for (const civ of entry.civs) {
+          tooltip.append("br");
+          tooltip.append("span").text(civ.name);
+        }
+        tooltip
           .style("opacity", 0)
           .transition()
           .duration(200)

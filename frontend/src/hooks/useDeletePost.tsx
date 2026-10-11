@@ -1,3 +1,4 @@
+import { invalidatePostQueries } from "../lib/invalidatePostQueries";
 import { useAuth } from "../context/AuthContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "../context/ToastContext";
@@ -22,27 +23,15 @@ export function useDeletePost(onClose: () => void) {
       if (res.data.errors) throw new Error(res.data.errors[0].message);
       return postId;
     },
-    onMutate: async (postId: number) => {
-      await queryClient.cancelQueries({ queryKey: ["timeline"] });
-
-      const previous = queryClient.getQueryData<any>(["timeline"]);
-
-      queryClient.setQueryData(["timeline"], (old: any) =>
-        old?.filter((p: any) => p.id !== postId)
-      );
-
-      return { previous };
-    },
-    onError: (_err, _postId, context) => {
-      queryClient.setQueryData(["timeline"], context?.previous);
+    onError: (_err) => {
       addToast({ message: _err.message, type: "error" });
     },
-    onSuccess: (_postId) => {
+    onSuccess: () => {
       addToast({ message: "Post deleted", type: "success" });
       onClose();
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["timeline"] });
+      return invalidatePostQueries(queryClient);
     },
   });
 

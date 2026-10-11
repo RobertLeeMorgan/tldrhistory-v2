@@ -1,3 +1,4 @@
+import { useToast } from "../../../context/ToastContext";
 import { useState } from "react";
 import type { PendingEditsQuery } from "../../../generated/graphql";
 import { useApproveEdit, useRejectEdit } from "../hooks/useEdit";
@@ -26,6 +27,7 @@ export default function ReviewEditsPanel({
   isLoading,
   isError,
 }: ReviewEditsPanelProps) {
+  const { addToast } = useToast();
   const approveEdit = useApproveEdit();
   const rejectEdit = useRejectEdit();
   const [actingEditId, setActingEditId] = useState<number | null>(null);
@@ -33,6 +35,7 @@ export default function ReviewEditsPanel({
   const handleApprove = (id: number) => {
     setActingEditId(id);
     approveEdit.mutate(id, {
+      onError: (error) => addToast({ message: error.message, type: "error" }),
       onSettled: () => setActingEditId(null),
     });
   };
@@ -40,6 +43,7 @@ export default function ReviewEditsPanel({
   const handleReject = (id: number) => {
     setActingEditId(id);
     rejectEdit.mutate(id, {
+      onError: (error) => addToast({ message: error.message, type: "error" }),
       onSettled: () => setActingEditId(null),
     });
   };

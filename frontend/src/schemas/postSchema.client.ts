@@ -4,9 +4,9 @@ import { getMaxDays } from "./dateValidation";
 export const postSchemaClient = z
   .object({
     type: z.enum(["person", "landmark", "event", "period"]),
-    name: z.string().min(4).max(100).trim(),
-    startDescription: z.string().min(10).max(250).trim(),
-    endDescription: z.string().max(250).trim().optional(),
+    name: z.string().trim().min(4).max(50),
+    startDescription: z.string().trim().min(10).max(250),
+    endDescription: z.string().trim().max(200).optional(),
 
     startYear: z.number().int().gte(-300000).lte(2025),
     startMonth: z.number().int().min(0).max(12),
@@ -62,7 +62,9 @@ export const postSchemaClient = z
         id: z.number(),
         name: z.string(),
       })
-      .optional(),
+      .nullable()
+      .optional()
+      .transform((group) => group?.id === 0 ? null : group),
     subjects: z
       .array(
         z.object({
@@ -73,7 +75,19 @@ export const postSchemaClient = z
       .min(1, "Select at least one subject"),
   })
   .superRefine((data, ctx) => {
-    const maxStart = getMaxDays(data.startYear, data.startMonth);
+    // Zero end-year is the existing sentinel for an unknown/open-ended date.
+    // Compare only components known on both sides of an imprecise date.
+    if (data.endYear !== 0 && (
+      data.endYear < data.startYear ||
+      (data.endYear === data.startYear && data.startMonth > 0 && data.endMonth > 0 && (
+        data.endMonth < data.startMonth ||
+        (data.endMonth === data.startMonth && data.startDay > 0 && data.endDay > 0 && data.endDay < data.startDay)
+      ))
+    )) {
+      ctx.addIssue({ path: ["endYear"], message: "End date cannot precede start date", code: "custom" });
+    }
+    const maxStart = data.startMonth >= 0 && data.startMonth <= 12
+      ? getMaxDays(data.startYear, data.startMonth) : 0;
     if (data.startDay > maxStart) {
       ctx.addIssue({
         path: ["startDay"],
@@ -82,7 +96,8 @@ export const postSchemaClient = z
       });
     }
 
-    const maxEnd = getMaxDays(data.endYear, data.endMonth);
+    const maxEnd = data.endMonth >= 0 && data.endMonth <= 12
+      ? getMaxDays(data.endYear, data.endMonth) : 0;
     if (data.endDay > maxEnd) {
       ctx.addIssue({
         path: ["endDay"],

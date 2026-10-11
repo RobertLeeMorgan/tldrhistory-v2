@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { LIKE_POST } from "../../graphql/mutations";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { graphqlRequest } from "../../lib/graphql";
 import type {
   Post,
@@ -10,7 +10,7 @@ import type {
   LikePostMutation,
 } from "../../generated/graphql";
 import { motion } from "framer-motion";
-import { queryClient } from "../../lib/queryClient";
+import { useToast } from "../../context/ToastContext";
 
 interface CardFooterProps {
   post: Post;
@@ -19,6 +19,8 @@ interface CardFooterProps {
 export default function CardFooter({ post }: CardFooterProps) {
   const { isAuth } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post.likes);
@@ -38,9 +40,12 @@ export default function CardFooter({ post }: CardFooterProps) {
       setLiked(data.likePost.liked);
       setLikesCount(data.likePost.likes);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["userLikes"] });
+    onError: () => {
+      addToast({ message: "Could not confirm the like change. Refresh before trying again.", type: "error" });
     },
+    onSettled: () => Promise.all(["timeline", "userPosts", "userLikes", "userStats"].map(
+      (key) => queryClient.invalidateQueries({ queryKey: [key] }),
+    )),
   });
 
   function handleClick(e: React.MouseEvent<HTMLButtonElement>) {

@@ -1,3 +1,4 @@
+import { invalidatePostQueries } from "../../../lib/invalidatePostQueries";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { graphqlRequest } from "../../../lib/graphql";
 import { SUGGEST_EDIT, APPROVE_EDIT_MUTATION,
@@ -18,8 +19,7 @@ export function useApproveEdit() {
     mutationFn: (id: number) =>
       graphqlRequest(APPROVE_EDIT_MUTATION, { id }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pendingEdits"] });
-      queryClient.invalidateQueries({ queryKey: ["timeline"] });
+      return invalidatePostQueries(queryClient);
     },
   });
 }
@@ -31,7 +31,10 @@ export function useRejectEdit() {
     mutationFn: (id: number) =>
       graphqlRequest(REJECT_EDIT_MUTATION, { id }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pendingEdits"] });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["pendingEdits"] }),
+        queryClient.invalidateQueries({ queryKey: ["pendingStats"] }),
+      ]);
     },
   });
 }

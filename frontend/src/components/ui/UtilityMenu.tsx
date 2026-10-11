@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { hasActiveState } from "../../utils/filterUtils";
 import { IoIosAdd } from "react-icons/io";
 import { IoMdShare } from "react-icons/io";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useTimelineFilter } from "../../context/FilterContext";
 import { DEFAULT_TIMELINE_FILTER } from "../../features/filter/components/TimelineFilter";
 import { useToast } from "../../context/ToastContext";
@@ -22,12 +22,19 @@ export default function UtilityMenu({ onOpenDrawer }: UtilityMenuProps) {
   const { filter, patchFilter, resetFilter } = useTimelineFilter();
   const { addToast } = useToast();
 
-  const [searchInput, setSearchInput] = useState(filter.search ?? "");
+  const { key: locationKey } = useLocation();
+  const [searchDraft, setSearchDraft] = useState({ value: filter.search ?? "", locationKey });
+  if (searchDraft.locationKey !== locationKey) {
+    setSearchDraft({ value: filter.search ?? "", locationKey });
+  }
+  const searchInput = searchDraft.locationKey === locationKey ? searchDraft.value : filter.search ?? "";
+  const setSearchInput = (value: string) => setSearchDraft({ value, locationKey });
   const [active, setActive] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (searchDraft.locationKey !== locationKey) return;
     const id = window.setTimeout(() => {
       const nextSearch = searchInput.trim() || undefined;
       if (nextSearch !== filter.search) {
@@ -36,7 +43,7 @@ export default function UtilityMenu({ onOpenDrawer }: UtilityMenuProps) {
     }, 300);
 
     return () => window.clearTimeout(id);
-  }, [searchInput, filter.search, patchFilter]);
+  }, [searchInput, searchDraft.locationKey, locationKey, filter.search, patchFilter]);
 
   useEffect(() => {
     if (active) inputRef.current?.focus();

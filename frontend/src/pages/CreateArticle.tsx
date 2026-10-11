@@ -8,7 +8,7 @@ import PageContainer from "../../src/components/ui/PageContainer";
 export default function CreatePost() {
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { data: formListsData } = useFormListsQuery();
+  const { data: formListsData, error, refetch } = useFormListsQuery();
   const mutation = useCreatePostSuggestionMutation();
 
   const handleSubmit = (data: any) => {
@@ -35,7 +35,11 @@ export default function CreatePost() {
     );
   };
 
-  if (!formListsData) return null;
+  if (!formListsData) return (
+    <PageContainer><div className="py-24 px-6 text-center text-gold" role={error ? "alert" : "status"}>
+      {error ? <>Could not load the form. <button type="button" className="btn btn-sm" onClick={() => void refetch()}>Retry</button></> : "Loading form?"}
+    </div></PageContainer>
+  );
 
   return (
     <PageContainer>

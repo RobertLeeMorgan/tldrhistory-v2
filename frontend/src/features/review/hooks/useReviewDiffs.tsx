@@ -74,7 +74,7 @@ export function useReviewDiffs(suggestion: PendingEditItem): ReviewDiffsResult {
 
   // Group & Country
   const groupFrom = post.group?.name ?? "";
-  const groupTo = changes.group?.to?.name ?? post.group?.name ?? "";
+  const groupTo = changes.group ? changes.group.to?.name ?? "" : post.group?.name ?? "";
   const isGroupDiff = groupFrom !== groupTo;
 
   const countryFrom = post.country?.name ?? "";
@@ -87,6 +87,13 @@ export function useReviewDiffs(suggestion: PendingEditItem): ReviewDiffsResult {
     changes.civilisation?.to ?? post.civilisation,
   );
   const isCivilisationDiff = civilisationFrom !== civilisationTo;
+
+  const startSignificanceTo = Number(
+    changes.startSignificance?.to ?? post.startSignificance,
+  );
+  const endSignificanceTo = Number(
+    changes.endSignificance?.to ?? post.endSignificance,
+  );
 
   // Subjects
   const subjectsFrom: SubjectItem[] = post.subjects.map((s) => ({
@@ -138,6 +145,24 @@ export function useReviewDiffs(suggestion: PendingEditItem): ReviewDiffsResult {
       },
     ],
     metadataFields: [
+      ...(post.startSignificance !== startSignificanceTo
+        ? [{
+            label: "Start significance",
+            from: post.startSignificance,
+            to: startSignificanceTo,
+            isDiff: true,
+            render: (value: number) => <span>{value}</span>,
+          }]
+        : []),
+      ...(post.endSignificance !== endSignificanceTo
+        ? [{
+            label: "End significance",
+            from: post.endSignificance,
+            to: endSignificanceTo,
+            isDiff: true,
+            render: (value: number) => <span>{value}</span>,
+          }]
+        : []),
       {
         label: "Group",
         from: groupFrom,

@@ -1,82 +1,57 @@
-import { useEffect, useRef, type RefObject } from "react";
+import { useCallback, useEffect, useRef, type RefObject } from "react";
 import { useEra } from "../../../context/EraContext";
 import type { Post } from "../../../generated/graphql";
 
 export function useEraTracker(
   posts: Post[],
-  postRefs: Map<string, RefObject<HTMLDivElement | null>>
+  postRefs: RefObject<Map<string, RefObject<HTMLDivElement | null>>>,
 ) {
   const { setDataStartYear } = useEra();
-
   const currentYearRef = useRef<number | null>(null);
-  const lastIndexRef = useRef(0);
-  const lastScrollYRef = useRef(0);
-  const tickingRef = useRef(false);
   const rafIdRef = useRef<number | null>(null);
+  const updateRef = useRef<(() => void) | null>(null);
+
+  const scheduleUpdate = useCallback(() => {
+    if (rafIdRef.current !== null) return;
+    rafIdRef.current = requestAnimationFrame(() => {
+      rafIdRef.current = null;
+      updateRef.current?.();
+    });
+  }, []);
 
   useEffect(() => {
-    if (!posts.length) return;
-
-    lastIndexRef.current = 0;
-    currentYearRef.current = null;
-
     const update = () => {
-      tickingRef.current = false;
-
-      const scrollY = window.scrollY;
-      const scrollingDown = scrollY >= lastScrollYRef.current;
-      lastScrollYRef.current = scrollY;
-
-      let index = lastIndexRef.current;
-      const start = Math.max(0, Math.min(index, posts.length - 1));
-
-      if (scrollingDown) {
-        for (let i = start; i < posts.length; i++) {
-          const el = postRefs.get(posts[i].id)?.current;
-          if (!el) continue;
-          const rect = el.getBoundingClientRect();
-          if (rect.top >= 0) {
-            index = i;
-            break;
-          }
-        }
-      } else {
-        for (let i = start; i >= 0; i--) {
-          const el = postRefs.get(posts[i].id)?.current;
-          if (!el) continue;
-          const rect = el.getBoundingClientRect();
-          if (rect.top < 0) {
-            index = Math.min(i + 1, posts.length - 1);
-            break;
-          }
-          index = i;
-        }
+      let candidate: Post | undefined;
+      let crossing: Post | undefined;
+      let crossingTop = -Infinity;
+      // Only mounted, visible cards contribute. Virtual eviction must never
+      // reset the year to an unmounted first card after a page append.
+      for (const post of posts) {
+        const element = postRefs.current.get(post.id)?.current;
+        if (!element) continue;
+        const rect = element.getBoundingClientRect();
+        if (rect.bottom <= 0 || rect.top >= window.innerHeight || rect.height === 0) continue;
+        if (rect.top >= 0) { candidate = post; break; }
+        if (rect.top > crossingTop) { crossing = post; crossingTop = rect.top; }
       }
-
-      lastIndexRef.current = index;
-
-      const topPost = posts[index];
-      if (!topPost) return;
-
-      if (currentYearRef.current !== topPost.startYear) {
+      const topPost = candidate ?? crossing;
+      if (topPost && currentYearRef.current !== topPost.startYear) {
         currentYearRef.current = topPost.startYear;
         setDataStartYear(topPost.startYear);
       }
     };
-
-    const handleScroll = () => {
-      if (!tickingRef.current) {
-        tickingRef.current = true;
-        rafIdRef.current = requestAnimationFrame(update);
-      }
-    };
-
-    rafIdRef.current = requestAnimationFrame(update);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
+    updateRef.current = update;
+    scheduleUpdate();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      updateRef.current = null;
       if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
     };
-  }, [posts, postRefs, setDataStartYear]);
+  }, [posts, postRefs, setDataStartYear, scheduleUpdate]);
+
+  return scheduleUpdate;
 }

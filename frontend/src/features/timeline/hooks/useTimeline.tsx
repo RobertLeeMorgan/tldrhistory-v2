@@ -16,7 +16,7 @@ export default function useTimeline({ filter }: UseTimelineOptions = {}) {
   const { isAuth } = useAuth();
   const viewerKey = isAuth.id != null ? String(isAuth.id) : "anonymous";
 
-  const { initialData } = useLoaderData() as Awaited<
+  const { initialData, filter: loaderFilter } = useLoaderData() as Awaited<
     ReturnType<typeof timelineLoader>
   >;
 
@@ -26,7 +26,7 @@ export default function useTimeline({ filter }: UseTimelineOptions = {}) {
       viewerKey,
     }),
     initialData:
-      viewerKey === "anonymous" && initialData
+      viewerKey === "anonymous" && initialData && JSON.stringify(filter) === JSON.stringify(loaderFilter)
         ? {
             pages: [initialData],
             pageParams: [null],
@@ -59,7 +59,7 @@ export default function useTimeline({ filter }: UseTimelineOptions = {}) {
         : undefined;
     },
     staleTime: 30_000,
-    refetchOnMount: viewerKey === "anonymous" ? false : "always",
+    refetchOnMount: viewerKey === "anonymous" ? true : "always",
   });
 
   const posts = useMemo(
@@ -74,5 +74,7 @@ export default function useTimeline({ filter }: UseTimelineOptions = {}) {
     hasNextPage: query.hasNextPage,
     fetchNextPage: query.fetchNextPage,
     error: query.error,
+    isFetchNextPageError: query.isFetchNextPageError,
+    refetch: query.refetch,
   };
 }

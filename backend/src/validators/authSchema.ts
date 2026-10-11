@@ -1,10 +1,16 @@
 import { z } from "zod";
 import { GraphQLError } from "graphql";
 
-export const passwordSchema = z.string().min(8).refine(
-  (value) => Buffer.byteLength(value, "utf8") <= 72,
-  "Password must be at most 72 UTF-8 bytes",
-);
+export const passwordSchema = z.string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(
+    /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/,
+    "Must include uppercase, lowercase, and number",
+  )
+  .refine(
+    (value) => Buffer.byteLength(value, "utf8") <= 72,
+    "Password must be at most 72 UTF-8 bytes",
+  );
 export const registerSchema = z.object({
   email: z.email().trim().toLowerCase().max(80),
   username: z.string().trim().min(3).max(20).regex(/^[A-Za-z][A-Za-z0-9-]*$/),

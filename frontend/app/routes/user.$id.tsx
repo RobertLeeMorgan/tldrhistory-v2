@@ -1,12 +1,12 @@
 import type { Route } from "./+types/user.$id";
-import { useParams } from "react-router";
+import { useLoaderData, useParams } from "react-router";
 import { buildMeta } from "../../src/lib/seo";
 import UserHeader from "../../src/features/user/components/UserHeader";
 import UserTimeline from "../../src/features/user/components/UserTimeline";
 import UserStats from "../../src/features/user/components/UserStats";
 import {
-  useUserStatsQuery,
   fetchUserStats,
+  useUserStatsQuery,
 } from "../../src/features/user/hooks/useUser";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -48,7 +48,8 @@ export default function User() {
   const { id } = useParams<{ id: string }>();
   const userId = Number(id);
 
-  const { data, isLoading } = useUserStatsQuery({ userId });
+  const initial = useLoaderData<typeof loader>();
+  const { data, isLoading } = useUserStatsQuery({ userId }, { userStats: initial.userStats });
   const stats = data?.userStats;
 
   const formattedDate = stats?.createdAt

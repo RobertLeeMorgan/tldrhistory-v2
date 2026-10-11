@@ -12,8 +12,8 @@ export async function generateAuthToken(
   userId: number,
   type: AuthTokenType
 ): Promise<TokenData> {
-  const rawToken = crypto.randomBytes(32).toString("base64url");
-  const hashedToken = await bcrypt.hash(rawToken, 12);
+  const rawToken = `v2.${crypto.randomBytes(32).toString("base64url")}`;
+  const hashedToken = `sha256:${crypto.createHash("sha256").update(rawToken).digest("hex")}`;
 
   const expiresAt =
     type === "EMAIL_VERIFICATION"
@@ -40,9 +40,19 @@ export async function generateAuthToken(
 }
 
 export async function findMatchingAuthToken(rawToken: string, type: AuthTokenType) {
+  if (/^v2\.[A-Za-z0-9_-]{43}$/.test(rawToken)) {
+    const tokenHash = `sha256:${crypto.createHash("sha256").update(rawToken).digest("hex")}`;
+    return prisma.authToken.findFirst({
+      where: { tokenHash, type, usedAt: null, expiresAt: { gt: new Date() } },
+      include: { user: true },
+    });
+  }
+  // Keep already-issued links valid until their existing 1h/24h expiry.
+  if (!/^[A-Za-z0-9_-]{43}$/.test(rawToken)) return null;
   const candidates = await prisma.authToken.findMany({
     where: {
       type,
+      tokenHash: { startsWith: "$2" },
       usedAt: null,
       expiresAt: { gt: new Date() },
     },

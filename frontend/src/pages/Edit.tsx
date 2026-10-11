@@ -4,23 +4,26 @@ import { useSuggestEditMutation } from "../../src/features/review/hooks/useEdit"
 import { useToast } from "../../src/context/ToastContext";
 import PostForm from "../../src/features/form/components/PostForm";
 import PageContainer from "../../src/components/ui/PageContainer";
+import type { PostFormData } from "../schemas/postSchema.client";
 
 export default function Edit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToast } = useToast();
 
-  const { data } = usePostQuery({ id: Number(id!) });
+  const { data, error, refetch } = usePostQuery({ id: Number(id!) });
   const mutation = useSuggestEditMutation();
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (formData: PostFormData) => {
+    if (!data) return;
+
     mutation.mutate(
       {
         postId: Number(id),
         input: {
-          ...data,
-          startSignificance: data?.getPost?.startSignificance,
-          endSignificance: data?.getPost?.endSignificance,
+          ...formData,
+          startSignificance: data.getPost.startSignificance,
+          endSignificance: data.getPost.endSignificance,
         },
       },
       {
@@ -44,7 +47,11 @@ export default function Edit() {
     );
   };
 
-  if (!data) return null;
+  if (!data) return (
+    <PageContainer><div className="py-24 px-6 text-center text-gold" role={error ? "alert" : "status"}>
+      {error ? <>Could not load the form. <button type="button" className="btn btn-sm" onClick={() => void refetch()}>Retry</button></> : "Loading form?"}
+    </div></PageContainer>
+  );
 
   return (
     <PageContainer>

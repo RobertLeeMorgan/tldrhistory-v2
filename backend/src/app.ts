@@ -1,3 +1,4 @@
+import { formatGraphqlError } from "./utils/formatGraphqlError";
 import express, { Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import compression from "compression";
@@ -135,12 +136,9 @@ const apolloServer = new ApolloServer({
     BigInt: GraphQLBigInt,
     ...resolvers,
   },
-  formatError: (err) => {
+  formatError: (err, originalError) => {
     console.error("GraphQL ERROR:", err);
-    return {
-      message: err.message,
-      extensions: { code: err.extensions?.code || "INTERNAL_SERVER_ERROR" },
-    };
+    return formatGraphqlError(err, originalError);
   },
 });
 

@@ -457,8 +457,8 @@ async function processPost(post: Post): Promise<ProcessPostResult> {
 
   return {
     imageStatus: best.status,
-    imageUrl:
-      post.imageUrl && best.status === "approved" ? post.imageUrl : best.url,
+    // Use the URL returned by Wikimedia metadata, never the untrusted input.
+    imageUrl: best.url,
     imageCredit: best.credit || null,
     sourceField: best.sourceField,
   };

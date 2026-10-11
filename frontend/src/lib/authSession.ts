@@ -36,30 +36,53 @@ export function clearAuthHandlers() {
   logoutRef = null;
 }
 
-export async function fetchRefreshSession(): Promise<RefreshSessionResult> {
-  const res = await fetch("/api/refresh", {
-    method: "POST",
-    credentials: "include",
-  });
+let sessionVersion = 0;
+let refreshBlocked = false;
+let refreshInFlight: Promise<RefreshSessionResult> | null = null;
 
-  if (!res.ok) {
-    throw new Error("Refresh failed");
-  }
+export class SessionChangedError extends Error {
+  constructor() { super("Session changed during refresh"); }
+}
 
-  const data = await res.json();
+export function beginLoginSession() {
+  sessionVersion++;
+  refreshBlocked = false;
+}
 
-  if (!data?.token || !data?.user) {
-    throw new Error("Invalid refresh payload");
-  }
+export async function invalidateRefreshSession() {
+  sessionVersion++;
+  refreshBlocked = true;
+  // Let the rotating response set its cookie before logout deletes that session.
+  await refreshInFlight?.catch(() => undefined);
+}
 
-  return {
-    token: data.token,
-    user: data.user,
-  };
+export function fetchRefreshSession(): Promise<RefreshSessionResult> {
+  if (refreshBlocked) return Promise.reject(new SessionChangedError());
+  if (refreshInFlight) return refreshInFlight;
+  const version = sessionVersion;
+  const request = (async () => {
+    const res = await fetch("/api/refresh", {
+      method: "POST",
+      credentials: "include",
+      signal: AbortSignal.timeout(20_000),
+    });
+    if (version !== sessionVersion) throw new SessionChangedError();
+    if (!res.ok) throw new Error("Refresh failed");
+    const data = await res.json();
+    if (version !== sessionVersion) throw new SessionChangedError();
+    if (!data?.token || !data?.user) throw new Error("Invalid refresh payload");
+    return { token: data.token, user: data.user };
+  })();
+  refreshInFlight = request;
+  const clear = () => { if (refreshInFlight === request) refreshInFlight = null; };
+  void request.then(clear, clear);
+  return request;
 }
 
 export async function refreshAndApplySession() {
+  const version = sessionVersion;
   const data = await fetchRefreshSession();
+  if (version !== sessionVersion) throw new SessionChangedError();
 
   if (!applySessionRef) {
     setAccessToken(data.token);

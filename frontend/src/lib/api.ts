@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getGraphqlUrl } from "./api-origin";
-import { refreshAndApplySession } from "./authSession";
+import { refreshAndApplySession, SessionChangedError } from "./authSession";
 
 let accessToken: string | null = null;
 
@@ -12,7 +12,7 @@ const isServer = typeof window === "undefined";
 
 const api = axios.create({
   baseURL: isServer ? getGraphqlUrl() : "/graphql",
-  timeout: 10000,
+  timeout: 20000,
   withCredentials: true,
 });
 
@@ -93,7 +93,7 @@ api.interceptors.response.use(
       return api(originalRequest);
     } catch (err) {
       processQueue(err, null);
-      window.dispatchEvent(new Event("auth:logout"));
+      if (!(err instanceof SessionChangedError)) window.dispatchEvent(new Event("auth:logout"));
       return Promise.reject(err);
     } finally {
       isRefreshing = false;
@@ -141,7 +141,7 @@ api.interceptors.response.use(
       return api(originalRequest);
     } catch (err) {
       processQueue(err, null);
-      window.dispatchEvent(new Event("auth:logout"));
+      if (!(err instanceof SessionChangedError)) window.dispatchEvent(new Event("auth:logout"));
       return Promise.reject(err);
     } finally {
       isRefreshing = false;

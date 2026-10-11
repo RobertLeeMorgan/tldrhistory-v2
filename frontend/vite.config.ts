@@ -12,12 +12,12 @@ export default defineConfig({
   server: {
     proxy: {
       "/graphql": {
-        target: "http://localhost:5000",
+        target: process.env.DEV_API_ORIGIN ?? "http://localhost:5000",
         changeOrigin: true,
         secure: false,
       },
       "/api": {
-        target: "http://localhost:5000",
+        target: process.env.DEV_API_ORIGIN ?? "http://localhost:5000",
         changeOrigin: true,
         secure: false,
       },

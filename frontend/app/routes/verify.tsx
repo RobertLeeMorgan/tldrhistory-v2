@@ -79,7 +79,8 @@ export default function VerifyEmail() {
       {
         onSuccess: async (data) => {
           if (data.verifyEmail.success) {
-            await refreshAndApplySession();
+            // Verification succeeds independently of a refresh cookie (e.g. another device).
+            try { await refreshAndApplySession(); } catch { /* Keep the confirmed verification result. */ }
 
             setView("success");
             setMessage("Your email has been verified successfully.");

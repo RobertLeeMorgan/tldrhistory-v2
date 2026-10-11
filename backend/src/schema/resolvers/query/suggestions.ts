@@ -81,6 +81,7 @@ export async function pendingCreatedPosts(
 }
 
 export async function pendingStats(_: unknown, __: unknown, ctx: Context) {
+  requireRole(ctx, ["MODERATOR", "ADMIN"]);
   const editCounts = await prisma.editSuggestion.groupBy({
     by: ["status"],
     _count: { _all: true },

@@ -1,3 +1,4 @@
+import { invalidatePostQueries } from "../../../lib/invalidatePostQueries";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { graphqlRequest } from "../../../lib/graphql";
 import { CREATE_POST_SUGGESTION_MUTATION, APPROVE_CREATED_POST_MUTATION, REJECT_CREATED_POST_MUTATION } from "../../../graphql/mutations";
@@ -23,8 +24,7 @@ export function useApproveCreatedPost() {
     mutationFn: (id: number) =>
       graphqlRequest(APPROVE_CREATED_POST_MUTATION, { id }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pendingCreatedPosts"] });
-      queryClient.invalidateQueries({ queryKey: ["timeline"] });
+      return invalidatePostQueries(queryClient);
     },
   });
 }
@@ -36,7 +36,10 @@ export function useRejectCreatedPost() {
     mutationFn: (id: number) =>
       graphqlRequest(REJECT_CREATED_POST_MUTATION, { id }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pendingCreatedPosts"] });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["pendingCreatedPosts"] }),
+        queryClient.invalidateQueries({ queryKey: ["pendingStats"] }),
+      ]);
     },
   });
 }

@@ -26,7 +26,7 @@ export async function sendVerificationEmail({
 
   const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleString();
 
-  const result = await resend.emails.send({
+  const { error } = await resend.emails.send({
     to: [to],
     template: {
       id: EMAIL_VERIFICATION_TEMPLATE_ID,
@@ -37,7 +37,7 @@ export async function sendVerificationEmail({
       },
     },
   });
-  if (result.error) throw new Error("Verification email delivery failed");
+  if (error) throw new Error("Email delivery failed. Please try again later.");
 }
 
 export async function sendPasswordResetEmail({
@@ -53,7 +53,7 @@ export async function sendPasswordResetEmail({
 
   const expiry = new Date(Date.now() + 60 * 60 * 1000).toLocaleString();
 
-  const result = await resend.emails.send({
+  const { error } = await resend.emails.send({
     to: [to],
     template: {
       id: PASSWORD_RESET_TEMPLATE_ID,
@@ -64,5 +64,5 @@ export async function sendPasswordResetEmail({
       },
     },
   });
-  if (result.error) throw new Error("Password reset email delivery failed");
+  if (error) throw new Error("Email delivery failed. Please try again later.");
 }

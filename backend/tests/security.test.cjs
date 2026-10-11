@@ -9,8 +9,8 @@ test('registration and reset enforce server-side password/account bounds', () =>
   for (const password of ['', 'short', 'x'.repeat(73), '😀'.repeat(19)]) {
     assert.equal(passwordSchema.safeParse(password).success, false);
   }
-  assert.equal(passwordSchema.safeParse('a long passphrase').success, true);
-  const valid = { email: 'Test@example.invalid', username: 'test-user', password: 'a long passphrase' };
+  assert.equal(passwordSchema.safeParse('Valid passphrase1').success, true);
+  const valid = { email: 'Test@example.invalid', username: 'test-user', password: 'Valid passphrase1' };
   assert.equal(registerSchema.parse(valid).email, 'test@example.invalid');
   for (const change of [{username:'x'.repeat(21)}, {username:'<script>'}, {email:'invalid'}, {password:''}]) {
     assert.equal(registerSchema.safeParse({...valid,...change}).success, false);

@@ -4,9 +4,14 @@ import { setAccessToken } from "../lib/api";
 import {
   registerAuthHandlers,
   clearAuthHandlers,
-  fetchRefreshSession,
+  refreshAndApplySession,
+  beginLoginSession,
+  invalidateRefreshSession,
+  SessionChangedError,
   type AuthUser,
 } from "../lib/authSession";
+
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AuthState {
   token: string | null;
@@ -37,6 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuth, setIsAuth] = useState<AuthState>(emptyAuth);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
+  const queryClient = useQueryClient();
+  const viewerRef = useRef<string | null>(null);
 
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasSessionRef = useRef(false);
@@ -70,6 +77,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const applySession = (token: string, user: AuthUser, showToast = true) => {
+    if (viewerRef.current !== String(user.id)) {
+      queryClient.clear();
+      viewerRef.current = String(user.id);
+    }
     hasSessionRef.current = true;
     setAccessToken(token);
     setIsAuth({
@@ -92,7 +103,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async (expired = false) => {
     if (logoutInFlightRef.current) return;
-    if (!hasSessionRef.current && !isAuth.token) return;
 
     logoutInFlightRef.current = true;
     hasSessionRef.current = false;
@@ -100,6 +110,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     clearRefreshTimer();
     setAccessToken(null);
     setIsAuth(emptyAuth);
+    viewerRef.current = null;
+    queryClient.clear();
+    await invalidateRefreshSession();
 
     try {
       await fetch("/api/logout", {
@@ -119,14 +132,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = (token: string, user: AuthUser, showToast = true) => {
+    beginLoginSession();
     applySession(token, user, showToast);
   };
 
   const silentRefresh = async () => {
     try {
-      const data = await fetchRefreshSession();
-      applySession(data.token, data.user, false);
-    } catch {
+      await refreshAndApplySession();
+    } catch (error) {
+      if (error instanceof SessionChangedError) return;
       await logout(true);
     }
   };
@@ -141,11 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const initializeAuth = async () => {
       try {
-        const data = await fetchRefreshSession();
-
-        if (mounted) {
-          applySession(data.token, data.user, false);
-        }
+        await refreshAndApplySession();
       } catch {
       } finally {
         if (mounted) {

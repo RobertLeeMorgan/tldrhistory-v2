@@ -1,3 +1,5 @@
+import { validatePostReferences } from "../../../validators/postReferences";
+import { requireVerifiedEmail } from "../../../utils/auth/requireVerifiedEmail";
 import prisma from "../../../server/client";
 import {
   hasImageChanged,
@@ -7,6 +9,7 @@ import {
 import { requireRole } from "../../../utils/auth/requireRole";
 import { inputSchema } from "../../../validators/inputSchema";
 import { Context } from "../query/user";
+import { GraphQLError } from "graphql";
 
 export async function suggestEdit(
   _: any,
@@ -14,12 +17,14 @@ export async function suggestEdit(
   ctx: Context,
 ) {
   requireRole(ctx, ["USER", "MODERATOR", "ADMIN"]);
+  await requireVerifiedEmail(ctx);
 
   const validated = await inputSchema.parseAsync(input);
+  await validatePostReferences(validated);
 
   const post = await prisma.post.findUnique({
     where: { id: Number(postId) },
-    select: { id: true, name: true },
+    select: { id: true, name: true, updatedAt: true },
   });
 
   if (!post) throw new Error("Post not found");
@@ -28,7 +33,7 @@ export async function suggestEdit(
     data: {
       postId: post.id,
       suggestedById: ctx.user!.id,
-      data: validated,
+      data: { ...validated, _baseUpdatedAt: post.updatedAt.toISOString() },
       status: SUGGESTION_STATUS.PENDING,
     },
     include: {
@@ -51,12 +56,19 @@ export async function approveEdit(_: any, { id }: any, ctx: Context) {
       throw new Error("Suggestion already processed");
     }
 
+    const claimed = await tx.editSuggestion.updateMany({
+      where: { id: suggestion.id, status: SUGGESTION_STATUS.PENDING },
+      data: { status: SUGGESTION_STATUS.APPROVED, moderatorId: ctx.user!.id },
+    });
+    if (claimed.count !== 1) throw new Error("Suggestion already processed");
+
     const validated = await inputSchema.parseAsync(suggestion.data);
 
     const existingPost = await tx.post.findUnique({
       where: { id: suggestion.postId },
       select: {
         id: true,
+        updatedAt: true,
         imageUrl: true,
         imageCredit: true,
         sourceUrl: true,
@@ -73,9 +85,20 @@ export async function approveEdit(_: any, { id }: any, ctx: Context) {
 
     if (!existingPost) throw new Error("Post not found");
 
+    const snapshot = suggestion.data as { _baseUpdatedAt?: string };
+    const stale = snapshot._baseUpdatedAt
+      ? existingPost.updatedAt.toISOString() !== snapshot._baseUpdatedAt
+      : existingPost.updatedAt > suggestion.createdAt;
+    if (stale) {
+      throw new GraphQLError("This post changed after the suggestion was made. Reject it and submit a new edit against the current post.", {
+        extensions: { code: "CONFLICT" },
+      });
+    }
+
     const imageChanged = hasImageChanged(validated, existingPost);
 
     const updateData: any = {
+      updatedAt: new Date(Math.max(Date.now(), existingPost.updatedAt.getTime() + 1)),
       name: validated.name,
       type: validated.type,
       startDescription: validated.startDescription,
@@ -109,7 +132,7 @@ export async function approveEdit(_: any, { id }: any, ctx: Context) {
     }
 
     await tx.post.update({
-      where: { id: suggestion.postId },
+      where: { id: suggestion.postId, updatedAt: existingPost.updatedAt },
       data: updateData,
     });
 
@@ -120,6 +143,13 @@ export async function approveEdit(_: any, { id }: any, ctx: Context) {
         moderatorId: ctx.user!.id,
       },
     });
+  }).catch((error: unknown) => {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
+      throw new GraphQLError("The post changed during approval. Refresh the review queue before continuing.", {
+        extensions: { code: "CONFLICT" },
+      });
+    }
+    throw error;
   });
 
   return true;
@@ -138,13 +168,14 @@ export async function rejectEdit(_: any, { id }: any, ctx: Context) {
     throw new Error("Suggestion already processed");
   }
 
-  await prisma.editSuggestion.update({
-    where: { id: suggestion.id },
+  const rejected = await prisma.editSuggestion.updateMany({
+    where: { id: suggestion.id, status: SUGGESTION_STATUS.PENDING },
     data: {
       status: SUGGESTION_STATUS.REJECTED,
       moderatorId: ctx.user!.id,
     },
   });
+  if (rejected.count !== 1) throw new Error("Suggestion already processed");
 
   return true;
 }

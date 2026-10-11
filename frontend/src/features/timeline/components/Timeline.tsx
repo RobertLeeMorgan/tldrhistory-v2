@@ -22,17 +22,12 @@ const PostModal = lazy(() => import("./TimelineModal"));
 function StaticTimelineGrid({
   posts,
   renderStaticCard,
-  hidden,
 }: {
   posts: Post[];
   renderStaticCard: (post: Post) => React.ReactNode;
-  hidden: boolean;
 }) {
   return (
-    <div
-      aria-hidden={hidden}
-      className={hidden ? "pointer-events-none invisible absolute inset-0" : ""}
-    >
+    <div>
       <div className="columns-1 gap-6 lg:columns-2">
         {posts.map((post) => (
           <div key={post.id} className="mb-6 break-inside-avoid">
@@ -45,7 +40,7 @@ function StaticTimelineGrid({
 }
 
 export default function Timeline({ filter }: { filter: TimelineFilter }) {
-  const { posts, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+  const { posts, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error, isFetchNextPageError, refetch } =
     useTimeline({ filter });
 
   const [openPost, setOpenPost] = useState<Post | null>(null);
@@ -89,13 +84,13 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
     return ref;
   }, []);
 
-  useEraTracker(safePosts, postRefs.current);
+  const scheduleEraUpdate = useEraTracker(safePosts, postRefs);
 
   const loadMore = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
+    if (hasNextPage && !isFetchingNextPage && !error) {
       fetchNextPage();
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, error]);
 
   const maybeLoadMore = useInfiniteLoader(loadMore, {
     isItemLoaded: (index, items) => index < items.length && !!items[index],
@@ -129,7 +124,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
 
   return (
     <div className="relative pb-20">
-      {!isLoading && safePosts.length === 0 && (
+      {!isLoading && !error && safePosts.length === 0 && (
         <div className="p-8 text-center text-lg text-stone-900">
           No posts yet
         </div>
@@ -149,11 +144,10 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
 
       {safePosts.length > 0 && (
         <>
-          <StaticTimelineGrid
+          {!isEnhanced && <StaticTimelineGrid
             posts={safePosts}
             renderStaticCard={renderStaticCard}
-            hidden={isEnhanced}
-          />
+          />}
 
           {isEnhanced && (
             <Masonry
@@ -164,11 +158,24 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
               columnWidth={350}
               itemHeightEstimate={400}
               maxColumnCount={2}
-              onRender={maybeLoadMore}
+              onRender={(start, end, items) => {
+                maybeLoadMore(start, end, items);
+                scheduleEraUpdate();
+              }}
               render={renderMasonryCard}
             />
           )}
         </>
+      )}
+
+      {error && (
+        <div role="alert" className="p-4 text-center text-gold">
+          <p>Could not load {safePosts.length ? "more posts" : "the timeline"}.</p>
+          <button type="button" className="btn btn-sm" onClick={() => {
+            if (isFetchNextPageError) void fetchNextPage();
+            else void refetch();
+          }}>Retry</button>
+        </div>
       )}
 
       {isFetchingNextPage && isEnhanced && (
@@ -178,7 +185,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
       <AnimatePresence>
         {openPost && (
           <Suspense fallback={null}>
-            <PostModal open post={openPost} onClose={() => setOpenPost(null)} />
+            <PostModal open post={safePosts.find((post) => post.id === openPost.id) ?? openPost} onClose={() => setOpenPost(null)} />
           </Suspense>
         )}
       </AnimatePresence>

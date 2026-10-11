@@ -62,10 +62,11 @@ router.post("/refresh", async (req, res) => {
       );
 
       const consumed = await tx.refreshToken.deleteMany({
-        where: { token: incomingToken },
+        where: { token: incomingToken, expiresAt: { gt: new Date() } },
       });
       // A concurrent refresh may already have consumed this token after our
-      // initial read. Only the transaction that deleted it may mint a successor.
+      // initial read. Only the transaction that deleted a still-valid token may
+      // mint a successor.
       if (consumed.count !== 1) return null;
 
       await tx.refreshToken.create({

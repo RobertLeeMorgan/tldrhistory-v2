@@ -171,16 +171,21 @@ export async function verifyEmail(
     });
   }
 
-  await prisma.$transaction([
-    prisma.user.update({
+  await prisma.$transaction(async (tx) => {
+    const consumed = await tx.authToken.updateMany({
+      where: { id: authToken.id, usedAt: null, expiresAt: { gt: new Date() } },
+      data: { usedAt: new Date() },
+    });
+    if (consumed.count !== 1) {
+      throw new GraphQLError("Invalid or expired verification link", {
+        extensions: { code: "BAD_USER_INPUT" },
+      });
+    }
+    await tx.user.update({
       where: { id: authToken.userId },
       data: { emailVerifiedAt: new Date() },
-    }),
-    prisma.authToken.update({
-      where: { id: authToken.id },
-      data: { usedAt: new Date() },
-    }),
-  ]);
+    });
+  });
 
   return {
     success: true,
@@ -250,19 +255,22 @@ export async function resetPassword(
 
   const hashedPassword = await bcrypt.hash(validatedPassword, 12);
 
-  await prisma.$transaction([
-    prisma.user.update({
+  await prisma.$transaction(async (tx) => {
+    const consumed = await tx.authToken.updateMany({
+      where: { id: authToken.id, usedAt: null, expiresAt: { gt: new Date() } },
+      data: { usedAt: new Date() },
+    });
+    if (consumed.count !== 1) {
+      throw new GraphQLError("Invalid or expired reset link", {
+        extensions: { code: "BAD_USER_INPUT" },
+      });
+    }
+    await tx.user.update({
       where: { id: authToken.userId },
       data: { password: hashedPassword },
-    }),
-    prisma.authToken.update({
-      where: { id: authToken.id },
-      data: { usedAt: new Date() },
-    }),
-    prisma.refreshToken.deleteMany({
-      where: { userId: authToken.userId },
-    }),
-  ]);
+    });
+    await tx.refreshToken.deleteMany({ where: { userId: authToken.userId } });
+  });
 
   const safeUser = {
     id: authToken.user.id,

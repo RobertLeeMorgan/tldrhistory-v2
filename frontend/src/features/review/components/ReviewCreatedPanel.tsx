@@ -1,3 +1,4 @@
+import { useToast } from "../../../context/ToastContext";
 import { useState } from "react";
 import type { PendingCreatedPostsQuery } from "../../../generated/graphql";
 import {
@@ -30,6 +31,7 @@ export default function ReviewCreatedPanel({
   isLoading,
   isError,
 }: ReviewCreatedPanelProps) {
+  const { addToast } = useToast();
   const approveCreatedPost = useApproveCreatedPost();
   const rejectCreatedPost = useRejectCreatedPost();
   const [actingCreatedId, setActingCreatedId] = useState<number | null>(null);
@@ -37,6 +39,7 @@ export default function ReviewCreatedPanel({
   const handleApprove = (id: number) => {
     setActingCreatedId(id);
     approveCreatedPost.mutate(id, {
+      onError: (error) => addToast({ message: error.message, type: "error" }),
       onSettled: () => setActingCreatedId(null),
     });
   };
@@ -44,6 +47,7 @@ export default function ReviewCreatedPanel({
   const handleReject = (id: number) => {
     setActingCreatedId(id);
     rejectCreatedPost.mutate(id, {
+      onError: (error) => addToast({ message: error.message, type: "error" }),
       onSettled: () => setActingCreatedId(null),
     });
   };

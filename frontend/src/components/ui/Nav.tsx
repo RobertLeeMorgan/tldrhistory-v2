@@ -38,7 +38,7 @@ export default function Nav() {
             className="w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18 lg:w-20 lg:h-20 flex place-content-center items-center rounded-full cursor-pointer pointer-events-auto"
           >
             <img
-              src="/tldr-logo-512.png"
+              src="/tldr-history-logo-512.svg"
               alt="TLDR History logo"
               className="w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18 lg:w-20 lg:h-20 flex place-content-center items-center justify-center hover:bg-stone-900 rounded-full transition-colors duration-300"
             />

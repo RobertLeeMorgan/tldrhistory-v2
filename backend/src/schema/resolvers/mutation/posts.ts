@@ -1,3 +1,5 @@
+import { validatePostReferences } from "../../../validators/postReferences";
+import { requireVerifiedEmail } from "../../../utils/auth/requireVerifiedEmail";
 import { Context } from "../query/user";
 import prisma from "../../../server/client";
 import { requireRole } from "../../../utils/auth/requireRole";
@@ -13,8 +15,10 @@ export async function createPostSuggestion(
   ctx: Context,
 ) {
   requireRole(ctx, ["USER", "MODERATOR", "ADMIN"]);
+  await requireVerifiedEmail(ctx);
 
   const validated = await inputSchema.parseAsync(input);
+  await validatePostReferences(validated);
 
   const exactExistingPost = await prisma.post.findFirst({
     where: {
@@ -71,13 +75,14 @@ export async function rejectCreatedPost(_: any, { id }: any, ctx: Context) {
     throw new Error("Submission already processed");
   }
 
-  await prisma.createdPost.update({
-    where: { id: submission.id },
+  const rejected = await prisma.createdPost.updateMany({
+    where: { id: submission.id, status: SUGGESTION_STATUS.PENDING },
     data: {
       status: "rejected",
       moderatorId: ctx.user!.id,
     },
   });
+  if (rejected.count !== 1) throw new Error("Submission already processed");
 
   return true;
 }
@@ -94,6 +99,12 @@ export async function approveCreatedPost(_: any, { id }: any, ctx: Context) {
     if (submission.status !== SUGGESTION_STATUS.PENDING) {
       throw new Error("Submission already processed");
     }
+
+    const claimed = await tx.createdPost.updateMany({
+      where: { id: submission.id, status: SUGGESTION_STATUS.PENDING },
+      data: { status: SUGGESTION_STATUS.APPROVED, moderatorId: ctx.user!.id },
+    });
+    if (claimed.count !== 1) throw new Error("Submission already processed");
 
     const validated = await inputSchema.parseAsync(submission.data);
 

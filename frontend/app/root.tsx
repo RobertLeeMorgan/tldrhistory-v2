@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { LinksFunction } from "react-router";
 import { Links, Meta, Scripts } from "react-router";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../src/lib/queryClient";
 import { AuthProvider } from "../src/context/AuthContext";
 import { ToastProvider } from "../src/context/ToastContext";
@@ -22,8 +22,9 @@ export const links: LinksFunction = () => [
 ];
 
 function AppProviders({ children }: { children: ReactNode }) {
+  const [client] = useState(() => typeof window === "undefined" ? new QueryClient() : queryClient);
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={client}>
       <ToastProvider>
         <AuthProvider>{children}</AuthProvider>
       </ToastProvider>

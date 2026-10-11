@@ -1,4 +1,5 @@
 import prisma from "../server/client";
+import { fetchWikimediaImage } from "../utils/fetchWikimediaImage";
 import PQueue from "p-queue";
 import sharp from "sharp";
 import crypto from "crypto";
@@ -94,17 +95,9 @@ async function fetchImage(url: string) {
 
   const controller = new AbortController();
   activeControllers.add(controller);
-  const timeout = setTimeout(() => controller.abort(), 20000);
 
   try {
-    const res = await fetch(encodeURI(url), {
-      method: "GET",
-      headers: {
-        "User-Agent": USER_AGENT,
-      },
-      redirect: "follow",
-      signal: controller.signal,
-    });
+    const res = await fetchWikimediaImage(url, controller, { userAgent: USER_AGENT });
 
     if (res.status === 429) {
       stopAllWork();
@@ -115,7 +108,6 @@ async function fetchImage(url: string) {
 
     return res;
   } finally {
-    clearTimeout(timeout);
     activeControllers.delete(controller);
   }
 }
@@ -207,13 +199,12 @@ async function processPost(post: any) {
       return;
     }
 
-    const arrayBuffer = await finalResponse.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const buffer = finalResponse.buffer;
 
     let processed: Buffer;
 
     try {
-      processed = await sharp(buffer)
+      processed = await sharp(buffer, { limitInputPixels: 40_000_000 })
         .resize({ height: 230, withoutEnlargement: true })
         .webp({ quality: 80 })
         .toBuffer();
