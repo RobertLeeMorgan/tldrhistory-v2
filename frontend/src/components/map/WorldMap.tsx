@@ -6,10 +6,10 @@ import { scaleSqrt } from "d3-scale";
 import "d3-transition";
 import { useEra } from "../../context/EraContext";
 import type { FeatureCollection, Geometry, Feature } from "geojson";
+import type { GeometryCollection, Topology } from "topojson-specification";
 import { useQueryClient } from "@tanstack/react-query";
 import type { InfiniteData } from "@tanstack/react-query";
 import type { Post } from "../../generated/graphql";
-import { AnimatePresence } from "framer-motion";
 import groupColor from "./MapColour";
 import type { Continent } from "./MapColour";
 
@@ -17,16 +17,27 @@ const PostModal = lazy(
   () => import("../../features/timeline/components/TimelineModal"),
 );
 
+type Civilisation = {
+  id: string;
+  name: string;
+  country: { name: string; continent: string };
+  startYear: number;
+  endYear: number;
+  startSignificance: number;
+  group?: { id: number } | null;
+};
+
+type CountryEntry = {
+  civs: Civilisation[];
+  totalSignificance: number;
+  groupId: number | null;
+  country: { name: string; continent: Continent };
+};
+
+type MapFeature = Feature<Geometry, { name: string }>;
+
 type Props = {
-  civilisations: {
-    id: string;
-    name: string;
-    country: { name: string; continent: string };
-    startYear: number;
-    endYear: number;
-    startSignificance: number;
-    group?: { id: number } | null;
-  }[];
+  civilisations: Civilisation[];
   onClick?: () => void;
   isInteractive?: boolean;
 };
@@ -62,7 +73,7 @@ export default function WorldMap({
   );
 
   const countryMap = useMemo(() => {
-    const map = new Map<string, any>();
+    const map = new Map<string, CountryEntry>();
 
     activeCivilisations.forEach((c) => {
       const key = c.country.name.trim().toLowerCase();
@@ -112,14 +123,14 @@ export default function WorldMap({
 
     const loadWorld = async () => {
       if (!cachedWorld) {
-        const mod = await import("./world-110m.json");
-        const topology = (mod as any).default ?? mod;
+        const mod: unknown = await import("./world-110m.json");
+        const topology = ((mod as { default?: unknown }).default ?? mod) as Topology;
         const fcUnknown = feature(
           topology,
-          topology.objects.countries,
+          topology.objects.countries as GeometryCollection,
         ) as unknown;
 
-        if ((fcUnknown as any).type !== "FeatureCollection") return;
+        if (!fcUnknown || typeof fcUnknown !== "object" || !("type" in fcUnknown) || fcUnknown.type !== "FeatureCollection") return;
 
         cachedWorld = fcUnknown as FeatureCollection<
           Geometry,
@@ -151,12 +162,12 @@ export default function WorldMap({
         .selectAll("path")
         .data(cachedWorld.features)
         .join("path")
-        .attr("d", path as any)
+        .attr("d", (datum) => path(datum) ?? "")
         .attr("fill", "oklch(55.3% 0.013 58.071)")
         .attr("stroke", "#1B1715")
         .attr("stroke-width", 0.3);
     }
-  }, [worldDataLoaded]);
+  }, [path, projection, worldDataLoaded]);
 
   /** Draw dots */
   useEffect(() => {
@@ -178,16 +189,13 @@ export default function WorldMap({
         SVGCircleElement,
         Feature<Geometry, { name: string }>
       >("circle")
-      .data(filtered, (d: any) => d.properties.name);
+      .data(filtered, (d) => d.properties.name);
 
-    // EXIT: fade and shrink
-    circles
-      .exit()
-      .transition()
-      .duration(300)
-      .attr("r", 0)
-      .attr("opacity", 0)
-      .remove();
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const exiting = circles.exit();
+    if (reducedMotion) exiting.remove();
+    else exiting.transition().duration(300).attr("r", 0).attr("opacity", 0).remove();
 
     // ENTER: new circles
     const enterCircles = circles
@@ -204,11 +212,12 @@ export default function WorldMap({
           : "#adb7adff";
       });
 
-    // MERGE enter + update and transition all
-    enterCircles
-      .merge(circles)
-      .transition()
-      .duration(300)
+    const mergedCircles = enterCircles.merge(circles);
+    const positionedCircles = reducedMotion
+      ? mergedCircles
+      : mergedCircles.transition().duration(300);
+
+    positionedCircles
       .attr("cx", (d) => projection(geoCentroid(d))?.[0] ?? 0)
       .attr("cy", (d) => projection(geoCentroid(d))?.[1] ?? 0)
       .attr("r", (d) => {
@@ -227,8 +236,8 @@ export default function WorldMap({
 
     // Tooltip & click logic (same as before)
     dotsG
-      .selectAll("circle")
-      .on("mouseenter", (_e, d: any) => {
+      .selectAll<SVGCircleElement, MapFeature>("circle")
+      .on("mouseenter", (_e, d) => {
         const entry = countryMap.get(d.properties.name.trim().toLowerCase());
         if (!entry) return;
 
@@ -239,11 +248,8 @@ export default function WorldMap({
           tooltip.append("br");
           tooltip.append("span").text(civ.name);
         }
-        tooltip
-          .style("opacity", 0)
-          .transition()
-          .duration(200)
-          .style("opacity", 1);
+        if (reducedMotion) tooltip.style("opacity", 1);
+        else tooltip.style("opacity", 0).transition().duration(200).style("opacity", 1);
       })
       .on("mousemove", (event) => {
         if (!tooltipRef.current || !svgRef.current) return;
@@ -255,7 +261,7 @@ export default function WorldMap({
       .on("mouseleave", () => {
         select(tooltipRef.current).style("display", "none");
       })
-      .on("click", function (event, d: any) {
+      .on("click", function (event, d) {
         const entry = countryMap.get(d.properties.name.trim().toLowerCase());
 
         if (!isInteractive) {
@@ -285,7 +291,7 @@ export default function WorldMap({
         }
       })
       .style("cursor", isInteractive ? "pointer" : "default");
-  }, [countryMap, groupColors, worldDataLoaded]);
+  }, [countryMap, groupColors, isInteractive, onClick, projection, queryClient, radiusScale, worldDataLoaded]);
 
   return (
     <>
@@ -302,19 +308,23 @@ export default function WorldMap({
           className="w-full h-auto"
         />
 
+        <ul className="sr-only" aria-label="Active civilisation locations">
+          {activeCivilisations.map((civilisation) => (
+            <li key={civilisation.id}>{civilisation.name}, {civilisation.country.name}</li>
+          ))}
+        </ul>
+
         <div
           ref={tooltipRef}
           className={`${isInteractive ? "text-lg" : "text-sm"} absolute pointer-events-none bg-stone-800 text-stone-200 rounded px-2 py-1 hidden z-10`}
         />
       </div>
 
-      <AnimatePresence>
-        {openPost && (
-          <Suspense fallback={null}>
-            <PostModal open post={openPost} onClose={() => setOpenPost(null)} />
-          </Suspense>
-        )}
-      </AnimatePresence>
+      {openPost && (
+        <Suspense fallback={null}>
+          <PostModal open post={openPost} onClose={() => setOpenPost(null)} />
+        </Suspense>
+      )}
     </>
   );
 }

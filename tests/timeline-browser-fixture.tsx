@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, useNavigate } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Timeline from '../frontend/src/features/timeline/components/Timeline';
-import UtilityMenu from '../frontend/src/components/ui/UtilityMenu';
+import TimelineToolbar from '../frontend/src/features/timeline/components/TimelineToolbar';
 import WorldMap from '../frontend/src/components/map/WorldMap';
 import { EraProvider, useEra } from '../frontend/src/context/EraContext';
 import { TimelineFilterProvider, useTimelineFilter } from '../frontend/src/context/FilterContext';
@@ -23,7 +23,7 @@ function App() {
       <button id="reset" onClick={() => resetFilter({ replace: false })}>Reset</button>
       <button id="reverse" onClick={() => navigate('/timeline?o=desc')}>Reverse</button>
       <button id="region" onClick={() => era.setView(era.view === 'global' ? 'europe' : 'global')}>Region</button>
-      <UtilityMenu onOpenDrawer={() => setDrawerOpen(true)} />
+      <TimelineToolbar onOpenDrawer={() => setDrawerOpen(true)} />
     </div>
     <div style={{ position: 'fixed', right: 0, top: 140, zIndex: 10, pointerEvents: 'none' }} id="map">
       <WorldMap civilisations={[{ id: 'civ', name: '<img src=x onerror=alert(1)>', country: { name: 'France', continent: 'Europe' }, startYear: 1200, endYear: 1600, startSignificance: 1 }]} />

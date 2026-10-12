@@ -61,6 +61,12 @@
   :root { --page-gutter: 2rem; }
 }
 
+@media (max-height: 650px) {
+  :root { --timeline-header-height: 9.5rem; }
+  #timeline-context-header [aria-label^="Historical eras"] { max-height: 4.6rem; }
+  #timeline-context-header [aria-label^="Historical eras"] > div > div { padding-top: 0.85rem; padding-bottom: 0.55rem; }
+}
+
 html {
   min-width: 20rem;
   min-height: 100%;

@@ -1,33 +1,19 @@
 export default function Skeleton() {
   return (
-    <div className="card bg-gradient-to-br from-card-primary to-card-secondary shadow-xl shadow-stone-950/40 border border-stone-700 w-full">
-      <div className="card-body w-full px-5 gap-4">
-        {/* Title */}
-        <div className="skeleton bg-stone-500/70 h-7 w-[70%]" />
-
-        {/* Subheader */}
-        <div className="skeleton bg-stone-500/70 h-5 w-[40%] mb-4" />
-
-        {/* Content */}
-        <div className="flex gap-4 items-start mb-2">
-          {/* Text */}
-          <div className="flex-1 space-y-3">
-            <div className="skeleton bg-stone-500/70 h-5 w-full" />
-            <div className="skeleton bg-stone-500/70 h-5 w-full" />
-            <div className="skeleton bg-stone-500/70 h-5 w-full" />
-            <div className="skeleton bg-stone-500/70 h-5 w-full" />
-            <div className="skeleton bg-stone-500/70 h-5 w-[60%]" />
-          </div>
-
-          {/* Image */}
-          <div className="skeleton bg-stone-500/70 w-32 h-32 rounded shrink-0" />
-
-          
+    <div className="w-full rounded-2xl border border-divider bg-surface-raised p-5 shadow-[0_16px_42px_rgba(0,0,0,.2)] sm:p-6" aria-hidden="true">
+      <div className="space-y-4 motion-safe:animate-pulse">
+        <div className="h-7 w-3/4 rounded bg-divider/80" />
+        <div className="h-4 w-2/5 rounded bg-divider/60" />
+        <div className="aspect-[16/10] w-full rounded-xl bg-divider/45" />
+        <div className="space-y-2.5">
+          <div className="h-4 w-full rounded bg-divider/55" />
+          <div className="h-4 w-full rounded bg-divider/55" />
+          <div className="h-4 w-2/3 rounded bg-divider/55" />
         </div>
-        <div className="flex space-x-4">
-            <div className="skeleton bg-stone-500/70 h-5 w-[20%]" />
-            <div className="skeleton bg-stone-500/70 h-5 w-[20%]" />
-          </div>
+        <div className="flex gap-2 border-t border-divider pt-4">
+          <div className="h-7 w-20 rounded-full bg-divider/55" />
+          <div className="h-7 w-24 rounded-full bg-divider/55" />
+        </div>
       </div>
     </div>
   );

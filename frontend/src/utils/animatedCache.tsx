@@ -1,1 +1,0 @@
-export const animatedPosts = new Set<string>();

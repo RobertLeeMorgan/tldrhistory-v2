@@ -52,8 +52,12 @@ window.loadedCount=empty?0:count; return {posts:empty?[]:makePosts(count,filter.
     const count=await evaluate("document.querySelectorAll('[data-post-id]').length");assert.ok(count<100,'virtual DOM must stay bounded: '+count);
     const checkEra=async()=>{await sleep(900);const x=await evaluate(`(()=>{const visibleTop=document.querySelector('#timeline-context-header').getBoundingClientRect().bottom;const cards=[...document.querySelectorAll('[data-post-id]')].map(n=>({year:Number(n.dataset.startYear),top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom})).filter(n=>n.bottom>visibleTop&&n.top<innerHeight);return {year:Number(document.querySelector('#era').dataset.year),visible:cards.map(n=>n.year),dots:document.querySelectorAll('#map svg circle').length}})()`);assert.ok(x.visible.includes(x.year),JSON.stringify(x));assert.equal(x.dots,x.year>=1200&&x.year<=1600?1:0,'map must follow tracked year: '+JSON.stringify(x));};
     for(const y of [0,1600,6000,2500,0]){await evaluate('scrollTo(0,'+y+')');await checkEra();}
+    for(const viewport of [[320,844],[480,844],[768,1024],[1024,768],[1536,900],[1920,1080],[844,480]]){
+      await call('Emulation.setDeviceMetricsOverride',{width:viewport[0],height:viewport[1],deviceScaleFactor:1,mobile:false});await sleep(250);
+      assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,'horizontal overflow at '+viewport.join('x'));
+    }
     await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:false});await sleep(400);await checkEra();
-    await evaluate("document.querySelector(\"[aria-label='Filter timeline']\").click()");await until("document.querySelector('[role=dialog][aria-label=\"Timeline filters\"]') && document.body.style.overflow==='hidden'");
+    await evaluate("document.querySelector(\"[aria-label^='Open filters']\").click()");await until("document.querySelector('[role=dialog][aria-label=\"Timeline filters\"]') && document.body.style.overflow==='hidden'");
     await evaluate("window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))");await until("!document.querySelector('[role=dialog][aria-label=\"Timeline filters\"]') && document.body.style.overflow!=='hidden'");
     await evaluate('scrollTo(0,3000)');await checkEra();
     await evaluate("document.querySelector('#region').click()");await checkEra();

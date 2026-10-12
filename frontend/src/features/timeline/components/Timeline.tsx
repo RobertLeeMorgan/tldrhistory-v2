@@ -15,7 +15,6 @@ import AnimatedCard from "./AnimatedCard";
 import Skeleton from "../../../components/ui/Skeleton";
 import useTimeline from "../hooks/useTimeline";
 import { useEraTracker } from "../hooks/useEraTracker";
-import { AnimatePresence, motion } from "framer-motion";
 import { Masonry, useInfiniteLoader } from "masonic";
 
 const PostModal = lazy(() => import("./TimelineModal"));
@@ -127,21 +126,18 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
   return (
     <div className="relative pb-20">
       {!isLoading && !error && safePosts.length === 0 && (
-        <div className="p-8 text-center text-lg text-stone-900">
-          No posts yet
+        <div className="rounded-2xl border border-divider bg-surface p-8 text-center sm:p-12">
+          <p className="atlas-eyebrow">No matches</p>
+          <h2 className="mt-2 text-2xl font-bold text-content">No posts yet</h2>
+          <p className="mt-2 text-sm text-content-muted">Try a broader date range or remove one of the active filters.</p>
         </div>
       )}
 
       {isLoading && safePosts.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
-          className="grid grid-cols-1 gap-3 lg:grid-cols-2"
-        >
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2" role="status" aria-label="Loading timeline articles">
           <Skeleton />
           <Skeleton />
-        </motion.div>
+        </div>
       )}
 
       {safePosts.length > 0 && (
@@ -171,9 +167,9 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
       )}
 
       {error && (
-        <div role="alert" className="p-4 text-center text-gold">
-          <p>Could not load {safePosts.length ? "more posts" : "the timeline"}.</p>
-          <button type="button" className="btn btn-sm" onClick={() => {
+        <div role="alert" className="rounded-xl border border-danger/35 bg-danger/8 p-5 text-center text-content">
+          <p className="font-bold">Could not load {safePosts.length ? "more posts" : "the timeline"}.</p>
+          <button type="button" className="mt-3 min-h-11 rounded-lg border border-danger px-4 text-sm font-bold text-danger hover:bg-danger/10" onClick={() => {
             if (isFetchNextPageError) void fetchNextPage();
             else void refetch();
           }}>Retry</button>
@@ -181,16 +177,16 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
       )}
 
       {isFetchingNextPage && isEnhanced && (
-        <span className="loading loading-spinner mx-auto flex pt-14 text-gold loading-xl" />
+        <div className="flex items-center justify-center gap-3 py-12 text-sm font-bold text-content-muted" role="status">
+          <span className="loading loading-spinner text-accent" aria-hidden="true" /> Loading more history…
+        </div>
       )}
 
-      <AnimatePresence>
-        {openPost && (
-          <Suspense fallback={null}>
-            <PostModal open post={safePosts.find((post) => post.id === openPost.id) ?? openPost} onClose={() => setOpenPost(null)} />
-          </Suspense>
-        )}
-      </AnimatePresence>
+      {openPost && (
+        <Suspense fallback={null}>
+          <PostModal open post={safePosts.find((post) => post.id === openPost.id) ?? openPost} onClose={() => setOpenPost(null)} />
+        </Suspense>
+      )}
     </div>
   );
 }
