@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Skeleton from "../ui/Skeleton";
 import TimelineTabs from "../ui/TimelineTabs";
+import MasonryGrid from "./MasonryGrid";
+import { ContextSwap } from "./AnimatedValue";
 
 export interface TabConfig<T extends string> {
   id: T;
@@ -19,6 +21,7 @@ interface TabbedTimelineProps<T extends string, Item> {
   isLoading: boolean;
   isError?: boolean;
   className?: string;
+  masonry?: boolean;
 }
 
 export default function TabbedTimeline<T extends string, Item>({
@@ -32,6 +35,7 @@ export default function TabbedTimeline<T extends string, Item>({
   isLoading,
   isError = false,
   className = "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8",
+  masonry = false,
 }: TabbedTimelineProps<T, Item>) {
   const [internalActiveTab, setInternalActiveTab] = useState<T>(tabs[0].id);
 
@@ -86,9 +90,8 @@ export default function TabbedTimeline<T extends string, Item>({
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <Skeleton />
-          <Skeleton />
+        <div className={`grid grid-cols-1 gap-6 ${masonry ? "md:grid-cols-2 min-[1440px]:grid-cols-3" : "lg:grid-cols-2"}`}>
+          {Array.from({ length: masonry ? 6 : 2 }, (_, index) => <Skeleton key={index} />)}
         </div>
       ) : isError ? (
         <div className="rounded-xl border border-danger/40 bg-danger/8 p-6 font-semibold text-danger" role="alert">
@@ -108,16 +111,19 @@ export default function TabbedTimeline<T extends string, Item>({
             role="tabpanel"
             aria-labelledby={`timeline-tab-${currentTab}`}
           >
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {items.map((item, index) => (
-                <div
-                  key={getItemKey(item, index)}
-                  className="min-w-0"
-                >
-                  {renderCard(item)}
+            <ContextSwap transitionKey={currentTab} className="block">
+              {masonry ? (
+                <MasonryGrid items={items} getItemKey={getItemKey} renderCard={renderCard} />
+              ) : (
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  {items.map((item, index) => (
+                    <div key={getItemKey(item, index)} className="min-w-0">
+                      {renderCard(item)}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )}
+            </ContextSwap>
           </div>
       )}
     </div>

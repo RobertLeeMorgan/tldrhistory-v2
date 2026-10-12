@@ -17,7 +17,7 @@ export default function CardHeader({ post, onOpen }: { post: Post; onOpen?: () =
   const metadata = `${start}${end && end !== "0 CE" ? ` - ${end}` : ""}, ${post.country.name}`;
 
   return (
-    <header className="relative z-20 space-y-2">
+    <header className="relative z-20 space-y-1.5">
       <h2 className="text-xl font-bold leading-tight text-content md:text-2xl">
         {onOpen ? (
           <button
@@ -33,7 +33,7 @@ export default function CardHeader({ post, onOpen }: { post: Post; onOpen?: () =
           </button>
         ) : post.name}
       </h2>
-      <p className="text-sm font-medium leading-6 text-content-muted sm:text-base">{metadata}</p>
+      <p className="text-sm font-medium leading-5 text-content-muted sm:text-base">{metadata}</p>
     </header>
   );
 }

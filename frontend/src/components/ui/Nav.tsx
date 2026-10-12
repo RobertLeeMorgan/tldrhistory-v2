@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router";
-import { LuChevronDown, LuMenu, LuUserRound, LuX } from "react-icons/lu";
+import { LuChevronDown, LuMenu, LuX } from "react-icons/lu";
 import { useToast } from "../../context/ToastContext";
 import { useAuth } from "../../context/AuthContext";
+import { RomanHelmet, UserIcon } from "../../icons/icons";
+import { useMobileNavVisibility } from "../../hooks/useMobileNavVisibility";
 
 type MenuLink = { to: string; label: string };
 
@@ -28,6 +30,7 @@ export default function Nav() {
   const [accountMenuLocation, setAccountMenuLocation] = useState<string | null>(null);
   const mobileOpen = mobileMenuLocation === locationKey;
   const accountOpen = accountMenuLocation === locationKey;
+  const navHidden = useMobileNavVisibility(mobileOpen || accountOpen);
 
   useEffect(() => {
     const closeOnOutsideClick = (event: PointerEvent) => {
@@ -76,8 +79,8 @@ export default function Nav() {
       ];
 
   return (
-    <nav ref={navRef} aria-label="Primary navigation" className="fixed inset-x-0 top-0 z-50 h-[var(--nav-height)] border-b border-divider/70 bg-canvas/95 shadow-lg shadow-black/15 backdrop-blur-xl">
-      <div className="mx-auto flex h-full max-w-[1600px] items-center gap-3 px-4 sm:px-6 lg:px-8">
+    <nav ref={navRef} aria-label="Primary navigation" className={`fixed inset-x-0 top-0 z-50 h-[var(--nav-height)] border-b border-divider/70 bg-canvas/95 shadow-lg shadow-black/15 backdrop-blur-xl transition-transform duration-300 ease-out md:translate-y-0 ${navHidden ? "-translate-y-full" : "translate-y-0"}`}>
+      <div className="mx-auto flex h-full max-w-[1600px] items-center gap-8 px-4 sm:px-6 lg:gap-12 lg:px-8">
         <Link to="/timeline" aria-label="TL;DR History timeline" className="flex min-w-0 shrink-0 items-center rounded-sm">
           <img src="/tldr-history-logo.svg" alt="TL;DR History" className="h-8 w-auto max-w-[170px] sm:h-9 sm:max-w-[220px]" />
         </Link>
@@ -121,7 +124,9 @@ export default function Nav() {
               {loading ? (
                 <span className="loading loading-spinner loading-sm text-accent" aria-label="Loading account" />
               ) : (
-                <LuUserRound aria-hidden="true" className="size-5" />
+                <span aria-hidden="true" className="size-6 text-accent">
+                  {isAuth.token ? <RomanHelmet /> : <UserIcon />}
+                </span>
               )}
               <span className="hidden max-w-28 truncate text-sm font-semibold sm:inline">
                 {isAuth.token ? isAuth.username || "Account" : "Account"}

@@ -67,7 +67,7 @@ export default function WorldMap({
   const activeCivilisations = useMemo(
     () =>
       civilisations.filter(
-        (c) => c.startYear <= dataStartYear && c.endYear >= dataStartYear,
+        (c) => c.startYear <= dataStartYear && (c.endYear === 0 || c.endYear >= dataStartYear),
       ),
     [civilisations, dataStartYear],
   );

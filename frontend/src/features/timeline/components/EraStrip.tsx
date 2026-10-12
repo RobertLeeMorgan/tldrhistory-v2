@@ -7,7 +7,7 @@ function yearLabel(year: number) {
   return Math.abs(year).toLocaleString() + " " + formatYear(year);
 }
 
-export default function EraStrip() {
+export default function EraStrip({ className = "" }: { className?: string }) {
   const { view, eraIndex } = useEra();
   const ranges = RANGE_SETS[view];
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -23,14 +23,14 @@ export default function EraStrip() {
   }, [eraIndex, view]);
 
   return (
-    <div className="border-t border-divider/70">
+    <div className={`min-w-0 border-t border-divider/70 ${className}`}>
       <div
         ref={scrollerRef}
         tabIndex={0}
         aria-label="Historical eras, shown as equal-width periods rather than to scale"
-        className="overflow-x-auto overscroll-x-contain [scrollbar-color:var(--color-divider)_transparent]"
+        className="scrollbar-hidden overflow-x-auto overscroll-x-contain"
       >
-        <div className="mx-auto flex min-w-max px-4 sm:px-6 lg:max-w-[1500px] lg:px-8">
+        <div className="flex min-w-max px-2 sm:px-4">
           {ranges.map((range, index) => {
             const active = index === eraIndex;
             return (
@@ -38,7 +38,7 @@ export default function EraStrip() {
                 key={range.label}
                 ref={active ? activeRef : undefined}
                 aria-current={active ? "step" : undefined}
-                className="relative min-w-44 flex-1 px-4 pb-3 pt-4 text-center"
+                className="relative min-w-40 flex-1 px-3 pb-3 pt-4 text-center sm:min-w-44 sm:px-4"
               >
                 <span
                   aria-hidden="true"

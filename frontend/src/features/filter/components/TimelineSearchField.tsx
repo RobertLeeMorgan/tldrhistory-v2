@@ -8,6 +8,7 @@ type TimelineSearchFieldProps = {
   label?: string;
   className?: string;
   buttonLabel?: string;
+  compact?: boolean;
 };
 
 export default function TimelineSearchField({
@@ -18,11 +19,12 @@ export default function TimelineSearchField({
   label = "Search history",
   className = "",
   buttonLabel = "Search",
+  compact = false,
 }: TimelineSearchFieldProps) {
   return (
     <form
       role="search"
-      className={`flex min-h-12 min-w-0 items-center gap-2 rounded-full border border-control bg-cream-raised px-4 text-ink shadow-lg shadow-black/15 focus-within:border-accent ${className}`}
+      className={`flex min-w-0 items-center rounded-full border border-control bg-cream-raised text-ink shadow-lg shadow-black/15 focus-within:border-accent ${compact ? "min-h-10 gap-1.5 px-3" : "min-h-12 gap-2 px-4"} ${className}`}
       onSubmit={(event) => {
         event.preventDefault();
         onSubmit();
@@ -38,12 +40,12 @@ export default function TimelineSearchField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="min-w-0 flex-1 bg-transparent py-2 text-sm text-ink outline-none placeholder:text-ink/55"
+        className={`min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink/55 ${compact ? "py-1" : "py-2"}`}
       />
       <button
         type="submit"
         aria-label={buttonLabel}
-        className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent transition-colors hover:bg-accent-strong"
+        className={`inline-flex shrink-0 items-center justify-center rounded-full bg-accent text-on-accent transition-colors hover:bg-accent-strong ${compact ? "size-8" : "size-9"}`}
       >
         <LuArrowRight aria-hidden="true" />
       </button>

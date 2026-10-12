@@ -68,7 +68,7 @@ export default function User() {
         isLoading={isLoading}
         verified={stats?.emailVerifiedAt}
       />
-      <div className="relative z-10 -mt-5 space-y-8">
+      <div className="relative z-10 mx-auto -mt-5 grid max-w-[1600px] gap-6 px-4 sm:px-6 lg:grid-cols-[var(--timeline-sidebar-width)_minmax(0,1fr)] lg:items-start lg:px-8">
         <UserStats stats={stats?.stats} isLoading={isLoading} />
         <UserTimeline userId={userId} />
       </div>

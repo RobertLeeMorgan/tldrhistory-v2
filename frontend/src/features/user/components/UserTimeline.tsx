@@ -47,6 +47,7 @@ export default function UserTimeline({ userId }: { userId: number }) {
 
   return (
     <TabbedTimeline
+      masonry
       tabs={tabs}
       activeTab={activeTab}
       onTabChange={setActiveTab}
@@ -62,6 +63,7 @@ export default function UserTimeline({ userId }: { userId: number }) {
       )}
       isLoading={isLoading}
       isError={isError}
+      className="min-w-0"
     />
   );
 }

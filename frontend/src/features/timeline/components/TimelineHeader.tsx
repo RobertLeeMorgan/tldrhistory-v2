@@ -4,10 +4,16 @@ import { formatYear } from "../../../utils/formatYear";
 import type { TimelineFilter } from "../../filter/components/TimelineFilter";
 import { themes } from "../../../utils/drawerValues";
 import { VIEW_OPTIONS } from "../../../utils/rangeViews";
+import { AnimatedNumber, ContextSwap, TextSwap } from "../../../components/ui/AnimatedValue";
 import EraStrip from "./EraStrip";
 
-function yearLabel(year: number) {
-  return Math.abs(year).toLocaleString() + " " + formatYear(year);
+function AnimatedYear({ year, className }: { year: number; className?: string }) {
+  return (
+    <span className={`inline-flex items-baseline gap-1 tabular-nums ${className ?? ""}`}>
+      <AnimatedNumber value={Math.abs(year)} format={(value) => Math.floor(value).toLocaleString()} />
+      <span className="text-[0.7em] font-semibold text-content-muted">{formatYear(year)}</span>
+    </span>
+  );
 }
 
 export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
@@ -15,8 +21,7 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
   const groupMeta = filter.group > 0
     ? themes.options.find((option) => option.value === filter.group)
     : null;
-  const hasExplicitRange =
-    filter.yearStart !== -300000 && filter.yearEnd !== 2025;
+  const hasExplicitRange = filter.yearStart !== -300000 && filter.yearEnd !== 2025;
   const years: [number, number] = hasExplicitRange
     ? [filter.yearStart ?? startYear, filter.yearEnd ?? endYear]
     : groupMeta?.fallbackYears
@@ -32,47 +37,54 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
       className="fixed inset-x-0 top-[var(--nav-height)] z-40 h-[var(--timeline-header-height)] overflow-hidden border-b border-divider bg-canvas/97 shadow-xl shadow-black/20 backdrop-blur-xl"
     >
       <div className="pointer-events-none absolute inset-0 opacity-40 [background:radial-gradient(circle_at_72%_20%,rgba(214,173,104,.14),transparent_33%),linear-gradient(90deg,rgba(16,23,25,1),rgba(24,33,36,.72))]" />
-      <div className="relative mx-auto grid h-[calc(var(--timeline-header-height)-5.7rem)] max-w-[1600px] grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:grid-cols-[minmax(0,1fr)_220px_260px] lg:px-8">
-        <div className="min-w-0">
-          <p className="atlas-eyebrow">Current context</p>
-          <h1 className="truncate font-serif text-2xl font-semibold text-content sm:text-3xl lg:text-4xl">
-            {title}
+      <div className="relative mx-auto grid h-full max-w-[1600px] grid-cols-[minmax(0,1fr)_minmax(8.5rem,auto)] grid-rows-[minmax(0,1fr)_auto] md:grid-cols-[minmax(17rem,30%)_minmax(0,1fr)]">
+        <div className="min-w-0 px-4 py-2 sm:px-6 md:row-span-2 md:flex md:flex-col md:justify-center md:border-r md:border-divider/70 lg:px-8">
+          <p className="atlas-eyebrow">Current era</p>
+          <h1 className="truncate font-serif text-xl font-semibold text-content sm:text-3xl lg:text-4xl">
+            {groupMeta ? title : <TextSwap text={title} className="block truncate" />}
           </h1>
-          <p className="mt-1 hidden max-w-2xl truncate text-sm text-content-muted sm:block">
-            {subheadline}
-          </p>
-          <p className="mt-1 text-xs font-semibold text-accent sm:text-sm">
-            {yearLabel(orderedYears[0] ?? 0)} – {yearLabel(orderedYears[1] ?? 0)}
+          {subheadline && (
+            <p className="mt-0.5 hidden max-w-md truncate text-xs text-content-muted sm:block lg:text-sm">
+              <ContextSwap transitionKey={subheadline}>{subheadline}</ContextSwap>
+            </p>
+          )}
+          <p className="mt-0.5 truncate text-xs font-semibold text-accent sm:text-sm">
+            <AnimatedYear year={orderedYears[0] ?? 0} />
+            <span className="mx-1.5 text-content-muted">–</span>
+            <AnimatedYear year={orderedYears[1] ?? 0} />
           </p>
         </div>
 
-        <div className="hidden border-l border-divider pl-6 lg:block">
-          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-content-muted">
-            <LuMapPin aria-hidden="true" /> Timeline position
-          </p>
-          <p className="mt-1 font-serif text-3xl text-content">{yearLabel(dataStartYear)}</p>
+        <div className="grid min-w-0 grid-cols-1 content-center gap-1 border-l border-divider/70 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_minmax(9rem,12rem)] sm:items-center sm:gap-4 sm:px-5 md:border-l-0 lg:px-7">
+          <div className="min-w-0">
+            <p className="flex items-center gap-1.5 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-content-muted sm:text-xs">
+              <LuMapPin aria-hidden="true" /> Timeline year
+            </p>
+            <p className="truncate font-serif text-lg text-content sm:text-2xl">
+              <AnimatedYear year={dataStartYear} />
+            </p>
+          </div>
+
+          <label className="relative min-w-0">
+            <span className="sr-only sm:not-sr-only sm:mb-1 sm:block sm:text-[0.62rem] sm:font-bold sm:uppercase sm:tracking-[0.12em] sm:text-content-muted">
+              Era perspective
+            </span>
+            <LuGlobe aria-hidden="true" className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-accent sm:top-[calc(50%+.55rem)]" />
+            <select
+              value={view}
+              onChange={(event) => setView(event.target.value as typeof view)}
+              className="atlas-control h-9 min-h-9 w-full min-w-0 appearance-none pl-8 pr-6 text-xs"
+              aria-label="Era perspective"
+            >
+              {VIEW_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </label>
         </div>
 
-        <label className="flex min-w-0 items-center gap-2 lg:flex-col lg:items-stretch">
-          <span className="sr-only lg:not-sr-only lg:text-xs lg:font-bold lg:uppercase lg:tracking-[0.15em] lg:text-content-muted">
-            Era perspective
-          </span>
-          <span className="pointer-events-none absolute ml-3 text-accent lg:mt-[2.25rem]">
-            <LuGlobe aria-hidden="true" />
-          </span>
-          <select
-            value={view}
-            onChange={(event) => setView(event.target.value as typeof view)}
-            className="atlas-control min-w-0 max-w-40 appearance-none pl-9 pr-7 text-xs sm:max-w-48 sm:text-sm lg:max-w-none"
-            aria-label="Era perspective"
-          >
-            {VIEW_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-        </label>
+        <EraStrip className="col-span-2 min-w-0 md:col-span-1 md:col-start-2" />
       </div>
-      <EraStrip />
     </header>
   );
 }

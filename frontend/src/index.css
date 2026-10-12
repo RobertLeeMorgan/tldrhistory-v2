@@ -83,6 +83,22 @@ body {
   color: var(--color-content);
 }
 
+@keyframes atlas-context-in {
+  from { opacity: 0; transform: translateY(0.2rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.atlas-context-swap {
+  animation: atlas-context-in 200ms ease-out both;
+}
+
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar { display: none; }
+
 button, input, select, textarea { font: inherit; }
 
 button, a, input, select, textarea, [tabindex]:not([tabindex="-1"]) {

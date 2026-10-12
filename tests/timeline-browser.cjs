@@ -19,7 +19,7 @@ window.loadedCount=empty?0:count; return {posts:empty?[]:makePosts(count,filter.
     build.onResolve({filter: /hooks\/useTimeline$/}, () => ({path:'timeline-fixture',namespace:'fixture'}));
     build.onResolve({filter: /context\/AuthContext$/}, () => ({path:'auth-fixture',namespace:'fixture'}));
     build.onResolve({filter: /lib\/(graphql|api)$/}, args => ({path:args.path.endsWith('graphql')?'graphql-fixture':'api-fixture',namespace:'fixture'}));
-    build.onLoad({filter: /.*/,namespace:'fixture'}, args => ({contents: args.path==='timeline-fixture'?fixtureHook:args.path==='auth-fixture'?`export const useAuth=()=>({isAuth:{id:'1',token:'fixture',role:'USER'}});`:args.path==='graphql-fixture'?`export const graphqlRequest=async()=>({likePost:{liked:true,likes:1}});`:`export const api={post:async()=>({data:{data:{}}})};`,loader:'js',resolveDir:path.join(root,'frontend')}));
+    build.onLoad({filter: /.*/,namespace:'fixture'}, args => ({contents: args.path==='timeline-fixture'?fixtureHook:args.path==='auth-fixture'?`export const useAuth=()=>({isAuth:{id:'1',token:'fixture',role:'USER',username:'Fixture'},loading:false,logout:async()=>{}});`:args.path==='graphql-fixture'?`export const graphqlRequest=async query=>{const source=String(query);if(source.includes('GetPopulation'))return {getPopulation:8000000};if(source.includes('GetSignificant'))return {getSignificant:{id:'1',name:'Fixture 1',imageUrl:null,cdnId:null}};if(source.includes('GetCivilisation'))return {getCivilisation:[{id:'civ',name:'Fixture civilisation',startYear:900,endYear:1800,startSignificance:1,country:{name:'France',continent:'Europe'},group:{id:1}}]};return {likePost:{liked:true,likes:1}};};`:`export const api={post:async()=>({data:{data:{}}})};`,loader:'js',resolveDir:path.join(root,'frontend')}));
   }}] });
   const assetsDir=path.join(root,'frontend/build/client/assets');
   const cssName=fs.readdirSync(assetsDir).find(name=>name.startsWith('root-')&&name.endsWith('.css'));
@@ -47,6 +47,9 @@ window.loadedCount=empty?0:count; return {posts:empty?[]:makePosts(count,filter.
     const baseline=await evaluate("({cards:document.querySelectorAll('[data-post-id]').length,loaded:window.loadedCount})");
     if(process.env.AUDIT_BASELINE){console.log('baseline DOM',baseline);return;}
     assert.ok(baseline.cards<baseline.loaded,JSON.stringify(baseline));
+    const headerGeometry=await evaluate(`(()=>{const title=document.querySelector('#timeline-context-header h1').parentElement.getBoundingClientRect();const strip=document.querySelector('[aria-label^="Historical eras"]').getBoundingClientRect();const year=[...document.querySelectorAll('#timeline-context-header p')].find(n=>n.textContent.includes('Timeline year')).parentElement.getBoundingClientRect();return {titleRight:title.right,stripLeft:strip.left,yearBottom:year.bottom,stripTop:strip.top}})()`);
+    assert.ok(headerGeometry.titleRight<=headerGeometry.stripLeft+1,'era strip overlaps title column: '+JSON.stringify(headerGeometry));
+    assert.ok(headerGeometry.yearBottom<=headerGeometry.stripTop+1,'timeline year must sit above era strip: '+JSON.stringify(headerGeometry));
     await evaluate('scrollTo(0,document.documentElement.scrollHeight)');await until('window.loadedCount>60');
     await evaluate("window.fixture.append()");await sleep(300);
     const count=await evaluate("document.querySelectorAll('[data-post-id]').length");assert.ok(count<100,'virtual DOM must stay bounded: '+count);
@@ -57,6 +60,11 @@ window.loadedCount=empty?0:count; return {posts:empty?[]:makePosts(count,filter.
       assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,'horizontal overflow at '+viewport.join('x'));
     }
     await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:false});await sleep(400);await checkEra();
+    const mobileStats=await evaluate(`(()=>{const aside=document.querySelector('aside[aria-label="Timeline context"]');const rect=aside.getBoundingClientRect();return {bottom:rect.bottom,height:rect.height,columns:getComputedStyle(aside.firstElementChild).gridTemplateColumns.split(' ').length}})()`);
+    assert.ok(Math.abs(mobileStats.bottom-844)<2,'mobile statistics must be fixed to viewport bottom: '+JSON.stringify(mobileStats));
+    assert.equal(mobileStats.columns,3,'mobile statistics must use three columns');
+    await evaluate('scrollTo(0,1400)');await sleep(450);assert.ok(await evaluate("document.querySelector('nav[aria-label=\"Primary navigation\"]').getBoundingClientRect().bottom<=1"),'mobile nav should hide after sustained downward scroll');
+    await evaluate('scrollBy(0,-120)');await sleep(450);assert.ok(await evaluate("document.querySelector('nav[aria-label=\"Primary navigation\"]').getBoundingClientRect().bottom>1"),'mobile nav should return after sustained upward scroll');
     await evaluate("document.querySelector(\"[aria-label^='Open filters']\").click()");await until("document.querySelector('[role=dialog][aria-label=\"Timeline filters\"]') && document.body.style.overflow==='hidden'");
     await evaluate("window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))");await until("!document.querySelector('[role=dialog][aria-label=\"Timeline filters\"]') && document.body.style.overflow!=='hidden'");
     await evaluate('scrollTo(0,3000)');await checkEra();
