@@ -1,192 +1,126 @@
+import { lazy, Suspense, useMemo, useState } from "react";
+import { LuChevronDown, LuGlobe, LuMap, LuSparkles, LuUsers } from "react-icons/lu";
 import { useEra } from "../../../context/EraContext";
-import {
-  useCivilisationQuery,
-  usePopulationQuery,
-  useSignificantQuery,
-} from "../../stats/hooks/useStats";
+import { useCivilisationQuery, usePopulationQuery, useSignificantQuery } from "../../stats/hooks/useStats";
 import { formatPopulation } from "../../../utils/formatPopulation";
 import { cleanName } from "../../../utils/cleanName";
-import type { TimelineFilter } from "../../../features/filter/components/TimelineFilter";
-import { motion, AnimatePresence, useTransform } from "framer-motion";
-import { useCountAnimation } from "../../../hooks/useCountUp";
-import { lazy, Suspense, useMemo, useState } from "react";
+import type { TimelineFilter } from "../../filter/components/TimelineFilter";
 import WorldMap from "../../../components/map/WorldMap";
-import StatsContainer from "../../stats/components/StatsContainer";
-import { StatBlock } from "../../stats/components/StatsBlock";
 
 const MapModal = lazy(() => import("../../../components/map/MapModal"));
 
 export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
-  const { startYear, endYear, label, Icon } = useEra();
+  const { startYear, endYear, dataStartYear, label } = useEra();
+  const [expanded, setExpanded] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
-
-  const { data, isLoading } = usePopulationQuery({ start: startYear });
-
-  const {
-    data: sigData,
-    isLoading: sigLoading,
-    isError: sigError,
-  } = useSignificantQuery({
-    startYear: startYear,
-    endYear: endYear,
-    filter: filter,
-  });
-
-  const { data: civData, isLoading: civLoading } = useCivilisationQuery({
-    startYear: startYear,
-    endYear: endYear,
-    filter: filter,
-  });
-
-  const significant = sigData?.getSignificant;
-  const civilisationsRaw = civData?.getCivilisation ?? [];
-  const populationValue = data?.getPopulation ?? null;
-
-  const imageSrc = significant?.cdnId
-    ? `https://cdn.tldrhistory.xyz/${significant.cdnId}`
-    : (significant?.imageUrl ?? null);
-
-  const animatedPopulation = useCountAnimation(populationValue ?? 0);
-
-  const formattedPopulation = useTransform(animatedPopulation, (v) =>
-    formatPopulation(Math.round(v)),
+  const population = usePopulationQuery({ start: startYear });
+  const significant = useSignificantQuery({ startYear, endYear, filter });
+  const civilisationQuery = useCivilisationQuery({ startYear, endYear, filter });
+  const civilisationsRaw = useMemo(
+    () => civilisationQuery.data?.getCivilisation ?? [],
+    [civilisationQuery.data?.getCivilisation],
   );
-
-  const civilisations = useMemo(() => {
-    return Array.from(
-      new Map(civilisationsRaw.map((c) => [cleanName(c.name), c])).values(),
-    );
-  }, [civilisationsRaw]);
+  const civilisations = useMemo(
+    () => Array.from(new Map(civilisationsRaw.map((item) => [cleanName(item.name), item])).values()),
+    [civilisationsRaw],
+  );
+  const significantPost = significant.data?.getSignificant;
+  const significantImage = significantPost?.cdnId
+    ? "https://cdn.tldrhistory.xyz/" + significantPost.cdnId
+    : significantPost?.imageUrl;
 
   return (
-    <StatsContainer timeline>
-      <StatBlock
-        title="Population"
-        description={label}
-        figure={<Icon className="w-8 md:w-10 lg:w-16 h-auto text-gold/95" />}
+    <>
+      <aside
+        aria-label="Timeline context"
+        className="mb-5 rounded-xl border border-divider bg-surface/95 shadow-xl shadow-black/20 lg:fixed lg:bottom-0 lg:left-0 lg:top-[calc(var(--nav-height)+var(--timeline-header-height))] lg:z-30 lg:mb-0 lg:w-[var(--timeline-sidebar-width)] lg:overflow-y-auto lg:rounded-none lg:border-b-0 lg:border-l-0 lg:border-t-0"
       >
-        {isLoading ? (
-          <span className="loading loading-spinner loading-lg m-auto"></span>
-        ) : populationValue != null ? (
-          <motion.div className="truncate">{formattedPopulation}</motion.div>
-        ) : (
-          <motion.div className="truncate">—</motion.div>
-        )}
-      </StatBlock>
+        <button
+          type="button"
+          aria-expanded={expanded}
+          className="flex min-h-12 w-full items-center justify-between px-4 text-left lg:hidden"
+          onClick={() => setExpanded((value) => !value)}
+        >
+          <span>
+            <span className="block text-xs font-bold uppercase tracking-[0.15em] text-content-muted">Timeline context</span>
+            <span className="font-serif text-lg text-content">{Math.abs(dataStartYear).toLocaleString()} · {label}</span>
+          </span>
+          <LuChevronDown aria-hidden="true" className={`transition-transform ${expanded ? "rotate-180" : ""}`} />
+        </button>
 
-      {/* Significant Figure */}
-      <div className="h-full border-dashed border-r border-stone-700/60 sm:border-r-0 sm:border-b grid">
-        <div className="sm:stat [overflow-y:hidden] h-20 sm:h-auto p-3 xs:px-5 sm:px-4 lg:px-6 space-y-1 place-content-start sm:place-content-evenly">
-          <div className="stat-figure text-gold/95 hidden lg:block">
-            {imageSrc ? (
-              <div className="avatar">
-                <div className="w-8 md:w-10 lg:w-16 hidden lg:block">
-                  <motion.img
-                    key={imageSrc}
-                    src={imageSrc}
-                    alt={significant?.name ?? "Significant figure"}
-                    className="absolute w-full h-full object-cover rounded-full"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                  />
+        <div className={`${expanded ? "block" : "hidden"} space-y-5 p-4 lg:block lg:p-5`}>
+          <header className="hidden lg:block">
+            <p className="atlas-eyebrow">Global context</p>
+            <h2 className="mt-2 font-serif text-2xl text-content">{label}</h2>
+            <p className="mt-1 text-sm text-content-muted">Position: {Math.abs(dataStartYear).toLocaleString()} {dataStartYear < 0 ? "BCE" : "CE"}</p>
+          </header>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <section className="rounded-lg border border-divider bg-canvas/55 p-4">
+              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.13em] text-content-muted">
+                <LuUsers aria-hidden="true" className="text-accent" /> Estimated global population
+              </p>
+              <p className="mt-2 font-serif text-2xl text-content" aria-live="polite">
+                {population.isLoading
+                  ? "Loading…"
+                  : population.isError
+                    ? "Unavailable"
+                    : formatPopulation(Number(population.data?.getPopulation ?? 0))}
+              </p>
+            </section>
+
+            <section className="rounded-lg border border-divider bg-canvas/55 p-4">
+              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.13em] text-content-muted">
+                <LuSparkles aria-hidden="true" className="text-accent" /> Most significant
+              </p>
+              {significant.isLoading ? (
+                <p className="mt-3 text-sm text-content-muted">Updating…</p>
+              ) : significant.isError || !significantPost ? (
+                <p className="mt-3 text-sm text-content-muted">Unavailable for this context</p>
+              ) : (
+                <div className="mt-3 flex items-center gap-3">
+                  {significantImage && <img src={significantImage} alt="" className="size-14 rounded-md object-cover" loading="lazy" />}
+                  <p className="font-serif text-lg leading-tight text-content">{cleanName(significantPost.name)}</p>
                 </div>
-              </div>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-8 md:w-10 lg:w-16 hidden lg:block stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4S8 5.79 8 8s1.79 4 4 4zm0 2c-3.866 0-7 1.567-7 3.5V19h14v-1.5c0-1.933-3.134-3.5-7-3.5z"
-                />
-              </svg>
-            )}
+              )}
+            </section>
           </div>
-          <div className="stat-title truncate self-end text-stone-400 md:text-base">
-            Most Significant
-          </div>
-          <div className="text-gold/95 font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl group">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={
-                  sigLoading
-                    ? "loading"
-                    : sigError
-                      ? "—"
-                      : (significant?.id ?? "empty")
-                }
-                className="line-clamp-2 text-wrap"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                onClick={(e) => {
-                  const tooltip = e.currentTarget
-                    .nextElementSibling as HTMLDivElement | null;
-                  if (tooltip) {
-                    tooltip.style.opacity =
-                      tooltip.style.opacity === "1" ? "0" : "1";
-                  }
-                }}
-              >
-                {sigLoading ? (
-                  <span className="loading loading-spinner loading-lg justify-center m-auto"></span>
-                ) : sigError ? (
-                  "—"
-                ) : significant?.name ? (
-                  cleanName(significant.name)
-                ) : (
-                  "—"
-                )}
-              </motion.div>
-            </AnimatePresence>
 
-            {significant?.name && (
-              <div className="absolute w-max max-w-xs bg-base-200 text-base-content text-sm rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50 pointer-events-none">
-                {cleanName(significant.name)}
+          <section className="border-t border-divider pt-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.13em] text-content-muted">
+                  <LuGlobe aria-hidden="true" className="text-accent" /> Article locations
+                </p>
+                <p className="mt-1 text-xs leading-5 text-content-muted">Modern country locations associated with active civilisation articles.</p>
               </div>
-            )}
-          </div>
-          <div className="stat-desc truncate self-start text-stone-400 md:text-base">
-            Highly influential event
-          </div>
-        </div>
-      </div>
-
-      {/* Civilisations */}
-      <div className="flex justify-center items-center">
-        {civLoading ? (
-          <span className="loading loading-spinner loading-lg justify-center m-auto text-gold/80"></span>
-        ) : (
-          <div className="size-fit">
-            <WorldMap
-              civilisations={civilisations}
+            </div>
+            <div className="mt-3 overflow-hidden rounded-lg border border-divider bg-canvas/60">
+              {civilisationQuery.isLoading ? (
+                <div className="grid aspect-[16/9] place-items-center text-sm text-content-muted">Loading map…</div>
+              ) : civilisationQuery.isError ? (
+                <div className="grid aspect-[16/9] place-items-center text-sm text-content-muted">Map unavailable</div>
+              ) : (
+                <WorldMap civilisations={civilisations} onClick={() => setMapOpen(true)} isInteractive={false} />
+              )}
+            </div>
+            <button
+              type="button"
               onClick={() => setMapOpen(true)}
-              isInteractive={false}
-            />
-          </div>
-        )}
-      </div>
+              disabled={civilisationQuery.isLoading || civilisationQuery.isError}
+              className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-accent px-4 text-sm font-bold text-accent transition-colors hover:bg-accent hover:text-on-accent disabled:opacity-50"
+            >
+              <LuMap aria-hidden="true" /> Open map
+            </button>
+          </section>
+        </div>
+      </aside>
 
-      {/* Modal */}
-      <AnimatePresence>
-        {mapOpen && (
-          <Suspense>
-            <MapModal
-              open={mapOpen}
-              onClose={() => setMapOpen(false)}
-              civilisations={civilisations}
-            />
-          </Suspense>
-        )}
-      </AnimatePresence>
-    </StatsContainer>
+      {mapOpen && (
+        <Suspense fallback={null}>
+          <MapModal open={mapOpen} onClose={() => setMapOpen(false)} civilisations={civilisations} />
+        </Suspense>
+      )}
+    </>
   );
 }

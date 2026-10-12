@@ -1,9 +1,9 @@
+import { lazy, Suspense, useState } from "react";
 import { Outlet } from "react-router";
+import { AnimatePresence } from "framer-motion";
 import TimelineHeader from "./TimelineHeader";
 import TimelineStats from "./TimelineStats";
-import { Suspense, lazy, useState } from "react";
 import { useTimelineFilter } from "../../../context/FilterContext";
-import { AnimatePresence } from "framer-motion";
 
 const Drawer = lazy(() => import("../../../components/drawer/Drawer"));
 const UtilityMenu = lazy(() => import("../../../components/ui/UtilityMenu"));
@@ -15,30 +15,15 @@ export default function TimelineLayout() {
   return (
     <>
       <TimelineHeader filter={filter} />
-      <TimelineStats filter={filter} />
-
-      <main
-        className="
-          relative z-10
-          pt-[8rem]
-          sm:pt-[var(--header-height-sm)]
-          md:pt-[var(--header-height-md)]
-          lg:pt-[var(--header-height-lg)]
-
-          pb-32
-          sm:pb-6
-
-          sm:pr-[min(34vw,420px)]
-          md:pr-[min(32vw,440px)]
-          lg:pr-[min(30vw,460px)]
-        "
-      >
-        <div className="fixed inset-0 z-0 bg-base" />
-        <div className="relative z-10 p-4 sm:p-6">
-          <Outlet />
+      <main className="relative z-10 min-h-screen bg-canvas pt-[var(--timeline-header-height)]">
+        <div className="relative mx-auto max-w-[1600px] lg:pl-[var(--timeline-sidebar-width)]">
+          <TimelineStats filter={filter} />
+          <section id="timeline-feed" aria-label="Historical timeline entries" className="min-w-0 px-4 pb-28 pt-4 sm:px-6 sm:pb-20 lg:px-7 lg:pt-6">
+            <Outlet />
+          </section>
         </div>
 
-        <div className="fixed z-40 right-1 bottom-[calc(7rem+env(safe-area-inset-bottom))] sm:right-auto sm:top-auto sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2">
+        <div className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-2 z-40 sm:left-1/2 sm:right-auto sm:-translate-x-1/2">
           <Suspense fallback={null}>
             <AnimatePresence>
               <UtilityMenu onOpenDrawer={() => setDrawerOpen(true)} />
@@ -49,13 +34,7 @@ export default function TimelineLayout() {
 
       <Suspense fallback={null}>
         <AnimatePresence>
-          {drawerOpen && (
-            <Drawer
-              key="timeline-drawer"
-              isOpen={drawerOpen}
-              onClose={() => setDrawerOpen(false)}
-            />
-          )}
+          {drawerOpen && <Drawer key="timeline-drawer" isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />}
         </AnimatePresence>
       </Suspense>
     </>

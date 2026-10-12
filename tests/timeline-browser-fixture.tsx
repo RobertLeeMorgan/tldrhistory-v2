@@ -15,7 +15,7 @@ function App() {
   const navigate = useNavigate();
   useEffect(() => { (window as any).navigateFixture = navigate; }, [navigate]);
   return <>
-    <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 99999, background: '#111', color: 'white', width: '100%' }}>
+    <div id="timeline-context-header" style={{ position: 'fixed', top: 0, left: 0, zIndex: 99999, background: '#111', color: 'white', width: '100%', minHeight: 120 }}>
       <output id="era" data-year={era.dataStartYear}>{era.label}</output>
       <button id="saved" onClick={() => navigate('/timeline?q=saved')}>Saved search</button>
       <button id="reset" onClick={() => resetFilter({ replace: false })}>Reset</button>

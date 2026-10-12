@@ -21,6 +21,8 @@ export function useEraTracker(
 
   useEffect(() => {
     const update = () => {
+      const occludingHeader = document.getElementById("timeline-context-header");
+      const viewportTop = Math.max(0, occludingHeader?.getBoundingClientRect().bottom ?? 0);
       let candidate: Post | undefined;
       let crossing: Post | undefined;
       let crossingTop = -Infinity;
@@ -30,8 +32,8 @@ export function useEraTracker(
         const element = postRefs.current.get(post.id)?.current;
         if (!element) continue;
         const rect = element.getBoundingClientRect();
-        if (rect.bottom <= 0 || rect.top >= window.innerHeight || rect.height === 0) continue;
-        if (rect.top >= 0) { candidate = post; break; }
+        if (rect.bottom <= viewportTop || rect.top >= window.innerHeight || rect.height === 0) continue;
+        if (rect.top >= viewportTop) { candidate = post; break; }
         if (rect.top > crossingTop) { crossing = post; crossingTop = rect.top; }
       }
       const topPost = candidate ?? crossing;

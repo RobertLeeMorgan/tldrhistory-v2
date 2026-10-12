@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useEffect,
+  useSyncExternalStore,
 } from "react";
 import type { Post } from "../../../generated/graphql";
 import type { TimelineFilter } from "../../../features/filter/components/TimelineFilter";
@@ -18,6 +19,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Masonry, useInfiniteLoader } from "masonic";
 
 const PostModal = lazy(() => import("./TimelineModal"));
+const subscribeToHydration = () => () => {};
 
 function StaticTimelineGrid({
   posts,
@@ -44,11 +46,11 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
     useTimeline({ filter });
 
   const [openPost, setOpenPost] = useState<Post | null>(null);
-  const [isEnhanced, setIsEnhanced] = useState(false);
-
-  useEffect(() => {
-    setIsEnhanced(true);
-  }, []);
+  const isEnhanced = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
 
   const safePosts = useMemo(
     () => posts.filter((post): post is Post => !!post && !!post.id),
@@ -155,9 +157,9 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
               items={safePosts}
               itemKey={(post) => post.id}
               columnGutter={24}
-              columnWidth={350}
+              columnWidth={320}
               itemHeightEstimate={400}
-              maxColumnCount={2}
+              maxColumnCount={3}
               onRender={(start, end, items) => {
                 maybeLoadMore(start, end, items);
                 scheduleEraUpdate();
