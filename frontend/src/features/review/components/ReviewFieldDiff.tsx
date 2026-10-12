@@ -15,21 +15,21 @@ export default function ReviewFieldDiff<T>({
 }: ReviewFieldDiffProps<T>) {
   if (!isDiff) {
     return (
-      <div>
-        <p className="text-stone-400 text-sm font-semibold">{label}:</p>
-        <p className="text-stone-200 text-base">{render(to)}</p>
+      <div className="rounded-lg border border-divider/70 bg-canvas/25 p-3">
+        <p className="text-xs font-bold uppercase tracking-wide text-content-muted">{label}</p>
+        <div className="mt-1 break-words text-sm text-content">{render(to)}</div>
       </div>
     );
   }
 
   return (
-    <div>
-      <p className="text-stone-400 text-sm font-semibold">
-        {label} <span className="text-gold text-sm">(changed)</span>
+    <div className="rounded-lg border border-accent/45 bg-accent/8 p-3">
+      <p className="text-xs font-bold uppercase tracking-wide text-content-muted">
+        {label} <span className="ml-1 text-accent">Changed</span>
       </p>
-      <div className="flex flex-col gap-1">
-        <p className="text-stone-400 text-sm line-through">{render(from)}</p>
-        <p className="text-stone-200 text-base">{render(to)}</p>
+      <div className="mt-2 grid gap-2">
+        <div className="break-words text-sm text-content-muted line-through">{render(from)}</div>
+        <div className="break-words border-l-2 border-accent pl-3 text-sm text-content">{render(to)}</div>
       </div>
     </div>
   );

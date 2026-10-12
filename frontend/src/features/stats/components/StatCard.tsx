@@ -1,5 +1,3 @@
-import { motion } from "framer-motion";
-
 type StatCardProps = {
   title: string;
   value?: string | number;
@@ -20,34 +18,22 @@ export default function StatCard({
   isNotFound = false,
 }: StatCardProps) {
   return (
-    <div className="stat lg:gap-2 space-y-1 p-3 xs:px-5 sm:px-4 lg:px-6 items-start sm:items-center">
+    <section className="relative min-w-0 overflow-hidden rounded-xl border border-divider bg-surface-raised p-4 shadow-lg shadow-black/15 sm:p-5">
       {(imageSrc || Icon) && (
-        <div className="stat-figure text-gold/95 hidden sm:block">
+        <div className="absolute bottom-3 right-3 text-accent/20" aria-hidden="true">
           {imageSrc ? (
-            <div className="avatar">
-              <div className="w-8 md:w-10 lg:w-16">
-                <motion.img
-                  key={imageSrc}
-                  src={imageSrc}
-                  alt={title}
-                  className="absolute w-full h-full object-cover rounded-full"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                />
-              </div>
-            </div>
+            <img src={imageSrc} alt="" className="size-16 rounded-full object-cover opacity-35" loading="lazy" />
           ) : Icon ? (
-            <Icon className="w-8 md:w-10 lg:w-16 h-auto" />
+            <Icon className="size-16" />
           ) : null}
         </div>
       )}
 
-      <div className="stat-title text-stone-400 truncate self-end md:text-base">
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-content-muted">
         {title}
-      </div>
+      </p>
 
-      <div className="text-gold/95 truncate font-extrabold text-md sm:text-xl md:text-3xl lg:text-4xl">
+      <p className="relative z-10 mt-2 truncate font-serif text-2xl font-bold text-content sm:text-3xl">
         {isLoading ? (
           <span className="loading loading-spinner loading-lg m-auto"></span>
         ) : isNotFound ? (
@@ -55,13 +41,13 @@ export default function StatCard({
         ) : (
           (value ?? "—")
         )}
-      </div>
+      </p>
 
       {description && (
-        <div className="stat-desc truncate self-start text-stone-400/60 md:text-base">
+        <p className="relative z-10 mt-1 truncate text-sm text-content-muted">
           {description}
-        </div>
+        </p>
       )}
-    </div>
+    </section>
   );
 }

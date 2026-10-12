@@ -1,13 +1,9 @@
-import HeaderContainer from "../../../components/ui/HeaderContainer";
-
 export default function ReviewHeader() {
   return (
-    <HeaderContainer>
-      <div className="relative z-10 h-full flex flex-col justify-center sm:py-6.5 text-center">
-        <h1 className="font-serif text-xl xs:text-2xl md:text-3xl lg:text-4xl font-extrabold uppercase text-stone-100 text-shadow-lg">
-          Review Suggestions
-        </h1>
-      </div>
-    </HeaderContainer>
+    <header className="border-b border-divider bg-surface px-4 py-10 text-center sm:px-6 sm:py-14">
+      <p className="atlas-eyebrow">Moderation workspace</p>
+      <h1 className="mt-2 font-serif text-3xl font-bold text-content sm:text-4xl lg:text-5xl">Review Suggestions</h1>
+      <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-content-muted sm:text-base">Compare proposed changes, verify sources, and resolve community submissions.</p>
+    </header>
   );
 }

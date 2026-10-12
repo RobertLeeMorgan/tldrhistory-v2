@@ -13,8 +13,8 @@ export default function ImageChangesSection({
   if (!hasAnyImageChange) return null;
 
   return (
-    <div className="bg-stone-900/40 rounded-md p-3 space-y-2 border border-stone-600">
-      <p className="text-sm text-gold font-semibold">
+    <div className="space-y-3 rounded-lg border border-accent/45 bg-accent/8 p-3">
+      <p className="text-sm font-bold text-accent">
         Image metadata has been changed
       </p>
       <ReviewDiff fields={imageFields} />

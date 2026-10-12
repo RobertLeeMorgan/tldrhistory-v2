@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Skeleton from "../ui/Skeleton";
 import TimelineTabs from "../ui/TimelineTabs";
 
@@ -32,7 +31,7 @@ export default function TabbedTimeline<T extends string, Item>({
   renderEmpty,
   isLoading,
   isError = false,
-  className = "p-4 pb-40 sm:p-6",
+  className = "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8",
 }: TabbedTimelineProps<T, Item>) {
   const [internalActiveTab, setInternalActiveTab] = useState<T>(tabs[0].id);
 
@@ -47,12 +46,28 @@ export default function TabbedTimeline<T extends string, Item>({
     setInternalActiveTab(tab);
   };
 
+  const handleTabKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const currentIndex = tabs.findIndex((tab) => tab.id === currentTab);
+    const nextIndex = event.key === "Home"
+      ? 0
+      : event.key === "End"
+        ? tabs.length - 1
+        : (currentIndex + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+    const next = tabs[nextIndex];
+    if (!next) return;
+    handleTabChange(next.id);
+    window.requestAnimationFrame(() => document.getElementById(`timeline-tab-${next.id}`)?.focus());
+  };
+
   return (
     <div className={className}>
       <div
-        className="mb-6 mt-1 flex gap-4 border-b border-stone-600 sm:mt-3"
+        className="mb-6 flex gap-1 border-b border-divider"
         role="tablist"
         aria-label="Timeline tabs"
+        onKeyDown={handleTabKeyDown}
       >
         {tabs.map((tab) => (
           <TimelineTabs
@@ -63,6 +78,7 @@ export default function TabbedTimeline<T extends string, Item>({
             ariaSelected={currentTab === tab.id}
             ariaControls={`timeline-panel-${tab.id}`}
             id={`timeline-tab-${tab.id}`}
+            tabIndex={currentTab === tab.id ? 0 : -1}
           >
             {tab.label} {tab.count !== undefined && `(${tab.count})`}
           </TimelineTabs>
@@ -75,41 +91,34 @@ export default function TabbedTimeline<T extends string, Item>({
           <Skeleton />
         </div>
       ) : isError ? (
-        <div className="py-10 text-gold font-semibold">
+        <div className="rounded-xl border border-danger/40 bg-danger/8 p-6 font-semibold text-danger" role="alert">
           Failed to load timeline data.
         </div>
       ) : items.length === 0 ? (
         renderEmpty ? (
           renderEmpty(currentTab)
         ) : (
-          <p className="min-h-[40vh] text-stone-800/86 text-shadow-sm">
+          <p className="min-h-[30vh] rounded-xl border border-divider bg-surface p-8 text-center text-content-muted">
             No items yet.
           </p>
         )
       ) : (
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={String(currentTab)}
+          <div
             id={`timeline-panel-${currentTab}`}
             role="tabpanel"
             aria-labelledby={`timeline-tab-${currentTab}`}
-            initial={{ opacity: 0, y: 2 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -2 }}
-            transition={{ duration: 0.2 }}
           >
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {items.map((item, index) => (
                 <div
                   key={getItemKey(item, index)}
-                  className="card shadow-lg shadow-stone-950/40"
+                  className="min-w-0"
                 >
                   {renderCard(item)}
                 </div>
               ))}
             </div>
-          </motion.div>
-        </AnimatePresence>
+          </div>
       )}
     </div>
   );

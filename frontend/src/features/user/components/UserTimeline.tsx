@@ -54,7 +54,7 @@ export default function UserTimeline({ userId }: { userId: number }) {
       getItemKey={(post) => post.id}
       renderCard={(post) => <ArticleCard post={post} />}
       renderEmpty={(tab) => (
-        <p className="min-h-[40vh] text-stone-800/86 text-shadow-sm">
+        <p className="min-h-[30vh] rounded-xl border border-divider bg-surface p-8 text-center text-content-muted">
           {tab === "created"
             ? "No articles created yet."
             : "No liked articles yet."}

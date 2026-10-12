@@ -61,30 +61,17 @@ export default function User() {
     : "";
 
   return (
-    <>
+    <main className="min-h-[calc(100dvh-var(--nav-height))] bg-canvas pb-16">
       <UserHeader
         memberSince={formattedDate}
         user={stats?.username}
         isLoading={isLoading}
         verified={stats?.emailVerifiedAt}
       />
-      <UserStats stats={stats?.stats} isLoading={isLoading} />
-
-      <main
-        className="
-          relative z-10
-          sm:pr-[min(34vw,420px)]
-          md:pr-[min(32vw,440px)]
-          lg:pr-[min(30vw,460px)]
-                  pt-[8rem]
-          sm:pt-[var(--header-height-sm)]
-          md:pt-[var(--header-height-md)]
-          lg:pt-[var(--header-height-lg)]
-        "
-      >
-        <div className="fixed inset-0 z-0 bg-base" />
+      <div className="relative z-10 -mt-5 space-y-8">
+        <UserStats stats={stats?.stats} isLoading={isLoading} />
         <UserTimeline userId={userId} />
-      </main>
-    </>
+      </div>
+    </main>
   );
 }

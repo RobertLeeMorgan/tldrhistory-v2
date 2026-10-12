@@ -71,7 +71,7 @@ export default function ReviewCreatedPanel({
         />
       )}
       renderEmpty={() => (
-        <p className="min-h-[40vh] text-stone-800/86 text-shadow-sm">
+        <p className="min-h-[30vh] rounded-xl border border-divider bg-surface p-8 text-center text-content-muted">
           No created post submissions yet.
         </p>
       )}

@@ -1,45 +1,31 @@
-import HeaderContainer from "../../../components/ui/HeaderContainer";
 import { MdVerifiedUser } from "react-icons/md";
 
 type HeaderProps = {
-  memberSince?: String;
-  user?: String;
+  memberSince?: string;
+  user?: string;
   isLoading: boolean;
-  verified?: String | null;
+  verified?: string | null;
 };
 
-export default function UserHeader({
-  memberSince,
-  user,
-  isLoading,
-  verified,
-}: HeaderProps) {
+export default function UserHeader({ memberSince, user, isLoading, verified }: HeaderProps) {
   const isNotFound = !isLoading && !user;
 
   return (
-    <HeaderContainer>
-      <div className="relative z-10 h-full flex flex-col justify-center sm:py-6.5 text-center">
-        {/* Title */}
-        <h1 className="font-serif text-xl xs:text-2xl md:text-3xl lg:text-4xl font-extrabold uppercase text-stone-100 text-shadow-lg">
-          {isLoading ? (
-            <span className="loading loading-spinner loading-md"></span>
-          ) : isNotFound ? (
-            "User Not Found"
-          ) : (
-            <span className="inline-flex items-center gap-2">
-              <span>{user}</span>
-              {verified && <sup className="text-xs sm:text-sm md:text-md lg:text-lg text-gold"><MdVerifiedUser /></sup>}
-            </span>
-          )}
-        </h1>
-
-        {/* Subtitle */}
-        {!isNotFound && (
-          <h2 className="text-xs sm:text-md md:text-lg text-stone-200/90 mt-1 uppercase font-serif ">
-            {isLoading ? "—" : `— Since ${memberSince} —`}
-          </h2>
+    <header className="border-b border-divider bg-surface px-4 py-10 text-center sm:px-6 sm:py-14">
+      <p className="atlas-eyebrow">Community profile</p>
+      <h1 className="mt-2 font-serif text-3xl font-bold text-content sm:text-4xl lg:text-5xl">
+        {isLoading ? (
+          <span className="loading loading-spinner" aria-label="Loading profile" />
+        ) : isNotFound ? (
+          "User not found"
+        ) : (
+          <span className="inline-flex items-center gap-2">
+            {user}
+            {verified && <span className="text-lg text-accent" title="Verified account"><MdVerifiedUser aria-label="Verified account" /></span>}
+          </span>
         )}
-      </div>
-    </HeaderContainer>
+      </h1>
+      {!isNotFound && <p className="mt-3 text-sm font-semibold text-content-muted">{isLoading ? "Loading profile…" : `Member since ${memberSince}`}</p>}
+    </header>
   );
 }

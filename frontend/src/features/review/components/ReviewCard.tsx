@@ -34,10 +34,10 @@ export default function ReviewCard({
 
   return (
     <CardContainer>
-      <header className="flex justify-between items-start">
+      <header className="flex items-start justify-between border-b border-divider pb-4">
         <div>
-          <h2 className="text-xl font-semibold text-stone-200">{post.name}</h2>
-          <p className="text-sm text-stone-300 pt-1">
+          <h2 className="text-xl font-bold text-content">{post.name}</h2>
+          <p className="pt-1 text-sm text-content-muted">
             Suggested by @{suggestedBy.username}
           </p>
         </div>
@@ -55,7 +55,7 @@ export default function ReviewCard({
         hasAnyImageChange={hasAnyImageChange}
       />
 
-      <div className="mt-4 pt-4 flex gap-3 justify-center">
+      <div className="mt-2 flex flex-wrap justify-end gap-3 border-t border-divider pt-4">
         <Button
           label="Reject"
           loading="Rejecting..."

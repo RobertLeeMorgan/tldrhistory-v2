@@ -2,9 +2,12 @@ import { ICON_MAP } from "../../../icons/iconMap";
 import { HISTORICAL_RANGES } from "../../../utils/historicalRanges";
 import StatsContainer from "../../stats/components/StatsContainer";
 import StatCard from "../../stats/components/StatCard"; // <-- import your reusable component
+import type { UserStatsQuery } from "../../../generated/graphql";
+
+type UserStatData = NonNullable<NonNullable<UserStatsQuery["userStats"]>["stats"]>;
 
 type StatsProps = {
-  stats?: any;
+  stats?: UserStatData;
   isLoading: boolean;
 };
 

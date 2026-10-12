@@ -27,41 +27,41 @@ export default function CreatedCard({
     <CardContainer>
       <CardHeader post={post} />
 
-      <div className="z-20">
+      <div className="relative z-20 space-y-4">
         {post.imageUrl && (
-          <div className="float-right ml-4 mb-2 max-w-32">
+          <figure className="overflow-hidden rounded-xl border border-divider bg-canvas/45">
             <img
               src={post.imageUrl}
-              alt={post.name}
-              className="max-w-32 max-h-32 object-cover rounded shadow-md"
-              loading="eager"
+              alt=""
+              className="aspect-[16/10] w-full object-contain"
+              loading="lazy"
             />
             {post.imageCredit && (
-              <span className="mt-2 block text-xs text-stone-400">
+              <figcaption className="border-t border-divider px-3 py-2 text-xs text-content-muted">
                 {post.imageCredit}
-              </span>
+              </figcaption>
             )}
-          </div>
+          </figure>
         )}
 
-        <p className="text-base md:text-lg text-stone-300">
+        <p className="text-base leading-7 text-content">
           {post.startDescription}
         </p>
 
         {post.endDescription && (
-          <p className="mt-3 text-base md:text-lg text-stone-400">
+          <p className="text-base leading-7 text-content-muted">
             {post.endDescription}
           </p>
         )}
       </div>
 
-      <div className="text-stone-400 font-medium">{typeMeta}</div>
+      <div className="text-sm font-bold text-content-muted">{typeMeta}</div>
 
       <CardSubjects subjects={post.subjects} />
 
       {post.sourceUrl && (
         <a
-          className="text-stone-400 font-medium break-all"
+          className="break-all text-sm font-bold text-accent underline decoration-control underline-offset-4 hover:text-content"
           href={post.sourceUrl}
           target="_blank"
           rel="noreferrer"
@@ -70,7 +70,7 @@ export default function CreatedCard({
         </a>
       )}
 
-      <div className="mt-4 flex gap-3 justify-center">
+      <div className="mt-2 flex flex-wrap justify-end gap-3 border-t border-divider pt-4">
         <Button
           label="Reject"
           loading="Rejecting..."

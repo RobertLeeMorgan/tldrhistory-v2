@@ -9,7 +9,7 @@ interface ReviewDiffProps {
 export default function ReviewDiff({ fields, className = "" }: ReviewDiffProps) {
   return (
     <div className={`space-y-2 ${className}`}>
-      {fields.map(({ label, from, to, isDiff, render = (v) => <span>{v || <span className="text-stone-500 italic">empty</span>}</span> }) => (
+      {fields.map(({ label, from, to, isDiff, render = (v) => <span>{v || <span className="italic text-content-muted">empty</span>}</span> }) => (
         <ReviewFieldDiff
           key={label}
           label={label}
