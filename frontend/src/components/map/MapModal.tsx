@@ -23,11 +23,18 @@ export default function MapModal({ open, onClose, civilisations }: ModalProps) {
     <ModalShell
       open={open}
       onClose={onClose}
-      panelClassName="max-w-5xl p-1 sm:p-3"
+      ariaLabel="Historical map"
+      panelClassName="max-w-5xl"
     >
-      <ModalCloseButton onClose={onClose} />
-      <div className="aspect-[16/9] w-full mx-auto">
-        <WorldMap civilisations={civilisations} isInteractive={true} />
+      <div className="flex items-center justify-between border-b border-divider px-4 py-3 sm:px-5">
+        <div>
+          <p className="atlas-eyebrow">Geography</p>
+          <h2 className="text-xl font-bold text-content sm:text-2xl">Historical map</h2>
+        </div>
+        <ModalCloseButton onClose={onClose} />
+      </div>
+      <div className="aspect-[4/3] w-full bg-canvas sm:aspect-[16/9]">
+        <WorldMap civilisations={civilisations} isInteractive />
       </div>
     </ModalShell>
   );

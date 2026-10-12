@@ -3,7 +3,7 @@ import { CloseIcon } from "../../icons/icons";
 export default function ModalCloseButton({ onClose }: { onClose: () => void }) {
   return (
     <button
-      className="absolute top-4 right-4 text-stone-500 hover:text-gold text-xl z-50"
+      className="absolute right-3 top-3 z-50 inline-flex size-11 items-center justify-center rounded-full border border-divider bg-canvas/90 text-content-muted transition-colors hover:border-accent hover:text-accent"
       onClick={onClose}
       aria-label="Close modal"
       type="button"

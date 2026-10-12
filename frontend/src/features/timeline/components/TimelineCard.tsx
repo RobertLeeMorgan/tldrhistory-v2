@@ -7,18 +7,19 @@ import CardContainer from "../../../components/cards/CardContainer";
 
 interface ArticleCardProps {
   post: Post;
+  onOpen?: () => void;
 }
 
-export default function ArticleCard({ post }: ArticleCardProps) {
+export default function ArticleCard({ post, onOpen }: ArticleCardProps) {
   return (
     <CardContainer {...(post.startSignificance === 1 && { significant: true })}>
-      <CardHeader post={post} />
+      <CardHeader post={post} onOpen={onOpen} />
 
       {/* Description */}
       <CardDescriptions post={post} />
 
       {/* Subjects */}
-      <div className="flex items-center mt-auto z-20">
+      <div className="relative z-20 mt-auto flex items-center gap-3 border-t border-divider/70 pt-4">
         <CardSubjects subjects={post.subjects} />
         <CardFooter post={post} />
       </div>

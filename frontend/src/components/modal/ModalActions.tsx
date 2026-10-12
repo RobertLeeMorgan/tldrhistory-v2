@@ -1,8 +1,18 @@
+import type { Post } from "../../generated/graphql";
 import Button from "../ui/Button";
 
-export default function ModalActions({ post, deleteMutation }: any) {
+interface ModalActionsProps {
+  post: Post;
+  deleteMutation: {
+    canDelete: boolean;
+    isPending: boolean;
+    delete: (id: number) => void;
+  };
+}
+
+export default function ModalActions({ post, deleteMutation }: ModalActionsProps) {
   return (
-    <div className="flex gap-4 justify-center">
+    <div className="flex flex-wrap justify-end gap-3 border-t border-divider pt-5">
       <Button label="Suggest Edit" to={`/articles/edit/${post.id}`} />
 
       {deleteMutation.canDelete && (

@@ -4,7 +4,7 @@ import Background from "../components/ui/Background";
 
 export default function RootLayout() {
   return (
-    <div className="relative min-h-screen w-full bg-canvas text-content">
+    <div data-app-root className="relative min-h-screen w-full bg-canvas text-content">
       <a
         href="#main-content"
         className="fixed left-4 top-2 z-[100] -translate-y-20 rounded-md bg-accent px-4 py-2 font-semibold text-on-accent transition-transform focus:translate-y-0"

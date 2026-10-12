@@ -26,19 +26,19 @@ const SUBJECT_ICONS: Record<
 };
 
 type SubjectProps = {
-  subjects: any[];
-  modal?: boolean
+  subjects: { id: string | number; name: string }[];
+  modal?: boolean;
 }
 
 export default function CardSubjects({ subjects, modal }: SubjectProps) {
   return (
-    <div className="items-center flex flex-wrap gap-2 items-center">
+    <div className="flex flex-wrap items-center gap-2">
       {subjects.map((s) => {
         const Icon = SUBJECT_ICONS[s.name];
         return (
           <span
             key={s.id}
-            className={`badge ${modal ? "bg-gold/90" : "bg-stone-800/60"} border border-stone-800 flex items-center text-sm gap-1 shadow-sm shadow-stone-950/30 text-stone-200 p-3`}
+            className={`inline-flex min-h-7 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold capitalize tracking-wide ${modal ? "border-accent/45 bg-accent/12 text-accent" : "border-divider bg-canvas/45 text-content-muted"}`}
           >
             {Icon && <Icon className="w-4 h-4" />} {s.name}
           </span>
