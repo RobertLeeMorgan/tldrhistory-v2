@@ -1,3 +1,4 @@
+import type { ButtonHTMLAttributes } from "react";
 import { Link } from "react-router";
 
 type ButtonProps = {
@@ -8,7 +9,9 @@ type ButtonProps = {
   type?: "button" | "submit" | "reset";
   loading?: string;
   to?: string;
-};
+  className?: string;
+  disabled?: boolean;
+} & Pick<ButtonHTMLAttributes<HTMLButtonElement>, "aria-describedby">;
 
 export default function Button({
   label,
@@ -18,37 +21,28 @@ export default function Button({
   type = "button",
   loading = "Submitting...",
   to,
+  className = "",
+  disabled = false,
+  ...ariaProps
 }: ButtonProps) {
-  const className = `btn rounded-lg w-32 sm:w-40 self-center shadow-sm shadow-stone-950/30 hover:shadow-lg transition-all duration-300 ${
+  const classes = `inline-flex min-h-11 min-w-32 items-center justify-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-bold shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-55 ${
     primary
-      ? "bg-gold text-stone-100 hover:bg-gold-hover"
-      : "btn-outline text-stone-100 bg-stone-900 border-stone-200 hover:border-gold hover:text-gold hover:bg-stone-950/90"
-  }`;
+      ? "border-accent bg-accent text-on-accent hover:border-accent-strong hover:bg-accent-strong"
+      : "border-control bg-surface text-content hover:border-accent hover:text-accent"
+  } ${className}`;
 
   if (to) {
-    return (
-      <Link to={to} className={className} aria-label={label}>
-        {label}
-      </Link>
-    );
+    return <Link to={to} className={classes} aria-label={label}>{label}</Link>;
   }
 
   return (
-    <button
-      className={className}
-      disabled={isLoading}
-      aria-label={label}
-      onClick={onClick}
-      type={type}
-    >
+    <button className={classes} disabled={disabled || isLoading} aria-label={label} aria-busy={isLoading || undefined} onClick={onClick} type={type} {...ariaProps}>
       {isLoading ? (
         <>
-          <span className="loading loading-spinner loading-md"></span>
+          <span className="loading loading-spinner loading-sm" aria-hidden="true" />
           {loading}
         </>
-      ) : (
-        label
-      )}
+      ) : label}
     </button>
   );
 }

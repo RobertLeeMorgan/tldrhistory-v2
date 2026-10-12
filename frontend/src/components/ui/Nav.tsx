@@ -1,161 +1,163 @@
-import { Link, useNavigate, useLocation } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router";
+import { LuChevronDown, LuMenu, LuUserRound, LuX } from "react-icons/lu";
 import { useToast } from "../../context/ToastContext";
 import { useAuth } from "../../context/AuthContext";
-import { RomanHelmet, UserIcon } from "../../icons/icons";
-import { motion } from "framer-motion";
+
+type MenuLink = { to: string; label: string };
+
+const publicLinks: MenuLink[] = [
+  { to: "/", label: "Home" },
+  { to: "/timeline", label: "Timeline" },
+];
+
+function navLinkClass({ isActive }: { isActive: boolean }) {
+  return `inline-flex min-h-11 items-center border-b-2 px-1 text-sm font-semibold transition-colors ${
+    isActive ? "border-accent text-content" : "border-transparent text-content-muted hover:text-content"
+  }`;
+}
 
 export default function Nav() {
   const { isAuth, logout, loading } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+  const navRef = useRef<HTMLElement>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
 
-  const isLogin = location.pathname === "/login";
-  const isRegister = location.pathname === "/register";
-  const isProfile = location.pathname === `/user/${isAuth.id}`;
+  useEffect(() => {
+    setMobileOpen(false);
+    setAccountOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setMobileOpen(false);
+        setAccountOpen(false);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+        setAccountOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
 
   async function handleLogout() {
-    try {
-      logout();
-      addToast({
-        message: "You are logged out, bye for now!",
-        type: "info",
-      });
-      navigate("/timeline");
-    } catch (error) {
-      console.error(error);
-    }
+    await logout();
+    addToast({ message: "You are logged out, bye for now!", type: "info" });
+    navigate("/timeline");
   }
 
+  const accountLinks: MenuLink[] = isAuth.token
+    ? [
+        { to: `/user/${isAuth.id}`, label: "Profile" },
+        ...(isAuth.role === "ADMIN" || isAuth.role === "MODERATOR"
+          ? [{ to: "/review-suggestions", label: "Review suggestions" }]
+          : []),
+        { to: "/articles/create", label: "Create article" },
+        { to: "/terms", label: "Terms" },
+        { to: "/privacy", label: "Privacy" },
+        { to: "/cookies", label: "Cookies" },
+      ]
+    : [
+        { to: "/login", label: "Log in" },
+        { to: "/register", label: "Register" },
+        { to: "/terms", label: "Terms" },
+        { to: "/privacy", label: "Privacy" },
+        { to: "/cookies", label: "Cookies" },
+      ];
+
   return (
-    <nav className="navbar fixed top-0 z-40 w-full p-2 sm:p-4 md:p-6 pointer-events-none">
-      <div className="flex justify-between w-full md:px-6">
-        {/* Left: title */}
-        <div className="navbar-start text-stone-700">
-          <Link
-            to="/timeline"
-            aria-label="timeline"
-            className="w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18 lg:w-20 lg:h-20 flex place-content-center items-center rounded-full cursor-pointer pointer-events-auto"
-          >
-            <img
-              src="/tldr-history-logo-512.svg"
-              alt="TLDR History logo"
-              className="w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18 lg:w-20 lg:h-20 flex place-content-center items-center justify-center hover:bg-stone-900 rounded-full transition-colors duration-300"
-            />
-          </Link>
+    <nav ref={navRef} aria-label="Primary navigation" className="fixed inset-x-0 top-0 z-50 h-[var(--nav-height)] border-b border-divider/70 bg-canvas/95 shadow-lg shadow-black/15 backdrop-blur-xl">
+      <div className="mx-auto flex h-full max-w-[1600px] items-center gap-3 px-4 sm:px-6 lg:px-8">
+        <Link to="/timeline" aria-label="TL;DR History timeline" className="flex min-w-0 shrink-0 items-center rounded-sm">
+          <img src="/tldr-history-logo.svg" alt="TL;DR History" className="h-8 w-auto max-w-[170px] sm:h-9 sm:max-w-[220px]" />
+        </Link>
+
+        <div className="hidden h-full items-center gap-7 md:flex">
+          {publicLinks.map((item) => (
+            <NavLink key={item.to} to={item.to} end={item.to === "/"} className={navLinkClass}>
+              {item.label}
+            </NavLink>
+          ))}
         </div>
 
-        <div className="flex-1 lg:hidden"></div>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-divider text-content md:hidden"
+            onClick={() => {
+              setMobileOpen((value) => !value);
+              setAccountOpen(false);
+            }}
+          >
+            {mobileOpen ? <LuX aria-hidden="true" /> : <LuMenu aria-hidden="true" />}
+          </button>
 
-        {/* Right: avatar/profile */}
-        <div className="navbar-end flex items-center">
-          <div className="dropdown dropdown-end">
-            {loading ? (
-              <div className="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center">
-                <span className="loading loading-spinner loading-lg text-gold "></span>
-              </div>
-            ) : (
-              <motion.div
-                whileHover={{
-                  scale: 1.05,
-                }}
-                transition={{ type: "spring", stiffness: 260, damping: 18 }}
-              >
-                <div
-                  tabIndex={0}
-                  role="button"
-                  className="btn btn-ghost btn-circle w-12 h-12 md:w-18 md:h-18 avatar hover:bg-stone-950 transition-colors duration-300 cursor-pointer pointer-events-auto"
-                  aria-label="user menu"
-                >
-                  <div className="text-gold place-items-center w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14">
-                    {isAuth.token ? <RomanHelmet /> : <UserIcon />}
-                  </div>
-                </div>
-              </motion.div>
-            )}
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Account menu"
+              aria-expanded={accountOpen}
+              aria-controls="account-navigation"
+              disabled={loading}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-divider px-3 text-content transition-colors hover:border-control hover:bg-surface disabled:cursor-wait disabled:opacity-60"
+              onClick={() => {
+                setAccountOpen((value) => !value);
+                setMobileOpen(false);
+              }}
+            >
+              {loading ? (
+                <span className="loading loading-spinner loading-sm text-accent" aria-label="Loading account" />
+              ) : (
+                <LuUserRound aria-hidden="true" className="size-5" />
+              )}
+              <span className="hidden max-w-28 truncate text-sm font-semibold sm:inline">
+                {isAuth.token ? isAuth.username || "Account" : "Account"}
+              </span>
+              <LuChevronDown aria-hidden="true" className="hidden size-4 sm:block" />
+            </button>
 
-            {!loading && (
-              <ul
-                tabIndex={0}
-                className="mt-3 z-50 p-2 shadow opacity-100 menu menu-sm dropdown-content bg-stone-950/80 backdrop-blur-md rounded-box w-52 cursor-pointer pointer-events-auto"
-              >
-                {isAuth.token ? (
-                  <>
-                    <li className={`${isProfile ? "hidden" : "block"} `}>
-                      <Link to={`/user/${isAuth.id}`}>Profile</Link>
-                    </li>
-                    <li
-                      className={`${
-                        isAuth.role === "ADMIN" || isAuth.role === "MODERATOR"
-                          ? "block"
-                          : "hidden"
-                      }`}
-                    >
-                      <Link
-                        to={`/review-suggestions`}
-                        aria-label="review suggestions"
-                      >
-                        Review Suggestions
-                      </Link>
-                    </li>
-                    <li
-                      className={`${
-                        isAuth.role === "ADMIN" ||
-                        isAuth.role === "MODERATOR" ||
-                        isAuth.role === "USER"
-                          ? "block"
-                          : "hidden"
-                      }`}
-                    >
-                      <Link to="/articles/create" aria-label="Create Article">
-                        Create Article
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/terms" aria-label="Terms">
-                        Terms
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/privacy" aria-label="Privacy">
-                        Privacy
-                      </Link>
-                    </li>
-                    <li>
-                      <button onClick={handleLogout} aria-label="logout">
-                        Logout
-                      </button>
-                    </li>
-                  </>
-                ) : (
-                  <>
-                    <li className={`${isLogin ? "hidden" : "block"}`}>
-                      <Link to="/login" aria-label="login">
-                        Login
-                      </Link>
-                    </li>
-                    <li className={`${isRegister ? "hidden" : "block"}`}>
-                      <Link to="/register" aria-label="register">
-                        Register
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/terms" aria-label="Terms">
-                        Terms
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/privacy" aria-label="Privacy">
-                        Privacy
-                      </Link>
-                    </li>
-                  </>
+            {!loading && accountOpen && (
+              <div id="account-navigation" className="atlas-surface absolute right-0 top-[calc(100%+0.6rem)] w-56 rounded-xl p-2">
+                {accountLinks.map((item) => (
+                  <Link key={`${item.to}-${item.label}`} to={item.to} className="flex min-h-11 items-center rounded-lg px-3 text-sm text-content-muted transition-colors hover:bg-surface-raised hover:text-content">
+                    {item.label}
+                  </Link>
+                ))}
+                {isAuth.token && (
+                  <button type="button" onClick={() => void handleLogout()} className="flex min-h-11 w-full items-center rounded-lg px-3 text-left text-sm text-danger transition-colors hover:bg-surface-raised">
+                    Log out
+                  </button>
                 )}
-              </ul>
+              </div>
             )}
           </div>
         </div>
       </div>
+
+      {mobileOpen && (
+        <div id="mobile-navigation" className="atlas-surface absolute inset-x-3 top-[calc(100%+0.5rem)] rounded-xl p-2 md:hidden">
+          {publicLinks.map((item) => (
+            <NavLink key={item.to} to={item.to} end={item.to === "/"} className={({ isActive }) => `flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold ${isActive ? "bg-surface-raised text-accent" : "text-content-muted hover:bg-surface hover:text-content"}`}>
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }

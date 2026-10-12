@@ -1,23 +1,20 @@
-import { motion } from "framer-motion";
+import type { ReactNode } from "react";
+
+type PageVariant = "centered" | "discovery" | "form" | "reading";
 
 type PageProps = {
-  children: React.ReactNode;
+  children: ReactNode;
+  variant?: PageVariant;
+  className?: string;
 };
 
-export default function PageContainer({ children }: PageProps) {
-  return (
-    <motion.div
-      className="
-        flex flex-col
-        min-h-[100dvh] sm:min-h-screen
-        items-center justify-center
-        overflow-x-hidden
-      "
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.2 }}
-    >
-      {children}
-    </motion.div>
-  );
+const variantClasses: Record<PageVariant, string> = {
+  centered: "flex min-h-[calc(100dvh-var(--nav-height))] flex-col items-center justify-center",
+  discovery: "min-h-[calc(100dvh-var(--nav-height))]",
+  form: "flex min-h-[calc(100dvh-var(--nav-height))] flex-col items-center justify-center py-10 sm:py-16",
+  reading: "min-h-[calc(100dvh-var(--nav-height))] py-10 sm:py-16",
+};
+
+export default function PageContainer({ children, variant = "centered", className = "" }: PageProps) {
+  return <main className={`${variantClasses[variant]} min-w-0 ${className}`}>{children}</main>;
 }

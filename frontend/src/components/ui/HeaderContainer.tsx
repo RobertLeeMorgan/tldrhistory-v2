@@ -6,7 +6,7 @@ export default function HeaderContainer({ children }: HeaderProps) {
   return (
     <header
       className="
-        fixed top-0 left-0 w-full z-40
+        fixed top-[var(--nav-height)] left-0 w-full z-40
         shadow-lg shadow-stone-950/30
         backdrop-blur-sm overflow-hidden border-b border-stone-800
         h-[8rem]

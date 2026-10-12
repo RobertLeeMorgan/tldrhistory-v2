@@ -15,9 +15,9 @@ export default function StatsContainer({ children, timeline }: StatsProps) {
         md:w-[min(32vw,440px)]
         lg:w-[min(30vw,460px)]
 
-        sm:top-[var(--header-height-sm)]
-        md:top-[var(--header-height-md)]
-        lg:top-[var(--header-height-lg)]
+        sm:top-[calc(var(--nav-height)+var(--header-height-sm))]
+        md:top-[calc(var(--nav-height)+var(--header-height-md))]
+        lg:top-[calc(var(--nav-height)+var(--header-height-lg))]
 
         sm:h-[calc(100dvh-var(--header-height-sm))]
         md:h-[calc(100dvh-var(--header-height-md))]
