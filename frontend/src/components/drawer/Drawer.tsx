@@ -3,14 +3,12 @@ import DrawerCollapse from "./DrawerCollapse";
 import DrawerInput from "./DrawerInput";
 import { collapseData, themes } from "../../utils/drawerValues";
 import Button from "../ui/Button";
-import { AnimatePresence, motion } from "framer-motion";
 import { hasActiveState } from "../../utils/filterUtils";
 import { useTimelineFilter } from "../../context/FilterContext";
 import {
   DEFAULT_TIMELINE_FILTER,
   type TimelineFilter,
 } from "../../features/filter/components/TimelineFilter";
-import { createPortal } from "react-dom";
 import { useDrawerYearInputs } from "./useDrawerYearInputs";
 import {
   getDateCount,
@@ -18,6 +16,8 @@ import {
   getThemeCount,
 } from "./drawerFilterHelpers";
 import SavedFilters from "./SavedFilters";
+import ModalShell from "../modal/ModalShell";
+import ModalCloseButton from "../modal/ModalCloseButton";
 
 type DrawerProps = {
   isOpen: boolean;
@@ -67,32 +67,22 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
     setYearEndInput(String(DEFAULT_TIMELINE_FILTER.yearEnd));
   };
 
-  return createPortal(
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            className="fixed inset-0 z-[60] bg-stone-950/30"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            aria-label="Close filters"
-          />
-
-          <motion.aside
-            className="fixed inset-y-0 left-0 z-[65] w-80 bg-drawer text-stone-200 shadow-2xl shadow-stone-950/50"
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ type: "tween", duration: 0.24, ease: "easeOut" }}
-          >
-            <div className="h-full overflow-y-auto p-4 pt-10">
+  return (
+    <ModalShell open={isOpen} onClose={onClose} ariaLabel="Timeline filters" overlayClassName="justify-start p-0" panelClassName="h-full max-h-dvh max-w-sm rounded-none border-y-0 border-l-0">
+      <aside className="flex h-full flex-col bg-surface text-content">
+        <header className="flex items-center justify-between border-b border-divider px-5 py-4">
+          <div>
+            <p className="atlas-eyebrow">Refine the atlas</p>
+            <h2 className="text-2xl font-bold">Timeline filters</h2>
+          </div>
+          <ModalCloseButton onClose={onClose} />
+        </header>
+        <div className="flex-1 overflow-y-auto p-3">
               <DrawerCollapse title="Theme" count={themeCount}>
                 <select
                   value={filter.group ?? 0}
                   onChange={(e) => updateValueFilter("group", e.target.value)}
-                  className="select select-bordered w-full bg-drawer border-stone-600 text-stone-200"
+                  className="atlas-control w-full px-3"
                   aria-label="Theme Select"
                   name="Theme"
                 >
@@ -167,29 +157,12 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
               </DrawerCollapse>
               <SavedFilters />
 
-              <div className="min-h-20 flex items-center pt-4">
-                <AnimatePresence mode="wait">
-                  {hasActiveFilters ? (
-                    <motion.div
-                      className="w-full px-4"
-                      initial={{ opacity: 0, y: 2 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 2 }}
-                    >
-                      <Button label="Clear Filters" onClick={handleReset} />
-                    </motion.div>
-                  ) : (
-                    <div className="w-full px-4 invisible">
-                      <Button label="Clear Filters" onClick={() => {}} />
-                    </div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>,
-    document.body,
+        </div>
+        <footer className="flex items-center gap-3 border-t border-divider p-4">
+          <Button label="Done" primary onClick={onClose} className="flex-1" />
+          {hasActiveFilters && <Button label="Clear" onClick={handleReset} className="min-w-24" />}
+        </footer>
+      </aside>
+    </ModalShell>
   );
 }

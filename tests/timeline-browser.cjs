@@ -53,6 +53,8 @@ window.loadedCount=empty?0:count; return {posts:empty?[]:makePosts(count,filter.
     const checkEra=async()=>{await sleep(900);const x=await evaluate(`(()=>{const visibleTop=document.querySelector('#timeline-context-header').getBoundingClientRect().bottom;const cards=[...document.querySelectorAll('[data-post-id]')].map(n=>({year:Number(n.dataset.startYear),top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom})).filter(n=>n.bottom>visibleTop&&n.top<innerHeight);return {year:Number(document.querySelector('#era').dataset.year),visible:cards.map(n=>n.year),dots:document.querySelectorAll('#map svg circle').length}})()`);assert.ok(x.visible.includes(x.year),JSON.stringify(x));assert.equal(x.dots,x.year>=1200&&x.year<=1600?1:0,'map must follow tracked year: '+JSON.stringify(x));};
     for(const y of [0,1600,6000,2500,0]){await evaluate('scrollTo(0,'+y+')');await checkEra();}
     await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:false});await sleep(400);await checkEra();
+    await evaluate("document.querySelector(\"[aria-label='Filter timeline']\").click()");await until("document.querySelector('[role=dialog][aria-label=\"Timeline filters\"]') && document.body.style.overflow==='hidden'");
+    await evaluate("window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))");await until("!document.querySelector('[role=dialog][aria-label=\"Timeline filters\"]') && document.body.style.overflow!=='hidden'");
     await evaluate('scrollTo(0,3000)');await checkEra();
     await evaluate("document.querySelector('#region').click()");await checkEra();
     await evaluate("document.querySelector('#reverse').click();scrollTo(0,0)");await sleep(600);await checkEra();

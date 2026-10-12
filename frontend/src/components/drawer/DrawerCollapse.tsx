@@ -6,13 +6,13 @@ export default function DrawerCollapse({
   count,
 }: DrawerCollapseProps) {
   return (
-    <div className="collapse bg-drawer">
+    <div className="collapse border-b border-divider bg-surface">
       <input type="checkbox" className="peer" name={title} aria-label={title} />
-      <div className="collapse-title text-lg font-medium text-stone-200 flex items-center justify-between">
+      <div className="collapse-title flex items-center justify-between text-base font-bold text-content">
         <span>{title}</span>
 
         {count !== undefined && count > 0 && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-stone-200 text-stone-900 font-medium">
+          <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-on-accent">
             {count > 9 ? "9+" : count}
           </span>
         )}

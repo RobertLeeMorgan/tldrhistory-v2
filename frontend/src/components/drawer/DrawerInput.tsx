@@ -12,7 +12,7 @@ export default function DrawerInput({
       value={value}
       name={props.name}
       aria-label={props.name}
-      className={`input input-bordered w-full bg-drawer border-stone-600 text-stone-100 caret-stone-100 mb-2 ${className ?? ""}`}
+      className={`atlas-control mb-2 w-full px-3 ${className ?? ""}`}
       onChange={(e) => onChange(e.target.value)}
     />
   );
