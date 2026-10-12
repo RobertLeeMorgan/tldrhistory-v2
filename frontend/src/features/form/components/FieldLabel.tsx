@@ -14,9 +14,9 @@ export default function FieldLabel({
   return (
     <label
       htmlFor={htmlFor}
-      className="label flex items-center text-lg text-stone-200/86 text-shadow-sm"
+      className="mb-2 flex items-center text-sm font-bold text-content"
     >
-      <span className="label-text">{label}</span>
+      <span>{label}</span>
       {helpText ? <FieldHelp text={helpText} /> : null}
     </label>
   );

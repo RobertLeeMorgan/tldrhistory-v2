@@ -22,16 +22,16 @@ export default function FieldHelp({ text }: FieldHelpProps) {
         onKeyDown={(e) => {
           if (e.key === "Escape") setOpen(false);
         }}
-        className="ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full text-stone-400 transition hover:text-gold focus:outline-none"
+        className="ml-2 inline-flex min-h-7 min-w-7 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-canvas hover:text-accent"
       >
-        <IoMdInformationCircleOutline className="text-base hover:text-gold" />
+        <IoMdInformationCircleOutline className="text-base" />
       </button>
 
       {open && (
         <div
           id={id}
           role="tooltip"
-          className="absolute left-full top-1/2 z-30 ml-2 w-64 -translate-y-1/2 rounded-md border border-stone-700 bg-stone-900 px-3 py-2 text-xs leading-relaxed text-stone-200 shadow-xl"
+          className="absolute right-0 top-full z-30 mt-1 w-64 rounded-lg border border-divider bg-canvas px-3 py-2 text-xs font-normal leading-relaxed text-content shadow-xl sm:left-full sm:right-auto sm:top-1/2 sm:ml-2 sm:mt-0 sm:-translate-y-1/2"
         >
           {text}
         </div>

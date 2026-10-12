@@ -1,15 +1,17 @@
 import FieldLabel from "./FieldLabel";
+import type { FormAction } from "../hooks/useFormReducer";
 
 interface TextInputProps {
   label: string;
   value: string;
   field: string;
   placeHolder?: string;
-  dispatch: React.Dispatch<any>;
+  dispatch: React.Dispatch<FormAction>;
   required?: boolean;
   input?: boolean;
   rows?: number;
   helpText?: string;
+  error?: string;
 }
 
 export default function TextInput({
@@ -22,12 +24,15 @@ export default function TextInput({
   required = false,
   rows = 5,
   helpText,
+  error,
 }: TextInputProps) {
+  const errorId = `${field}-error`;
   const commonProps = {
     name: field,
     id: field,
     value,
-    "aria-label": label,
+    "aria-invalid": Boolean(error) || undefined,
+    "aria-describedby": error ? errorId : undefined,
     onChange: (
       e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) =>
@@ -39,9 +44,7 @@ export default function TextInput({
     minLength: required ? 5 : 0,
     required,
     placeholder: placeHolder,
-    className: `${
-      input ? "input input-bordered" : "textarea textarea-bordered"
-    } w-full bg-stone-950 border border-stone-600`,
+    className: `atlas-control w-full px-3.5 py-2.5 ${input ? "" : "min-h-28 resize-y"} ${error ? "border-danger" : ""}`,
   };
 
   return (
@@ -52,6 +55,7 @@ export default function TextInput({
       ) : (
         <textarea {...commonProps} rows={rows} />
       )}
+      {error && <p id={errorId} className="text-sm text-danger" role="alert">{error}</p>}
     </>
   );
 }

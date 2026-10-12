@@ -1,12 +1,14 @@
 import FieldLabel from "./FieldLabel";
+import type { FormAction } from "../hooks/useFormReducer";
 
 interface UrlInputProps {
   label: string;
   value: string;
   field: string;
   placeHolder: string;
-  dispatch: React.Dispatch<any>;
+  dispatch: React.Dispatch<FormAction>;
   helpText?: string;
+  error?: string;
 }
 
 export default function UrlInput({
@@ -16,11 +18,13 @@ export default function UrlInput({
   placeHolder,
   dispatch,
   helpText,
+  error,
 }: UrlInputProps) {
+  const errorId = `${field}-error`;
   return (
     <>
       <FieldLabel htmlFor={field} label={label} helpText={helpText} />
-      <label className="input validator w-full border border-stone-600 bg-stone-950 shadow-none">
+      <label className={`atlas-control flex w-full items-center gap-2 px-3 shadow-none ${error ? "border-danger" : ""}`}>
         <svg
           className="h-[1em] opacity-50"
           xmlns="http://www.w3.org/2000/svg"
@@ -42,10 +46,11 @@ export default function UrlInput({
           type="url"
           pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9\\-].*[a-zA-Z0-9])?\\.)+[a-zA-Z].*$"
           title="Must be valid URL"
-          className="bg-stone-950"
+          className="min-w-0 flex-1 bg-transparent text-content outline-none placeholder:text-content-muted/65"
           name={field}
           id={field}
-          aria-label={label}
+          aria-invalid={Boolean(error) || undefined}
+          aria-describedby={error ? errorId : undefined}
           value={value}
           placeholder={placeHolder}
           onChange={(e) =>
@@ -58,6 +63,7 @@ export default function UrlInput({
         />
       </label>
       <p className="validator-hint hidden">Must be valid URL</p>
+      {error && <p id={errorId} className="text-sm text-danger" role="alert">{error}</p>}
     </>
   );
 }

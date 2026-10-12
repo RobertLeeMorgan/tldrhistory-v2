@@ -7,17 +7,29 @@ import NumberInput from "./NumberInput";
 import UrlInput from "./UrlInput";
 import Button from "../../../components/ui/Button";
 import SelectInput from "./SelectInput";
-import type { GetFormListsQuery } from "../../../generated/graphql";
+import type { GetFormListsQuery, GetPostWithFormListsQuery } from "../../../generated/graphql";
+import type { PostFormData } from "../../../schemas/postSchema.client";
 import FieldLabel from "./FieldLabel";
+import type { ReactNode } from "react";
 
 type FormListsData = NonNullable<GetFormListsQuery["formLists"]>;
 
 interface PostFormProps {
   mode: "create" | "edit";
-  initialData?: any;
+  initialData?: GetPostWithFormListsQuery["getPost"];
   formLists: FormListsData;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: PostFormData) => void;
   isSubmitting: boolean;
+}
+
+function FormSection({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+  return (
+    <fieldset className="space-y-5 rounded-xl border border-divider bg-canvas/35 p-4 sm:p-6">
+      <legend className="px-2 text-xl font-bold text-content">{title}</legend>
+      <p className="-mt-2 text-sm leading-6 text-content-muted">{description}</p>
+      {children}
+    </fieldset>
+  );
 }
 
 export default function PostForm({
@@ -30,6 +42,7 @@ export default function PostForm({
   const { addToast } = useToast();
   const { state, dispatch } = useFormReducer(initialData);
   const [submitted, setSubmitted] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const { allCountries, allSubjects, allGroups } = formLists;
 
@@ -38,13 +51,18 @@ export default function PostForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    setFieldErrors({});
 
     const parsed = postSchemaClient.safeParse(state);
 
     if (!parsed.success) {
+      const nextErrors: Record<string, string> = {};
       parsed.error.issues.forEach((err) => {
+        const field = String(err.path[0] ?? "form");
+        if (!nextErrors[field]) nextErrors[field] = err.message;
         addToast({ message: err.message, type: "error" });
       });
+      setFieldErrors(nextErrors);
       return;
     }
 
@@ -54,8 +72,10 @@ export default function PostForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto flex max-w-2xl flex-col gap-4 rounded-xl border border-stone-900 bg-gradient-to-br from-stone-800 via-stone-900 to-stone-950 p-4 shadow-xl shadow-stone-950/40 sm:gap-5 sm:p-6"
+      className="atlas-surface mx-auto flex max-w-4xl flex-col gap-6 rounded-2xl p-4 sm:p-6 lg:p-8"
+      noValidate
     >
+      <FormSection title="Article summary" description="Give readers a clear title and concise account of what happened.">
       <TextInput
         label="Title"
         value={state.name}
@@ -64,6 +84,7 @@ export default function PostForm({
         required
         placeHolder="e.g. Fall of Constantinople"
         input
+        error={fieldErrors.name}
       />
 
       <TextInput
@@ -74,6 +95,7 @@ export default function PostForm({
         rows={4}
         required
         placeHolder="What happened, and why does it matter?"
+        error={fieldErrors.startDescription}
       />
 
       <TextInput
@@ -83,8 +105,11 @@ export default function PostForm({
         dispatch={dispatch}
         rows={4}
         placeHolder="How did this event, period, or life conclude?"
+        error={fieldErrors.endDescription}
       />
+      </FormSection>
 
+      <FormSection title="Classification" description="Place the article in the atlas so it appears in the right searches and filters.">
       <SelectInput
         id="type"
         label="Type"
@@ -92,6 +117,7 @@ export default function PostForm({
         placeholder="Select type"
         helpText="Events are short (<100 years). Periods are long (>100 years)."
         required
+        error={fieldErrors.type}
         options={[
           { value: "event", label: "Event" },
           { value: "person", label: "Person" },
@@ -114,6 +140,7 @@ export default function PostForm({
         placeholder="Select country"
         helpText="Use the modern equivalent country, even for ancient events."
         required
+        error={fieldErrors.country}
         options={allCountries.map((c) => ({
           value: c.name,
           label: `${c.name} (${c.continent})`,
@@ -149,11 +176,13 @@ export default function PostForm({
               : { id: 0, name: "" },
           });
         }}
+        error={fieldErrors.group}
       />
 
+      <div>
       <FieldLabel htmlFor="subjects" label="Subjects" />
 
-      <div className="flex flex-wrap gap-2">
+      <div id="subjects" className="flex flex-wrap gap-2" role="group" aria-label="Subjects" aria-describedby={showSubjectsError ? "subjects-error" : undefined}>
         {allSubjects.map((s) => {
           const selected = state.subjects.some((subj) => subj.id === s.id);
 
@@ -161,10 +190,11 @@ export default function PostForm({
             <button
               key={s.id}
               type="button"
-              className={`btn btn-sm border bg-stone-950 hover:bg-stone-950/70 ${
+              aria-pressed={selected}
+              className={`min-h-10 rounded-full border px-3 text-sm font-bold transition-colors ${
                 selected
-                  ? "border-[#daa754] text-[#daa754] shadow-lg shadow-stone-950/40 hover:border-gold hover:text-gold"
-                  : "border-stone-600 text-stone-400/80 hover:border-stone-300 hover:text-stone-300"
+                  ? "border-accent bg-accent/12 text-accent"
+                  : "border-divider bg-surface text-content-muted hover:border-control hover:text-content"
               }`}
               onClick={() =>
                 dispatch({
@@ -182,31 +212,25 @@ export default function PostForm({
         })}
       </div>
 
-      <p className={`text-xs text-error ${showSubjectsError ? "" : "hidden"}`}>
+      <p id="subjects-error" className={`mt-2 text-sm text-danger ${showSubjectsError ? "" : "hidden"}`} role={showSubjectsError ? "alert" : undefined}>
         Select at least one subject
       </p>
+      </div>
 
-      <FieldLabel
-        htmlFor="civilisation"
-        label="Civilisation"
-        helpText="For empires, dynasties, tribes, or cultures (not single events)."
-      />
+      <label htmlFor="civilisation" className="flex cursor-pointer items-start gap-3 rounded-lg border border-divider bg-surface p-4">
+        <input
+          id="civilisation"
+          type="checkbox"
+          checked={state.civilisation}
+          onChange={(e) => dispatch({ type: "SET_FIELD", field: "civilisation", value: e.target.checked })}
+          className="checkbox mt-0.5 rounded border-control [--chkbg:var(--color-accent)] [--chkfg:var(--color-on-accent)]"
+        />
+        <span><span className="block text-sm font-bold text-content">Civilisation</span><span className="mt-1 block text-sm leading-5 text-content-muted">For empires, dynasties, tribes, or cultures rather than single events.</span></span>
+      </label>
+      </FormSection>
 
-      <input
-        id="civilisation"
-        type="checkbox"
-        checked={state.civilisation}
-        onChange={(e) =>
-          dispatch({
-            type: "SET_FIELD",
-            field: "civilisation",
-            value: e.target.checked,
-          })
-        }
-        className="checkbox rounded border-stone-600 inset-shadow-none bg-stone-950 checked:border-gold checked:bg-stone-950 checked:text-gold"
-      />
-
-      <div className="grid grid-cols-3 gap-4">
+      <FormSection title="Dates" description="Use the most widely accepted academic dates. Enter negative years for BCE and 0 for an unknown month or day.">
+      <div className="grid gap-4 sm:grid-cols-3">
         <NumberInput
           label="Start Year"
           helpText="Use most widely accepted academic date. Use negative for BCE (e.g. -476)."
@@ -215,6 +239,7 @@ export default function PostForm({
           dispatch={dispatch}
           min={-300000}
           max={2025}
+          error={fieldErrors.startYear}
         />
         <NumberInput
           label="Start Month"
@@ -223,6 +248,7 @@ export default function PostForm({
           dispatch={dispatch}
           min={0}
           max={12}
+          error={fieldErrors.startMonth}
         />
         <NumberInput
           label="Start Day"
@@ -231,6 +257,7 @@ export default function PostForm({
           dispatch={dispatch}
           min={0}
           max={31}
+          error={fieldErrors.startDay}
         />
         <NumberInput
           label="End Year"
@@ -239,6 +266,7 @@ export default function PostForm({
           dispatch={dispatch}
           min={-300000}
           max={2025}
+          error={fieldErrors.endYear}
         />
         <NumberInput
           label="End Month"
@@ -247,6 +275,7 @@ export default function PostForm({
           dispatch={dispatch}
           min={0}
           max={12}
+          error={fieldErrors.endMonth}
         />
         <NumberInput
           label="End Day"
@@ -255,15 +284,19 @@ export default function PostForm({
           dispatch={dispatch}
           min={0}
           max={31}
+          error={fieldErrors.endDay}
         />
       </div>
+      </FormSection>
 
+      <FormSection title="Sources and image" description="Add a reliable source and optional image details so reviewers can verify the submission.">
       <UrlInput
         label="Source URL"
         placeHolder="e.g. https://en.wikipedia.org/wiki/Example"
         value={state.sourceUrl}
         field="sourceUrl"
         dispatch={dispatch}
+        error={fieldErrors.sourceUrl}
       />
 
       <UrlInput
@@ -273,6 +306,7 @@ export default function PostForm({
         value={state.imageUrl}
         field="imageUrl"
         dispatch={dispatch}
+        error={fieldErrors.imageUrl}
       />
 
       <TextInput
@@ -282,15 +316,13 @@ export default function PostForm({
         dispatch={dispatch}
         placeHolder="e.g. Rijksmuseum / Wikimedia Commons / CC BY-SA 4.0"
         input
+        error={fieldErrors.imageCredit}
       />
+      </FormSection>
 
-      <Button
-        isLoading={isSubmitting}
-        primary
-        label={mode === "create" ? "Submit Article" : "Submit Suggestion"}
-        type="submit"
-        loading="Submitting..."
-      />
+      <div className="sticky bottom-0 -mx-4 -mb-4 flex justify-end border-t border-divider bg-surface/95 p-4 backdrop-blur sm:-mx-6 sm:-mb-6 sm:px-6 lg:-mx-8 lg:-mb-8 lg:px-8">
+        <Button isLoading={isSubmitting} primary label={mode === "create" ? "Submit Article" : "Submit Suggestion"} type="submit" loading="Submitting..." className="w-full sm:w-auto" />
+      </div>
     </form>
   );
 }

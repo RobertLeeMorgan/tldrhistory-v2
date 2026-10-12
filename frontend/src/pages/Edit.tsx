@@ -48,17 +48,19 @@ export default function Edit() {
   };
 
   if (!data) return (
-    <PageContainer><div className="py-24 px-6 text-center text-gold" role={error ? "alert" : "status"}>
-      {error ? <>Could not load the form. <button type="button" className="btn btn-sm" onClick={() => void refetch()}>Retry</button></> : "Loading form?"}
+    <PageContainer variant="form" className="px-4"><div className="atlas-surface w-full max-w-lg rounded-2xl p-8 text-center text-content" role={error ? "alert" : "status"}>
+      {error ? <><p className="font-bold">Could not load the form.</p><button type="button" className="mt-4 min-h-11 rounded-lg border border-accent px-4 font-bold text-accent" onClick={() => void refetch()}>Retry</button></> : <><span className="loading loading-spinner text-accent" aria-hidden="true" /><p className="mt-3">Loading form…</p></>}
     </div></PageContainer>
   );
 
   return (
-    <PageContainer>
-      <div className="py-16 sm:py-24 p-4 sm:p-6 z-10">
-        <h1 className="text-4xl font-serif font-semibold tracking-wide text-stone-200/86 text-shadow-sm mb-8 sm:mb-12 text-center">
-          Suggest Edit
-        </h1>
+    <PageContainer variant="reading" className="bg-canvas px-4 sm:px-6">
+      <div className="relative z-10 mx-auto w-full max-w-5xl">
+        <header className="mx-auto mb-8 max-w-2xl text-center sm:mb-12">
+          <p className="atlas-eyebrow">Improve the record</p>
+          <h1 className="mt-3 text-4xl font-bold text-content sm:text-5xl">Suggest Edit</h1>
+          <p className="mt-4 text-base leading-7 text-content-muted">Propose a correction or clearer account. The published article stays unchanged until review.</p>
+        </header>
         <PostForm
           mode="edit"
           initialData={data.getPost}

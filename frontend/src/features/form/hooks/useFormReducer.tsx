@@ -1,7 +1,7 @@
 import { useReducer, useEffect } from "react";
 import type { GetPostWithFormListsQuery } from "../../../generated/graphql";
 
-type State = {
+export type FormState = {
   name: string;
   startDescription: string;
   endDescription: string;
@@ -21,11 +21,13 @@ type State = {
   civilisation?: boolean;
 };
 
-type Action =
-  | { type: "SET_FIELD"; field: keyof State; value: any }
-  | { type: "SET_ALL"; payload: Partial<State> };
+type SetFieldAction = {
+  [Key in keyof FormState]: { type: "SET_FIELD"; field: Key; value: FormState[Key] };
+}[keyof FormState];
 
-function reducer(state: State, action: Action): State {
+export type FormAction = SetFieldAction | { type: "SET_ALL"; payload: Partial<FormState> };
+
+function reducer(state: FormState, action: FormAction): FormState {
   switch (action.type) {
     case "SET_FIELD":
       return { ...state, [action.field]: action.value };

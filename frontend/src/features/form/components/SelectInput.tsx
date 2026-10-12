@@ -13,7 +13,8 @@ interface SelectInputProps {
   placeholder: string;
   onChange: (value: string) => void;
   required?: boolean;
- helpText?: string;
+  helpText?: string;
+  error?: string;
 }
 
 export default function SelectInput({
@@ -25,7 +26,9 @@ export default function SelectInput({
   helpText,
   onChange,
   required = false,
+  error,
 }: SelectInputProps) {
+  const errorId = `${id}-error`;
   return (
     <>
       <FieldLabel htmlFor={id} label={label} helpText={helpText}/>
@@ -34,8 +37,9 @@ export default function SelectInput({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="select select-bordered w-full border border-stone-600 bg-stone-950"
-        aria-label={label}
+        className={`atlas-control w-full px-3 ${error ? "border-danger" : ""}`}
+        aria-invalid={Boolean(error) || undefined}
+        aria-describedby={error ? errorId : undefined}
         required={required}
       >
         <option value="">{placeholder}</option>
@@ -45,6 +49,7 @@ export default function SelectInput({
           </option>
         ))}
       </select>
+      {error && <p id={errorId} className="text-sm text-danger" role="alert">{error}</p>}
     </>
   );
 }

@@ -1,14 +1,16 @@
 import FieldLabel from "./FieldLabel";
+import type { FormAction } from "../hooks/useFormReducer";
 
 interface NumberInputProps {
   label: string;
   value: number;
   field: string;
-  dispatch: React.Dispatch<any>;
+  dispatch: React.Dispatch<FormAction>;
   min?: number;
   max?: number;
   required?: boolean;
   helpText?: string;
+  error?: string;
 }
 
 export default function NumberInput({
@@ -20,7 +22,9 @@ export default function NumberInput({
   max,
   required = true,
   helpText,
+  error,
 }: NumberInputProps) {
+  const errorId = `${field}-error`;
   return (
     <div>
       <FieldLabel htmlFor={field} label={label} helpText={helpText} />
@@ -28,8 +32,9 @@ export default function NumberInput({
         type="number"
         id={field}
         name={field}
-        aria-label={label}
-        className="input input-bordered w-full border border-stone-600 bg-stone-950"
+        aria-invalid={Boolean(error) || undefined}
+        aria-describedby={error ? errorId : undefined}
+        className={`atlas-control w-full px-3 ${error ? "border-danger" : ""}`}
         required={required}
         placeholder={
           min !== undefined && max !== undefined
@@ -51,6 +56,7 @@ export default function NumberInput({
       {min !== undefined && max !== undefined && (
         <p className="validator-hint hidden">{`Must be between ${min} and ${max}`}</p>
       )}
+      {error && <p id={errorId} className="mt-1 text-sm text-danger" role="alert">{error}</p>}
     </div>
   );
 }
