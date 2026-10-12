@@ -1,17 +1,18 @@
-import { CloseIcon, FilterIcon, SearchIcon, SortIcon } from "../../icons/icons";
+import { CloseIcon, FilterIcon, SortIcon } from "../../icons/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Transition } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
 import { hasActiveState } from "../../utils/filterUtils";
 import { IoIosAdd } from "react-icons/io";
 import { IoMdShare } from "react-icons/io";
-import { Link, useLocation } from "react-router";
+import { Link } from "react-router";
 import { useTimelineFilter } from "../../context/FilterContext";
 import { DEFAULT_TIMELINE_FILTER } from "../../features/filter/components/TimelineFilter";
 import { useToast } from "../../context/ToastContext";
 import { useEra } from "../../context/EraContext";
 import { getGroupSlugFromId } from "../../utils/groupLookup";
 import { filterToSearchParams } from "../../features/filter/components/timelineFilterParams";
+import TimelineSearchField from "../../features/filter/components/TimelineSearchField";
+import { useTimelineSearch } from "../../features/filter/hooks/useTimelineSearch";
 
 type UtilityMenuProps = {
   onOpenDrawer: () => void;
@@ -22,43 +23,7 @@ export default function UtilityMenu({ onOpenDrawer }: UtilityMenuProps) {
   const { filter, patchFilter, resetFilter } = useTimelineFilter();
   const { addToast } = useToast();
 
-  const { key: locationKey } = useLocation();
-  const [searchDraft, setSearchDraft] = useState({ value: filter.search ?? "", locationKey });
-  if (searchDraft.locationKey !== locationKey) {
-    setSearchDraft({ value: filter.search ?? "", locationKey });
-  }
-  const searchInput = searchDraft.locationKey === locationKey ? searchDraft.value : filter.search ?? "";
-  const setSearchInput = (value: string) => setSearchDraft({ value, locationKey });
-  const [active, setActive] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (searchDraft.locationKey !== locationKey) return;
-    const id = window.setTimeout(() => {
-      const nextSearch = searchInput.trim() || undefined;
-      if (nextSearch !== filter.search) {
-        patchFilter({ search: nextSearch }, { replace: true });
-      }
-    }, 300);
-
-    return () => window.clearTimeout(id);
-  }, [searchInput, searchDraft.locationKey, locationKey, filter.search, patchFilter]);
-
-  useEffect(() => {
-    if (active) inputRef.current?.focus();
-  }, [active]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        if (!searchInput.trim()) setActive(false);
-      }
-    }
-
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, [searchInput]);
+  const search = useTimelineSearch();
 
   const hasActiveFilters = hasActiveState(filter);
 
@@ -121,43 +86,19 @@ export default function UtilityMenu({ onOpenDrawer }: UtilityMenuProps) {
 
   return (
     <motion.div
-      ref={menuRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       layout
       className="flex flex-col mx-1 gap-2 py-2 sm:flex-row sm:mx-0 sm:gap-6 sm:px-4 sm:py-0 bg-gradient-to-br from-stone-800/90 to-stone-900/90 backdrop-blur-lg border border-stone-900 rounded-3xl"
     >
-      <motion.div
-        layout
-        className="flex items-center overflow-hidden"
-        onClick={() => {
-          if (!active) setActive(true);
-        }}
-      >
-        <div
-          className={`${searchInput ? "text-gold" : "text-stone-200"} rounded-xl hover:bg-stone-700 p-2 cursor-pointer`}
-        >
-          <SearchIcon />
-        </div>
-
-        <motion.input
-          ref={inputRef}
-          type="search"
-          layout
-          placeholder="Search timeline..."
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          className="bg-transparent outline-none text-sm text-stone-200 placeholder:text-stone-500 flex-1"
-          animate={{
-            opacity: active ? 1 : 0,
-            width: active ? 200 : 0,
-            marginLeft: active ? 4 : 0,
-          }}
-          style={{ overflow: "hidden" }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-        />
-      </motion.div>
+      <TimelineSearchField
+        value={search.value}
+        onChange={search.setValue}
+        onSubmit={search.submit}
+        label="Search timeline"
+        className="w-[min(70vw,18rem)] border-divider bg-cream-raised shadow-none sm:w-64"
+      />
 
       <motion.button
         type="button"
@@ -226,7 +167,7 @@ export default function UtilityMenu({ onOpenDrawer }: UtilityMenuProps) {
             onClick={() => {
               setView("global");
               resetFilter({ replace: true });
-              setSearchInput("");
+              search.clear();
             }}
             aria-label="Reset filters"
             layout

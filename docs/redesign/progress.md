@@ -7,6 +7,7 @@ Updated: 12 October 2026 (Asia/Singapore)
 - Working-tree inputs preserved: the user's `frontend/AGENTS.md` edits and supplied `frontend/resources/` mockups.
 - Baseline issue: the manifest/lockfile declare React Router 7.18.4 while installed packages are 7.14.1. Validation must use the declared lockfile environment before final sign-off.
 - Phase 1 — shared design foundations and global shell: complete. Added semantic tokens, reduced-motion/focus foundations, shell variants, a responsive full navigation using the supplied SVG wordmark, and compatible fixed-header offsets. Validation: scoped lint passed; client/security node tests 10/10 passed; production client/SSR build passed with the existing DaisyUI CSS optimizer warning. TypeScript still reports only the documented pre-existing unused `options` parameter in `src/lib/cookies.ts`.
-- Current phase: Phase 2 — homepage and shared timeline search entry.
+- Phase 2 — homepage and shared timeline search entry: complete. Rebuilt the homepage around the supplied hero/editorial assets while retaining all existing copy, sections and destinations. Added a shared accessible search field and a location-key-aware timeline search controller; homepage submissions enter the existing `q` URL/loader/query pipeline. Validation: scoped lint passed; production client/SSR build passed; TypeScript remains limited to the pre-existing cookie diagnostic. The isolated browser command completed without captured output and will be rerun with the expanded timeline-shell checks in Phase 3.
+- Current phase: Phase 3 — timeline shell, header, passive era strip and context.
 
 Each completed phase will record its commit and validation here.
