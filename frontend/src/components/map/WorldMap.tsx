@@ -248,8 +248,7 @@ export default function WorldMap({
           tooltip.append("br");
           tooltip.append("span").text(civ.name);
         }
-        if (reducedMotion) tooltip.style("opacity", 1);
-        else tooltip.style("opacity", 0).transition().duration(200).style("opacity", 1);
+        tooltip.style("opacity", 1);
       })
       .on("mousemove", (event) => {
         if (!tooltipRef.current || !svgRef.current) return;

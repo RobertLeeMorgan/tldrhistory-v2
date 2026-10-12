@@ -1,8 +1,7 @@
 import PageContainer from "../../src/components/ui/PageContainer";
-import type { Route } from "./+types/terms";
 import { buildMeta } from "../../src/lib/seo";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return buildMeta({
     title: "Terms of Service | TLDR History",
     description:
@@ -14,7 +13,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Terms() {
   return (
-    <PageContainer>
+    <PageContainer variant="reading" className="legal-page">
       <div className="py-16 sm:py-24 p-4 sm:p-6 z-10">
         <h1 className="text-4xl font-serif font-semibold tracking-wide text-stone-200/86 text-shadow-sm mb-8 sm:mb-12 text-center">
           Terms of Service

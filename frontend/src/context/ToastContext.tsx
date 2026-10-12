@@ -1,6 +1,5 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 type ToastType = "success" | "error" | "info";
 
@@ -25,46 +24,49 @@ export const useToast = () => {
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const timers = useRef(new Map<number, number>());
 
-  const addToast = (toast: Omit<Toast, "id">) => {
+  const dismissToast = useCallback((id: number) => {
+    const timer = timers.current.get(id);
+    if (timer) window.clearTimeout(timer);
+    timers.current.delete(id);
+    setToasts((current) => current.filter((toast) => toast.id !== id));
+  }, []);
+
+  const addToast = useCallback((toast: Omit<Toast, "id">) => {
     const id = Date.now() + Math.random();
     const duration = toast.duration ?? 3000;
 
     setToasts((prev) => [...prev, { ...toast, id, duration }]);
+    timers.current.set(id, window.setTimeout(() => dismissToast(id), duration));
+  }, [dismissToast]);
 
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, duration);
-  };
+  useEffect(() => () => {
+    for (const timer of timers.current.values()) window.clearTimeout(timer);
+    timers.current.clear();
+  }, []);
 
   return (
     <ToastContext.Provider value={{ addToast }}>
       {children}
 
-      <div className="toast toast-bottom toast-center z-50">
-        <AnimatePresence>
-          {toasts.map((toast) => (
-            <motion.div
-              key={toast.id}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-            >
-              <div
-                className={`alert ${
-                  toast.type === "success"
-                    ? "bg-gradient-to-br from-stone-800 to-stone-900 border-stone-950/90 text-gold shadow-lg shadow-black/30 rounded"
-                    : toast.type === "error"
-                    ? "bg-gradient-to-br to-gold from-[#ead04c] border-stone-950/90 text-stone-950 shadow-lg shadow-black/30 rounded"
-                    : "bg-gradient-to-br from-stone-800 to-stone-900 border-stone-950/90 text-gold shadow-lg shadow-black/30 rounded"
-                } shadow-lg shadow-black/40 text-lg font-serif border text-shadow-sm font-semibold`}
-              >
-                <span>{toast.message}</span>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+      <div className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-[80] flex flex-col items-center gap-2 pointer-events-none" aria-live="polite" aria-atomic="false">
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            role={toast.type === "error" ? "alert" : "status"}
+            className={`pointer-events-auto flex w-full max-w-md items-start gap-3 rounded-xl border px-4 py-3 shadow-xl shadow-black/35 ${
+              toast.type === "error"
+                ? "border-danger/55 bg-surface-raised text-danger"
+                : toast.type === "success"
+                  ? "border-success/45 bg-surface-raised text-success"
+                  : "border-divider bg-surface-raised text-content"
+            }`}
+          >
+            <span className="flex-1 text-sm font-semibold leading-6">{toast.message}</span>
+            <button type="button" onClick={() => dismissToast(toast.id)} className="min-h-8 min-w-8 rounded-md text-content-muted hover:bg-canvas hover:text-content" aria-label="Dismiss notification">×</button>
+          </div>
+        ))}
       </div>
     </ToastContext.Provider>
   );

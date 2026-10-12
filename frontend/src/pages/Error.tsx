@@ -25,12 +25,13 @@ export default function ErrorPage() {
   }
 
   return (
-    <PageContainer>
-      <div className="text-center z-10">
-        <h1 className="text-5xl font-bold text-gold mb-4 text-shadow-md">
+    <PageContainer variant="form" className="relative overflow-hidden bg-canvas px-4">
+      <div className="atlas-surface z-10 w-full max-w-xl rounded-2xl p-8 text-center sm:p-12">
+        <p className="atlas-eyebrow">The atlas has a gap</p>
+        <h1 className="mt-3 text-4xl font-bold text-content sm:text-5xl">
           {title}
         </h1>
-        <p className="text-2xl text-stone-300 mb-6">{message}</p>
+        <p className="mx-auto mb-7 mt-4 max-w-md text-lg leading-8 text-content-muted">{message}</p>
         <Button label="Go Home" primary to="/" />
       </div>
     </PageContainer>

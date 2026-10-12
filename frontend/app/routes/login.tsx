@@ -3,13 +3,13 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { useLoginMutation } from "../../src/hooks/useAuthMutations";
 import { loginSchema } from "../../src/schemas/loginSchema";
 import Button from "../../src/components/ui/Button";
-import PageContainer from "../../src/components/ui/PageContainer";
+import AccountPanel from "../../src/components/ui/AccountPanel";
+import FormField from "../../src/components/form/FormField";
 import { useAuth } from "../../src/context/AuthContext";
 import { useToast } from "../../src/context/ToastContext";
-import type { Route } from "./+types/login";
 import { buildMeta } from "../../src/lib/seo";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return buildMeta({
     title: "Login | TLDR History",
     description:
@@ -78,52 +78,33 @@ export default function Login() {
   };
 
   return (
-    <PageContainer>
-      <div className="p-4">
-        <div className="card border border-stone-900/70 bg-gradient-to-br from-stone-800 to-stone-900 w-full max-w-sm shadow-stone-950/40 shadow-xl text-center">
-          <form className="card-body" onSubmit={handleLogin}>
-            <h1 className="text-4xl font-serif font-semibold tracking-wide text-stone-200 pb-2">
-              Welcome Back!
-            </h1>
-
-            <p className="hidden sm:block pb-6 text-stone-300/90 lg:text-lg">
-              Login to continue.
-            </p>
-            <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600 w-full">
-              <input
+    <AccountPanel title="Welcome back" description="Log in to continue exploring and contributing to the historical atlas.">
+          <form className="space-y-5" onSubmit={handleLogin} noValidate>
+            <FormField
+                label="Email address"
                 name="email"
                 type="email"
-                className="text-stone-200 caret-stone-200"
                 placeholder="mail@site.com"
-                aria-label="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                autoComplete="on"
+                autoComplete="email"
+                error={errors.email}
               />
-            </label>
-            {errors.email && (
-              <p className="text-error text-xs">{errors.email}</p>
-            )}
-
-            <label className="input input-bordered flex items-center gap-2 bg-stone-900/93 border-stone-600 w-full">
-              <input
+            <FormField
+                label="Password"
                 name="password"
                 type="password"
-                className="text-stone-200 caret-stone-200"
-                aria-label="password"
                 placeholder="Password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
+                autoComplete="current-password"
+                error={errors.password}
               />
-            </label>
-            {errors.password && (
-              <p className="text-error text-xs">{errors.password}</p>
-            )}
 
-            <div className="mb-4 text-right">
+            <div className="text-right">
               <Link
                 to="/forgot-password"
-                className="text-sm text-gold underline underline-offset-2"
+                className="text-sm font-bold text-accent underline decoration-control underline-offset-4 hover:text-content"
               >
                 Forgot password?
               </Link>
@@ -135,10 +116,9 @@ export default function Login() {
               label="Login"
               type="submit"
               loading="Logging In..."
+              className="w-full"
             />
           </form>
-        </div>
-      </div>
-    </PageContainer>
+    </AccountPanel>
   );
 }

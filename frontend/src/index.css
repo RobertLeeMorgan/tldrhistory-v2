@@ -136,6 +136,37 @@ button, a, input, select, textarea, [tabindex]:not([tabindex="-1"]) {
     background: color-mix(in srgb, var(--color-surface) 92%, transparent);
     color: var(--color-content);
   }
+
+  .legal-page {
+    color-scheme: light;
+    background: var(--color-cream);
+    color: var(--color-ink);
+  }
+
+  .legal-page > div {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+  }
+
+  .legal-page > div > h1 {
+    color: var(--color-ink) !important;
+    font-size: clamp(2.35rem, 5vw, 4.25rem);
+  }
+
+  .legal-page > div > div {
+    max-width: 52rem !important;
+    border-color: color-mix(in srgb, var(--color-ink) 16%, transparent) !important;
+    background: var(--color-cream-raised) !important;
+    box-shadow: 0 22px 60px rgb(51 42 29 / 0.12) !important;
+  }
+
+  .legal-page :where(p, li, dd) { color: color-mix(in srgb, var(--color-ink) 82%, white) !important; }
+  .legal-page :where(h2, h3, h4, dt, strong) { color: var(--color-ink) !important; }
+  .legal-page :where(a) { color: var(--color-accent-strong) !important; text-decoration-color: color-mix(in srgb, var(--color-accent-strong) 55%, transparent) !important; }
+  .legal-page :where(section) { border-color: color-mix(in srgb, var(--color-ink) 14%, transparent) !important; scroll-margin-top: calc(var(--nav-height) + 1.5rem); }
+  .legal-page :where(ul) { color: var(--color-ink) !important; }
+  .legal-page :where([class*="bg-stone-800"]) { background: color-mix(in srgb, var(--color-cream) 70%, white) !important; border-color: color-mix(in srgb, var(--color-ink) 18%, transparent) !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
