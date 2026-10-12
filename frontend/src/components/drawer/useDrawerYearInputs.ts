@@ -7,27 +7,40 @@ type Args = {
   patchFilter: (patch: Partial<TimelineFilter>) => void;
 };
 
+type YearDraft = {
+  filterValue: number | undefined;
+  input: string;
+};
+
+function formatYear(value: number | undefined) {
+  return value !== undefined ? String(value) : "";
+}
+
 export function useDrawerYearInputs({ filter, patchFilter }: Args) {
-  const [yearStartInput, setYearStartInput] = useState(
-    filter.yearStart !== undefined ? String(filter.yearStart) : "",
-  );
-  const [yearEndInput, setYearEndInput] = useState(
-    filter.yearEnd !== undefined ? String(filter.yearEnd) : "",
-  );
+  const [yearStartDraft, setYearStartDraft] = useState<YearDraft>(() => ({
+    filterValue: filter.yearStart,
+    input: formatYear(filter.yearStart),
+  }));
+  const [yearEndDraft, setYearEndDraft] = useState<YearDraft>(() => ({
+    filterValue: filter.yearEnd,
+    input: formatYear(filter.yearEnd),
+  }));
 
-  useEffect(() => {
-    const next = filter.yearStart !== undefined ? String(filter.yearStart) : "";
-    if (next !== yearStartInput) {
-      setYearStartInput(next);
-    }
-  }, [filter.yearStart]);
+  const yearStartInput =
+    yearStartDraft.filterValue === filter.yearStart
+      ? yearStartDraft.input
+      : formatYear(filter.yearStart);
+  const yearEndInput =
+    yearEndDraft.filterValue === filter.yearEnd
+      ? yearEndDraft.input
+      : formatYear(filter.yearEnd);
 
-  useEffect(() => {
-    const next = filter.yearEnd !== undefined ? String(filter.yearEnd) : "";
-    if (next !== yearEndInput) {
-      setYearEndInput(next);
-    }
-  }, [filter.yearEnd]);
+  const setYearStartInput = (input: string) => {
+    setYearStartDraft({ filterValue: filter.yearStart, input });
+  };
+  const setYearEndInput = (input: string) => {
+    setYearEndDraft({ filterValue: filter.yearEnd, input });
+  };
 
   useEffect(() => {
     const id = window.setTimeout(() => {

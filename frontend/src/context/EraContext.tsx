@@ -30,13 +30,13 @@ const EraContext = createContext<EraContextType | undefined>(undefined);
 export const EraProvider = ({ children }: { children: ReactNode }) => {
   const [searchParams] = useSearchParams();
   const [dataStartYear, setDataStartYearState] = useState(-300000);
-  const [view, setViewState] = useState<EraView>("global");
+  const [view, setViewState] = useState<EraView>(
+    () => parseView(searchParams.get("v")) ?? "global",
+  );
 
   useEffect(() => {
     const urlView = parseView(searchParams.get("v"));
     if (!urlView) return;
-
-    setViewState(urlView);
 
     const nextParams = new URLSearchParams(searchParams);
     nextParams.delete("v");
@@ -48,7 +48,7 @@ export const EraProvider = ({ children }: { children: ReactNode }) => {
       window.location.hash;
 
     window.history.replaceState(window.history.state, "", nextUrl);
-  }, []);
+  }, [searchParams]);
 
   const ranges = RANGE_SETS[view];
 
@@ -107,6 +107,7 @@ export const EraProvider = ({ children }: { children: ReactNode }) => {
       dataStartYear,
       setDataStartYear,
       view,
+      setView,
       setEra,
     ],
   );

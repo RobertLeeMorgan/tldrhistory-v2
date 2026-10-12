@@ -22,26 +22,24 @@ export default function Nav() {
   const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+  const locationKey = `${location.pathname}${location.search}`;
   const navRef = useRef<HTMLElement>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [accountOpen, setAccountOpen] = useState(false);
-
-  useEffect(() => {
-    setMobileOpen(false);
-    setAccountOpen(false);
-  }, [location.pathname, location.search]);
+  const [mobileMenuLocation, setMobileMenuLocation] = useState<string | null>(null);
+  const [accountMenuLocation, setAccountMenuLocation] = useState<string | null>(null);
+  const mobileOpen = mobileMenuLocation === locationKey;
+  const accountOpen = accountMenuLocation === locationKey;
 
   useEffect(() => {
     const closeOnOutsideClick = (event: PointerEvent) => {
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        setMobileOpen(false);
-        setAccountOpen(false);
+        setMobileMenuLocation(null);
+        setAccountMenuLocation(null);
       }
     };
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setMobileOpen(false);
-        setAccountOpen(false);
+        setMobileMenuLocation(null);
+        setAccountMenuLocation(null);
       }
     };
     document.addEventListener("pointerdown", closeOnOutsideClick);
@@ -100,8 +98,8 @@ export default function Nav() {
             aria-controls="mobile-navigation"
             className="inline-flex size-11 items-center justify-center rounded-full border border-divider text-content md:hidden"
             onClick={() => {
-              setMobileOpen((value) => !value);
-              setAccountOpen(false);
+              setMobileMenuLocation(mobileOpen ? null : locationKey);
+              setAccountMenuLocation(null);
             }}
           >
             {mobileOpen ? <LuX aria-hidden="true" /> : <LuMenu aria-hidden="true" />}
@@ -116,8 +114,8 @@ export default function Nav() {
               disabled={loading}
               className="inline-flex min-h-11 items-center gap-2 rounded-full border border-divider px-3 text-content transition-colors hover:border-control hover:bg-surface disabled:cursor-wait disabled:opacity-60"
               onClick={() => {
-                setAccountOpen((value) => !value);
-                setMobileOpen(false);
+                setAccountMenuLocation(accountOpen ? null : locationKey);
+                setMobileMenuLocation(null);
               }}
             >
               {loading ? (

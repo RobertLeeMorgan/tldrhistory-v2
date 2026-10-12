@@ -16,7 +16,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import { filterToSearchParams } from "../../features/filter/components/timelineFilterParams";
 import { getGroupSlugFromId } from "../../utils/groupLookup";
 import { useEra } from "../../context/EraContext";
-import { parseView } from "../../utils/rangeViews";
+import { parseView, type EraView } from "../../utils/rangeViews";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../ui/Button";
 
@@ -26,7 +26,7 @@ function normalizeName(name: string) {
   return name.trim();
 }
 
-function normalizeView(view: any) {
+function normalizeView(view: EraView): SaveFilterInput["state"]["view"] {
   return view === "global" ? null : view;
 }
 
