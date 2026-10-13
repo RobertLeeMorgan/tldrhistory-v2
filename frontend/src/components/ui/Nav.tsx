@@ -4,7 +4,6 @@ import { LuChevronDown, LuMenu, LuX } from "react-icons/lu";
 import { useToast } from "../../context/ToastContext";
 import { useAuth } from "../../context/AuthContext";
 import { RomanHelmet, UserIcon } from "../../icons/icons";
-import { useMobileNavVisibility } from "../../hooks/useMobileNavVisibility";
 
 type MenuLink = { to: string; label: string };
 
@@ -33,7 +32,6 @@ export default function Nav() {
   const [accountMenuLocation, setAccountMenuLocation] = useState<string | null>(null);
   const mobileOpen = mobileMenuLocation === locationKey;
   const accountOpen = accountMenuLocation === locationKey;
-  const navHidden = useMobileNavVisibility(mobileOpen || accountOpen);
 
   useEffect(() => {
     let frame = 0;
@@ -102,21 +100,23 @@ export default function Nav() {
     <nav
       ref={navRef}
       aria-label="Primary navigation"
-      data-scrolled={scrolled ? "true" : "false"}
-      className={`fixed inset-x-0 top-0 z-50 h-[var(--nav-height)] border-b transition-[transform,background-color,border-color,box-shadow] duration-300 ease-out md:translate-y-0 ${
-        scrolled
+      data-scrolled={!isTimeline && scrolled ? "true" : "false"}
+      className={`fixed inset-x-0 top-0 z-50 h-[var(--nav-height)] border-b transition-[background-color,border-color,box-shadow] duration-300 ease-out ${
+        !isTimeline && scrolled
           ? "border-divider/70 bg-canvas/95 shadow-lg shadow-black/15 backdrop-blur-xl"
           : "border-transparent bg-transparent shadow-none"
-      } ${navHidden ? "-translate-y-full" : "translate-y-0"}`}
+      }`}
     >
-      <div className={`mx-auto h-full max-w-[1600px] items-center gap-4 px-4 sm:px-6 lg:px-8 ${isTimeline ? "flex justify-end" : "grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"}`}>
-        {!isTimeline && (
-          <Link to="/timeline" aria-label="TL;DR History timeline" className="flex min-w-0 shrink-0 items-center justify-self-start rounded-sm">
-            <img src="/tldr-history-logo.svg" alt="TL;DR History" className="h-8 w-auto max-w-[170px] sm:h-9 sm:max-w-[220px]" />
-          </Link>
-        )}
+      <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-4 sm:gap-4 sm:px-6 lg:px-8">
+        <div className="min-w-0 justify-self-start">
+          {!isTimeline && (
+            <Link to="/timeline" aria-label="TL;DR History timeline" className="flex min-w-0 shrink-0 items-center justify-self-start rounded-sm">
+              <img src="/tldr-history-logo.svg" alt="TL;DR History" className="h-8 w-auto max-w-[170px] sm:h-9 sm:max-w-[220px]" />
+            </Link>
+          )}
+        </div>
 
-        <div className={`hidden h-full items-center gap-5 md:flex lg:gap-7 ${isTimeline ? "ml-auto" : "justify-self-center"}`}>
+        <div data-nav-links className="hidden h-full items-center gap-5 justify-self-center md:flex lg:gap-7">
           {publicLinks.map((item) => (
             <NavLink key={item.to} to={item.to} end={item.to === "/"} className={({ isActive }) => `${item.to === "/articles/create" ? "hidden lg:inline-flex" : ""} ${navLinkClass({ isActive })}`}>
               {item.label}
@@ -124,7 +124,7 @@ export default function Nav() {
           ))}
         </div>
 
-        <div className={`flex items-center gap-2 ${isTimeline ? "" : "justify-self-end"}`}>
+        <div className="flex items-center gap-2 justify-self-end">
           <button
             type="button"
             aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}

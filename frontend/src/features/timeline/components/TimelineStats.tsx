@@ -22,7 +22,6 @@ type SignificantStatProps = {
   isError: boolean;
   fallbackIcon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
   onOpen: (post: Post) => void;
-  className?: string;
 };
 
 function SignificantStat({
@@ -32,7 +31,6 @@ function SignificantStat({
   isError,
   fallbackIcon: FallbackIcon,
   onOpen,
-  className = "",
 }: SignificantStatProps) {
   const image = post?.cdnId
     ? `https://cdn.tldrhistory.xyz/${post.cdnId}`
@@ -40,33 +38,33 @@ function SignificantStat({
   const PostIcon = (post?.group?.icon && ICON_MAP[post.group.icon]) || FallbackIcon;
 
   return (
-    <section className={`min-w-0 border-divider/70 ${className}`}>
+    <section className="min-w-0 border-divider/70">
       <button
         type="button"
         onClick={() => post && onOpen(post)}
         disabled={!post || isLoading || isError}
-        className="flex h-full w-full min-w-0 items-center gap-2 px-2 py-1.5 text-left transition-colors hover:bg-canvas/45 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent disabled:cursor-default disabled:hover:bg-transparent lg:gap-3 lg:px-4 lg:py-3"
-        aria-label={post ? `Open ${label.toLowerCase()} article: ${cleanName(post.name)}` : label}
+        className="flex h-full w-full min-w-0 flex-col items-start gap-1 px-1.5 py-1 text-left transition-colors hover:bg-canvas/45 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent disabled:cursor-default disabled:hover:bg-transparent lg:flex-row lg:items-center lg:gap-2.5 lg:px-3 lg:py-2"
+        aria-label={post ? `Open most significant ${label.toLowerCase()} article: ${cleanName(post.name)}` : `Most significant ${label.toLowerCase()}`}
         title={label}
       >
         <ContextSwap transitionKey={image ?? post?.id ?? `${label}-empty`} className="shrink-0">
           {image ? (
-            <img src={image} alt="" className="size-6 rounded-full object-cover md:size-7 lg:size-9" loading="lazy" />
+            <img src={image} alt="" className="size-5 rounded-full object-cover sm:size-6 lg:size-8" loading="lazy" />
           ) : (
-            <PostIcon aria-hidden={true} className="size-6 text-accent md:size-7 lg:size-9" />
+            <PostIcon aria-hidden={true} className="size-5 text-accent sm:size-6 lg:size-8" />
           )}
         </ContextSwap>
 
-        <div className="min-w-0">
-          <p className="truncate text-[0.58rem] font-bold tracking-[0.08em] text-content-muted lg:text-[0.68rem]">
+        <div className="min-w-0 max-w-full">
+          <p className="truncate text-[0.55rem] font-bold uppercase tracking-[0.08em] text-content-muted lg:text-[0.62rem]">
             {label}
           </p>
           {isLoading ? (
-            <p className="mt-0.5 truncate text-xs text-content-muted">Updating…</p>
+            <p className="truncate text-[0.62rem] text-content-muted lg:text-xs">Updating…</p>
           ) : isError || !post ? (
-            <p className="mt-0.5 truncate text-xs text-content-muted">—</p>
+            <p className="truncate text-[0.62rem] text-content-muted lg:text-xs">—</p>
           ) : (
-            <p className="mt-0.5 min-w-0 truncate font-serif text-xs font-semibold leading-tight text-content sm:text-sm lg:text-base">
+            <p className="min-w-0 truncate font-serif text-[0.62rem] font-semibold leading-tight text-content sm:text-xs lg:text-sm">
               <ContextSwap transitionKey={post.id}>{cleanName(post.name)}</ContextSwap>
             </p>
           )}
@@ -109,83 +107,59 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
     <>
       <aside
         aria-label="Timeline context"
-        className="fixed inset-x-0 bottom-0 z-30 h-36 border-t border-divider bg-surface/98 shadow-[0_-12px_36px_rgba(0,0,0,.28)] backdrop-blur-xl lg:inset-x-auto lg:left-0 lg:top-[var(--timeline-header-height)] lg:h-auto lg:max-h-[calc(100dvh-var(--timeline-header-height))] lg:w-[var(--timeline-sidebar-width)] lg:overflow-y-auto lg:border-r lg:border-t-0 lg:shadow-xl"
+        className="fixed inset-x-0 bottom-0 z-30 h-40 border-t border-divider bg-surface/98 shadow-[0_-12px_36px_rgba(0,0,0,.28)] backdrop-blur-xl lg:inset-x-auto lg:left-0 lg:top-[var(--timeline-header-height)] lg:h-auto lg:w-[var(--timeline-sidebar-width)] lg:overflow-y-auto lg:border-r lg:border-t-0 lg:shadow-xl"
       >
-        <div className="grid h-full min-w-0 grid-cols-3 grid-rows-2 lg:block lg:h-auto">
-          <section className="flex min-w-0 items-center gap-2 border-b border-r border-divider/70 px-2 py-1.5 lg:gap-3 lg:px-4 lg:py-3">
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="size-6 shrink-0 fill-none stroke-accent md:size-7 lg:size-9"
-              strokeWidth="1.6"
-            >
-              <circle cx="12" cy="8" r="3" />
-              <path d="M5.5 19c.4-4 2.6-6 6.5-6s6.1 2 6.5 6M5 10.5a2.5 2.5 0 1 0 0-5M19 10.5a2.5 2.5 0 1 1 0-5M2.5 18c.2-2.7 1.4-4.3 3.7-4.8M21.5 18c-.2-2.7-1.4-4.3-3.7-4.8" />
-            </svg>
-            <div className="min-w-0">
-              <p className="truncate text-[0.58rem] font-bold tracking-[0.08em] text-content-muted lg:text-[0.68rem]">
-                Global population
-              </p>
-              <p className="mt-0.5 min-w-0 truncate font-serif text-sm font-semibold text-content sm:text-base lg:text-xl" aria-live="polite">
-                {population.isLoading
-                  ? "Loading…"
-                  : population.isError
-                    ? "Unavailable"
-                    : <AnimatedNumber value={populationValue} format={(value) => formatPopulation(Math.round(value))} />}
-              </p>
+        <div className="grid h-full min-w-0 grid-cols-[minmax(0,1fr)_clamp(5.25rem,25vw,7rem)] grid-rows-[3.5rem_minmax(0,1fr)] lg:flex lg:h-auto lg:flex-col">
+          <section aria-label="Timeline facts" className="grid min-w-0 grid-cols-2 border-b border-divider/70 lg:shrink-0">
+            <div className="flex min-w-0 items-center gap-1.5 border-r border-divider/70 px-2 py-1 lg:gap-2 lg:px-3 lg:py-2.5">
+              <LuCalendarDays aria-hidden="true" className="size-5 shrink-0 text-accent lg:size-7" />
+              <div className="min-w-0">
+                <p className="truncate text-[0.52rem] font-bold uppercase tracking-[0.08em] text-content-muted lg:text-[0.6rem]">Timeline year</p>
+                <p className="truncate font-serif text-xs font-semibold text-content sm:text-sm lg:text-lg" aria-live="polite">
+                  <AnimatedYear year={dataStartYear} />
+                </p>
+              </div>
+            </div>
+
+            <div className="flex min-w-0 items-center gap-1.5 px-2 py-1 lg:gap-2 lg:px-3 lg:py-2.5">
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5 shrink-0 fill-none stroke-accent lg:size-7" strokeWidth="1.6">
+                <circle cx="12" cy="8" r="3" />
+                <path d="M5.5 19c.4-4 2.6-6 6.5-6s6.1 2 6.5 6M5 10.5a2.5 2.5 0 1 0 0-5M19 10.5a2.5 2.5 0 1 1 0-5M2.5 18c.2-2.7 1.4-4.3 3.7-4.8M21.5 18c-.2-2.7-1.4-4.3-3.7-4.8" />
+              </svg>
+              <div className="min-w-0">
+                <p className="truncate text-[0.52rem] font-bold uppercase tracking-[0.08em] text-content-muted lg:text-[0.6rem]">Global population</p>
+                <p className="truncate font-serif text-xs font-semibold text-content sm:text-sm lg:text-lg" aria-live="polite">
+                  {population.isLoading
+                    ? "Loading…"
+                    : population.isError
+                      ? "Unavailable"
+                      : <AnimatedNumber value={populationValue} format={(value) => formatPopulation(Math.round(value))} />}
+                </p>
+              </div>
             </div>
           </section>
 
-          <section className="flex min-w-0 items-center gap-2 border-b border-r border-divider/70 px-2 py-1.5 lg:gap-3 lg:px-4 lg:py-3">
-            <LuCalendarDays aria-hidden="true" className="size-6 shrink-0 text-accent md:size-7 lg:size-9" />
-            <div className="min-w-0">
-              <p className="truncate text-[0.58rem] font-bold tracking-[0.08em] text-content-muted lg:text-[0.68rem]">
-                Timeline year
-              </p>
-              <p className="mt-0.5 truncate font-serif text-sm font-semibold text-content sm:text-base lg:text-xl" aria-live="polite">
-                <AnimatedYear year={dataStartYear} />
-              </p>
+          <section aria-labelledby="most-significant-heading" className="min-w-0 overflow-hidden lg:shrink-0 lg:border-b lg:border-divider/70">
+            <h2 id="most-significant-heading" className="px-1.5 pt-1 text-[0.55rem] font-bold uppercase tracking-[0.11em] text-content-muted lg:px-3 lg:pb-0.5 lg:pt-2">
+              Most Significant
+            </h2>
+            <div className="grid min-w-0 grid-cols-3 divide-x divide-divider/70 lg:block lg:divide-x-0 lg:divide-y">
+              <SignificantStat label="Person" post={person} isLoading={significant.isLoading} isError={significant.isError} fallbackIcon={Icon} onOpen={setOpenPost} />
+              <SignificantStat label="Event" post={event} isLoading={significant.isLoading} isError={significant.isError} fallbackIcon={Icon} onOpen={setOpenPost} />
+              <SignificantStat label="Landmark" post={landmark} isLoading={significant.isLoading} isError={significant.isError} fallbackIcon={Icon} onOpen={setOpenPost} />
             </div>
           </section>
 
-          <SignificantStat
-            label="Most significant person"
-            post={person}
-            isLoading={significant.isLoading}
-            isError={significant.isError}
-            fallbackIcon={Icon}
-            onOpen={setOpenPost}
-            className="border-b lg:border-r-0"
-          />
-          <SignificantStat
-            label="Most significant event"
-            post={event}
-            isLoading={significant.isLoading}
-            isError={significant.isError}
-            fallbackIcon={Icon}
-            onOpen={setOpenPost}
-            className="border-r lg:border-r-0 lg:border-b"
-          />
-          <SignificantStat
-            label="Most significant landmark"
-            post={landmark}
-            isLoading={significant.isLoading}
-            isError={significant.isError}
-            fallbackIcon={Icon}
-            onOpen={setOpenPost}
-            className="border-r lg:border-r-0 lg:border-b"
-          />
-
-          <section className="flex min-w-0 flex-col px-1.5 py-1.5 lg:px-4 lg:py-4">
-            <div className="hidden items-center justify-between lg:flex">
-              <p className="text-xs font-bold tracking-[0.11em] text-content-muted">Active civilisations</p>
-              <LuMap aria-hidden="true" className="text-accent" />
+          <section className="col-start-2 row-span-2 row-start-1 flex min-w-0 flex-col border-l border-divider/70 px-1.5 py-1.5 lg:border-l-0 lg:px-3 lg:py-2.5">
+            <div className="flex items-center justify-between gap-1">
+              <p className="truncate text-[0.52rem] font-bold uppercase tracking-[0.08em] text-content-muted lg:text-[0.62rem] lg:tracking-[0.11em]">Civilisations</p>
+              <LuMap aria-hidden="true" className="size-3.5 shrink-0 text-accent lg:size-4" />
             </div>
             <button
               type="button"
               onClick={() => setMapOpen(true)}
               disabled={civilisationQuery.isLoading || civilisationQuery.isError}
-              className="grid min-h-0 flex-1 place-items-center overflow-hidden rounded-md transition-colors hover:bg-canvas/45 disabled:opacity-50 lg:mt-2 lg:h-auto lg:flex-none lg:border lg:border-divider lg:bg-canvas/35"
+              className="mt-1 grid min-h-0 flex-1 place-items-center overflow-hidden rounded-md border border-divider/70 bg-canvas/25 transition-colors hover:bg-canvas/45 disabled:opacity-50 lg:h-[7.5rem] lg:flex-none"
               aria-label={remainingCivilisations > 0 ? `Open civilisation map and see ${remainingCivilisations} more` : "Open civilisation map"}
             >
               {civilisationQuery.isLoading ? (
@@ -197,32 +171,32 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
               )}
             </button>
 
-            <div className="grid grid-cols-[1.2fr_0.8fr]">
-            {legend.length > 0 && (
-              <ol className="mt-3 hidden space-y-1.5 lg:block" aria-label="Most significant civilisations in this era">
-                {legend.map((civilisation) => (
-                  <li key={civilisation.id} className="flex min-w-0 items-center gap-2 text-xs text-content-muted">
-                    <span
-                      aria-hidden="true"
-                      className="size-2.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: groupColor(civilisation.group?.id ?? null, civilisation.country.continent as Continent) }}
-                    />
-                    <span className="truncate">{cleanName(civilisation.name)}</span>
-                  </li>
-                ))}
-              </ol>
-            )}
-            {remainingCivilisations > 0 && (
-              <div className="mt-2 hidden items-start justify-end lg:flex">
-                <button
-                  type="button"
-                  onClick={() => setMapOpen(true)}
-                  className="rounded px-1 py-0.5 !text-xs font-semibold text-accent underline decoration-transparent underline-offset-4 transition-colors hover:text-content hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                >
-                  See {remainingCivilisations} more
-                </button>
-              </div>
-            )}
+            <div className="hidden grid-cols-[minmax(0,1fr)_auto] gap-2 lg:grid">
+              {legend.length > 0 && (
+                <ol className="mt-2 space-y-1" aria-label="Most significant civilisations in this era">
+                  {legend.map((civilisation) => (
+                    <li key={civilisation.id} className="flex min-w-0 items-center gap-2 text-xs text-content-muted">
+                      <span
+                        aria-hidden="true"
+                        className="size-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: groupColor(civilisation.group?.id ?? null, civilisation.country.continent as Continent) }}
+                      />
+                      <span className="truncate">{cleanName(civilisation.name)}</span>
+                    </li>
+                  ))}
+                </ol>
+              )}
+              {remainingCivilisations > 0 && (
+                <div className="mt-1.5 flex items-start justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setMapOpen(true)}
+                    className="rounded px-1 py-0.5 !text-xs font-semibold text-accent underline decoration-transparent underline-offset-4 transition-colors hover:text-content hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  >
+                    See {remainingCivilisations} more
+                  </button>
+                </div>
+              )}
             </div>
           </section>
         </div>

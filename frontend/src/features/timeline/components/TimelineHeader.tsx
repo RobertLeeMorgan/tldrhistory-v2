@@ -46,21 +46,22 @@ function EraPerspectiveMenu({ view, setView }: { view: EraView; setView: (view: 
   };
 
   return (
-    <div ref={rootRef} className="relative h-full w-[8.75rem] shrink-0 border-r border-divider/70 sm:w-44">
+    <div ref={rootRef} className="relative h-full w-12 shrink-0 border-l border-divider/70 sm:w-44 md:border-r">
       <button
         type="button"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-controls="era-perspective-menu"
         onClick={() => setOpen((current) => !current)}
-        className={`flex h-full w-full items-center gap-2 px-3 text-left transition-colors hover:bg-surface-raised focus-visible:outline-offset-[-3px] sm:px-4 ${open ? "bg-surface-raised text-content" : "bg-surface/85 text-content-muted"}`}
+        aria-label={`Era perspective: ${selected.label}`}
+        className={`flex h-full w-full items-center justify-center gap-1 px-1.5 text-left transition-colors hover:bg-surface-raised focus-visible:outline-offset-[-3px] sm:justify-start sm:gap-2 sm:px-4 ${open ? "bg-surface-raised text-content" : "bg-surface/85 text-content-muted"}`}
       >
         <LuGlobe aria-hidden="true" className="size-4 shrink-0 text-accent" />
-        <span className="min-w-0 flex-1">
+        <span className="hidden min-w-0 flex-1 sm:block">
           <span className="hidden text-[0.58rem] font-bold uppercase tracking-[0.12em] text-content-muted sm:block">Perspective</span>
           <span className="block truncate text-xs font-semibold text-content">{selected.label}</span>
         </span>
-        <LuChevronDown aria-hidden="true" className={`size-4 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <LuChevronDown aria-hidden="true" className={`size-3 shrink-0 transition-transform duration-200 sm:size-4 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
@@ -69,7 +70,7 @@ function EraPerspectiveMenu({ view, setView }: { view: EraView; setView: (view: 
           role="menu"
           aria-label="Era perspective"
           onKeyDown={moveFocus}
-          className="absolute left-2 top-[calc(100%+.5rem)] z-50 max-h-[min(24rem,60dvh)] w-[min(17rem,calc(100vw-1rem))] overflow-y-auto rounded-xl border border-divider bg-surface-raised p-2 shadow-2xl shadow-black/50 sm:left-3"
+          className="absolute right-0 top-[calc(100%+.5rem)] z-50 max-h-[min(24rem,60dvh)] w-[min(17rem,calc(100vw-1rem))] overflow-y-auto rounded-xl border border-divider bg-surface-raised p-2 shadow-2xl shadow-black/50 md:left-3 md:right-auto"
         >
           {VIEW_OPTIONS.map((option, index) => {
             const active = option.value === view;
@@ -119,29 +120,27 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
       className="fixed inset-x-0 top-0 z-40 h-[var(--timeline-header-height)] border-b border-divider bg-canvas/97 shadow-xl shadow-black/20 backdrop-blur-xl"
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-40 [background:radial-gradient(circle_at_72%_20%,rgba(214,173,104,.14),transparent_33%),linear-gradient(90deg,rgba(16,23,25,1),rgba(24,33,36,.72))]" />
-      <div className="relative mx-auto grid h-full max-w-[1600px] grid-rows-[minmax(0,1fr)_3.5rem]">
-        <div className="flex min-w-0 items-center px-4 pt-[var(--nav-height)] sm:px-6 md:pr-[23rem] md:pt-1 lg:px-8 lg:pr-[31rem]">
-          <div className="min-w-0">
-            <p className="atlas-eyebrow hidden md:block">Current era</p>
-            <h1 className="whitespace-nowrap font-serif text-[clamp(1.05rem,4.4vw,2.5rem)] font-semibold leading-none text-content md:text-[clamp(1.5rem,3vw,2.5rem)]">
-              {groupMeta ? title : <TextSwap text={title} className="block whitespace-nowrap" />}
-            </h1>
-            {subheadline && (
-              <p className="mt-1 hidden max-w-2xl truncate text-xs text-content-muted lg:block">
-                <ContextSwap transitionKey={subheadline}>{subheadline}</ContextSwap>
-              </p>
-            )}
-            <p className="mt-1 whitespace-nowrap text-[0.68rem] font-semibold text-accent sm:text-xs">
-              <AnimatedYear year={orderedYears[0] ?? 0} />
-              <span className="mx-1.5 text-content-muted">–</span>
-              <AnimatedYear year={orderedYears[1] ?? 0} />
+      <div className="relative mx-auto flex h-full max-w-[1600px] items-stretch px-4 pt-[var(--nav-height)] sm:px-6 lg:px-8">
+        <div className="flex min-w-0 shrink-0 flex-col justify-center py-1 pr-2 sm:pr-4 md:py-1.5">
+          <p className="atlas-eyebrow hidden md:block">Current era</p>
+          <h1 className="w-max whitespace-nowrap font-serif text-[clamp(.625rem,3.35vw,1.25rem)] font-semibold leading-none text-content sm:text-[clamp(.9rem,2.75vw,1.5rem)] md:text-[clamp(1rem,2.1vw,2rem)]">
+            {groupMeta ? title : <TextSwap text={title} className="block w-max whitespace-nowrap" />}
+          </h1>
+          {subheadline && (
+            <p className="mt-0.5 hidden max-w-[min(32rem,42vw)] truncate text-[0.68rem] text-content-muted lg:block">
+              <ContextSwap transitionKey={subheadline}>{subheadline}</ContextSwap>
             </p>
-          </div>
+          )}
+          <p className="mt-0.5 whitespace-nowrap text-[0.62rem] font-semibold text-accent sm:text-[0.68rem] md:text-xs">
+            <AnimatedYear year={orderedYears[0] ?? 0} />
+            <span className="mx-1.5 text-content-muted">–</span>
+            <AnimatedYear year={orderedYears[1] ?? 0} />
+          </p>
         </div>
 
-        <div className="flex min-w-0 border-t border-divider/70 bg-canvas/35">
+        <div className="flex min-w-0 flex-1 justify-end bg-canvas/20 md:justify-start">
           <EraPerspectiveMenu view={view} setView={setView} />
-          <EraStrip className="min-w-0 flex-1" />
+          <EraStrip className="hidden min-w-0 flex-1 md:block" />
         </div>
       </div>
     </header>
