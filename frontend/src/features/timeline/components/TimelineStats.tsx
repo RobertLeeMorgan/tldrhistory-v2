@@ -53,7 +53,7 @@ function SignificantStat({
           {image ? (
             <img src={image} alt="" className="size-6 rounded-full object-cover md:size-7 lg:size-9" loading="lazy" />
           ) : (
-            <PostIcon aria-hidden="true" className="size-6 text-accent md:size-7 lg:size-9" />
+            <PostIcon aria-hidden={true} className="size-6 text-accent md:size-7 lg:size-9" />
           )}
         </ContextSwap>
 
@@ -64,7 +64,7 @@ function SignificantStat({
           {isLoading ? (
             <p className="mt-0.5 truncate text-xs text-content-muted">Updating…</p>
           ) : isError || !post ? (
-            <p className="mt-0.5 truncate text-xs text-content-muted">Unavailable</p>
+            <p className="mt-0.5 truncate text-xs text-content-muted">—</p>
           ) : (
             <p className="mt-0.5 min-w-0 truncate font-serif text-xs font-semibold leading-tight text-content sm:text-sm lg:text-base">
               <ContextSwap transitionKey={post.id}>{cleanName(post.name)}</ContextSwap>
@@ -109,7 +109,7 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
     <>
       <aside
         aria-label="Timeline context"
-        className="fixed inset-x-0 bottom-0 z-30 h-36 border-t border-divider bg-surface/98 shadow-[0_-12px_36px_rgba(0,0,0,.28)] backdrop-blur-xl lg:inset-x-auto lg:left-0 lg:top-[calc(var(--nav-height)+var(--timeline-header-height))] lg:h-auto lg:max-h-[calc(100dvh-var(--nav-height)-var(--timeline-header-height))] lg:w-[var(--timeline-sidebar-width)] lg:overflow-y-auto lg:border-r lg:border-t-0 lg:shadow-xl"
+        className="fixed inset-x-0 bottom-0 z-30 h-36 border-t border-divider bg-surface/98 shadow-[0_-12px_36px_rgba(0,0,0,.28)] backdrop-blur-xl lg:inset-x-auto lg:left-0 lg:top-[var(--timeline-header-height)] lg:h-auto lg:max-h-[calc(100dvh-var(--timeline-header-height))] lg:w-[var(--timeline-sidebar-width)] lg:overflow-y-auto lg:border-r lg:border-t-0 lg:shadow-xl"
       >
         <div className="grid h-full min-w-0 grid-cols-3 grid-rows-2 lg:block lg:h-auto">
           <section className="flex min-w-0 items-center gap-2 border-b border-r border-divider/70 px-2 py-1.5 lg:gap-3 lg:px-4 lg:py-3">
@@ -191,12 +191,13 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
               {civilisationQuery.isLoading ? (
                 <span className="text-xs text-content-muted">Loading…</span>
               ) : civilisationQuery.isError ? (
-                <span className="text-xs text-content-muted">Unavailable</span>
+                <span className="text-xs text-content-muted">—</span>
               ) : (
                 <WorldMap civilisations={civilisations} isInteractive={false} />
               )}
             </button>
 
+            <div className="grid grid-cols-[1.2fr_0.8fr]">
             {legend.length > 0 && (
               <ol className="mt-3 hidden space-y-1.5 lg:block" aria-label="Most significant civilisations in this era">
                 {legend.map((civilisation) => (
@@ -212,16 +213,17 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
               </ol>
             )}
             {remainingCivilisations > 0 && (
-              <div className="mt-2 hidden justify-end lg:flex">
+              <div className="mt-2 hidden items-start justify-end lg:flex">
                 <button
                   type="button"
                   onClick={() => setMapOpen(true)}
-                  className="rounded px-1 py-0.5 text-xs font-semibold text-accent underline decoration-transparent underline-offset-4 transition-colors hover:text-content hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  className="rounded px-1 py-0.5 !text-xs font-semibold text-accent underline decoration-transparent underline-offset-4 transition-colors hover:text-content hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 >
                   See {remainingCivilisations} more
                 </button>
               </div>
             )}
+            </div>
           </section>
         </div>
       </aside>

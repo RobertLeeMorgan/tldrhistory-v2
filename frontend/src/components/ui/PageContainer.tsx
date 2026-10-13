@@ -9,10 +9,10 @@ type PageProps = {
 };
 
 const variantClasses: Record<PageVariant, string> = {
-  centered: "flex min-h-[calc(100dvh-var(--nav-height))] flex-col items-center justify-center",
-  discovery: "min-h-[calc(100dvh-var(--nav-height))]",
-  form: "flex min-h-[calc(100dvh-var(--nav-height))] flex-col items-center justify-center py-10 sm:py-16",
-  reading: "min-h-[calc(100dvh-var(--nav-height))] py-10 sm:py-16",
+  centered: "flex min-h-dvh flex-col items-center justify-center pt-[var(--nav-height)]",
+  discovery: "min-h-dvh",
+  form: "flex min-h-dvh flex-col items-center justify-center pb-10 pt-[calc(var(--nav-height)+2.5rem)] sm:pb-16 sm:pt-[calc(var(--nav-height)+4rem)]",
+  reading: "min-h-dvh pb-10 pt-[calc(var(--nav-height)+2.5rem)] sm:pb-16 sm:pt-[calc(var(--nav-height)+4rem)]",
 };
 
 export default function PageContainer({ children, variant = "centered", className = "" }: PageProps) {

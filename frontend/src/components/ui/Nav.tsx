@@ -11,6 +11,7 @@ type MenuLink = { to: string; label: string };
 const publicLinks: MenuLink[] = [
   { to: "/", label: "Home" },
   { to: "/timeline", label: "Timeline" },
+  { to: "/articles/create", label: "Create Article" },
 ];
 
 function navLinkClass({ isActive }: { isActive: boolean }) {
@@ -25,12 +26,31 @@ export default function Nav() {
   const navigate = useNavigate();
   const location = useLocation();
   const locationKey = `${location.pathname}${location.search}`;
+  const isTimeline = location.pathname === "/timeline" || location.pathname.startsWith("/timeline/");
   const navRef = useRef<HTMLElement>(null);
+  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuLocation, setMobileMenuLocation] = useState<string | null>(null);
   const [accountMenuLocation, setAccountMenuLocation] = useState<string | null>(null);
   const mobileOpen = mobileMenuLocation === locationKey;
   const accountOpen = accountMenuLocation === locationKey;
   const navHidden = useMobileNavVisibility(mobileOpen || accountOpen);
+
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      setScrolled(window.scrollY > 12);
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [location.pathname]);
 
   useEffect(() => {
     const closeOnOutsideClick = (event: PointerEvent) => {
@@ -79,21 +99,32 @@ export default function Nav() {
       ];
 
   return (
-    <nav ref={navRef} aria-label="Primary navigation" className={`fixed inset-x-0 top-0 z-50 h-[var(--nav-height)] border-b border-divider/70 bg-canvas/95 shadow-lg shadow-black/15 backdrop-blur-xl transition-transform duration-300 ease-out md:translate-y-0 ${navHidden ? "-translate-y-full" : "translate-y-0"}`}>
-      <div className="mx-auto flex h-full max-w-[1600px] items-center gap-8 px-4 sm:px-6 lg:gap-12 lg:px-8">
-        <Link to="/timeline" aria-label="TL;DR History timeline" className="flex min-w-0 shrink-0 items-center rounded-sm">
-          <img src="/tldr-history-logo.svg" alt="TL;DR History" className="h-8 w-auto max-w-[170px] sm:h-9 sm:max-w-[220px]" />
-        </Link>
+    <nav
+      ref={navRef}
+      aria-label="Primary navigation"
+      data-scrolled={scrolled ? "true" : "false"}
+      className={`fixed inset-x-0 top-0 z-50 h-[var(--nav-height)] border-b transition-[transform,background-color,border-color,box-shadow] duration-300 ease-out md:translate-y-0 ${
+        scrolled
+          ? "border-divider/70 bg-canvas/95 shadow-lg shadow-black/15 backdrop-blur-xl"
+          : "border-transparent bg-transparent shadow-none"
+      } ${navHidden ? "-translate-y-full" : "translate-y-0"}`}
+    >
+      <div className={`mx-auto h-full max-w-[1600px] items-center gap-4 px-4 sm:px-6 lg:px-8 ${isTimeline ? "flex justify-end" : "grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"}`}>
+        {!isTimeline && (
+          <Link to="/timeline" aria-label="TL;DR History timeline" className="flex min-w-0 shrink-0 items-center justify-self-start rounded-sm">
+            <img src="/tldr-history-logo.svg" alt="TL;DR History" className="h-8 w-auto max-w-[170px] sm:h-9 sm:max-w-[220px]" />
+          </Link>
+        )}
 
-        <div className="hidden h-full items-center gap-7 md:flex">
+        <div className={`hidden h-full items-center gap-5 md:flex lg:gap-7 ${isTimeline ? "ml-auto" : "justify-self-center"}`}>
           {publicLinks.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.to === "/"} className={navLinkClass}>
+            <NavLink key={item.to} to={item.to} end={item.to === "/"} className={({ isActive }) => `${item.to === "/articles/create" ? "hidden lg:inline-flex" : ""} ${navLinkClass({ isActive })}`}>
               {item.label}
             </NavLink>
           ))}
         </div>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${isTimeline ? "" : "justify-self-end"}`}>
           <button
             type="button"
             aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -135,7 +166,7 @@ export default function Nav() {
             </button>
 
             {!loading && accountOpen && (
-              <div id="account-navigation" className="atlas-surface absolute right-0 top-[calc(100%+0.6rem)] w-56 rounded-xl p-2">
+              <div id="account-navigation" className="absolute right-0 top-[calc(100%+0.6rem)] w-56 rounded-xl border border-divider bg-surface-raised p-2 shadow-2xl shadow-black/45">
                 {accountLinks.map((item) => (
                   <Link key={`${item.to}-${item.label}`} to={item.to} className="flex min-h-11 items-center rounded-lg px-3 text-sm text-content-muted transition-colors hover:bg-surface-raised hover:text-content">
                     {item.label}
@@ -153,7 +184,7 @@ export default function Nav() {
       </div>
 
       {mobileOpen && (
-        <div id="mobile-navigation" className="atlas-surface absolute inset-x-3 top-[calc(100%+0.5rem)] rounded-xl p-2 md:hidden">
+        <div id="mobile-navigation" className="absolute inset-x-3 top-[calc(100%+0.5rem)] rounded-xl border border-divider bg-surface-raised p-2 shadow-2xl shadow-black/45 md:hidden">
           {publicLinks.map((item) => (
             <NavLink key={item.to} to={item.to} end={item.to === "/"} className={({ isActive }) => `flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold ${isActive ? "bg-surface-raised text-accent" : "text-content-muted hover:bg-surface hover:text-content"}`}>
               {item.label}

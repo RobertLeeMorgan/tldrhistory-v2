@@ -60,10 +60,10 @@ const overlapFacts = [
   { eyebrow: "Same-time fact", title: "Oxford is older than the Aztec Empire", body: "A medieval university predates one of the most famous empires in the Americas.", to: "/timeline?ys=1096&ye=1521" },
 ];
 
-const startHere = [
-  { to: "/timeline/ancient-egypt", eyebrow: "Early civilization", label: "Ancient Egypt", blurb: "Dynasties, religion, pharaohs, and life shaped by the Nile." },
-  { to: "/timeline/ancient-greece", eyebrow: "Classical world", label: "Ancient Greece", blurb: "City-states, philosophy, warfare, and the classical world." },
-  { to: "/timeline/ancient-rome", eyebrow: "Empire and power", label: "Ancient Rome", blurb: "Republic, empire, conquest, and the remaking of the Mediterranean." },
+const popularSearches = [
+  { to: "/timeline/ancient-rome", label: "Ancient Rome" },
+  { to: "/timeline/ancient-greece", label: "Ancient Greece" },
+  { to: "/timeline/ancient-egypt", label: "Ancient Egypt" },
 ];
 
 function ArrowLink({ children }: { children: React.ReactNode }) {
@@ -94,12 +94,10 @@ export default function HomeRoute() {
 
   return (
     <PageContainer variant="discovery">
-      <section className="relative isolate min-h-[min(780px,calc(100dvh-var(--nav-height)))] overflow-hidden border-b border-divider">
+      <section className="relative isolate min-h-[min(780px,100dvh)] overflow-hidden border-b border-divider">
         <img src={heroImage} alt="" aria-hidden="true" fetchPriority="high" className="absolute inset-0 -z-20 size-full object-cover object-center" />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(7,14,17,.96)_0%,rgba(7,14,17,.75)_48%,rgba(7,14,17,.56)_100%)]" />
-        <div className="mx-auto grid min-h-[min(780px,calc(100dvh-var(--nav-height)))] max-w-7xl items-center gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-8">
-          <div className="max-w-3xl">
-            <p className="atlas-eyebrow">TLDR History</p>
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(7,14,17,.96)_0%,rgba(7,14,17,.56)_5%)]" />
+        <div className="mx-auto flex min-h-[min(780px,100dvh)] w-full flex-col items-center justify-center px-4 pb-12 pt-[calc(var(--nav-height)+2rem)] text-center sm:px-6 lg:px-8">
             <h1 className="mt-5 max-w-3xl font-serif text-5xl font-semibold leading-[1.02] text-content sm:text-6xl lg:text-7xl">
               Explore history <span className="text-accent">as a connected timeline.</span>
             </h1>
@@ -107,23 +105,22 @@ export default function HomeRoute() {
               Follow people, events, cultures, and empires across eras. Move through time visually, compare what was happening at once, and jump into the parts of history that interest you most.
             </p>
             <TimelineSearchField value={search} onChange={setSearch} onSubmit={openSearch} label="Search history from the homepage" placeholder="Search for an event, person, place, or topic…" className="mt-8 max-w-2xl" />
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Link to="/timeline" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold text-on-accent transition-colors hover:bg-accent-strong">Open the timeline <LuArrowRight aria-hidden="true" /></Link>
               <Link to="/timeline/modern-era" className="inline-flex min-h-11 items-center justify-center rounded-full border border-control bg-canvas/60 px-6 py-3 text-sm font-bold text-content transition-colors hover:border-accent hover:text-accent">Start with the modern era</Link>
             </div>
-          </div>
-          <aside className="atlas-surface rounded-2xl p-5 sm:p-6">
-            <p className="atlas-eyebrow">Start here</p>
-            <div className="mt-4 divide-y divide-divider">
-              {startHere.map((item) => (
-                <Link key={item.to} to={item.to} className="group block py-4 first:pt-1 last:pb-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-content-muted">{item.eyebrow}</p>
-                  <h2 className="mt-1 font-serif text-xl text-content transition-colors group-hover:text-accent">{item.label}</h2>
-                  <p className="mt-1 text-sm leading-6 text-content-muted">{item.blurb}</p>
+            <nav aria-label="Popular searches" className="mt-6 flex flex-wrap items-center justify-center gap-2">
+              <span className="mr-1 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-content-muted">Popular</span>
+              {popularSearches.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="inline-flex min-h-8 items-center rounded-full border border-divider bg-canvas/65 px-3 py-1 text-xs font-semibold text-content-muted backdrop-blur-sm transition-colors hover:border-accent hover:bg-surface hover:text-content"
+                >
+                  {item.label}
                 </Link>
               ))}
-            </div>
-          </aside>
+            </nav>
         </div>
       </section>
 
