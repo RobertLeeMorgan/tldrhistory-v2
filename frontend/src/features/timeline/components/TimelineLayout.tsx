@@ -17,7 +17,7 @@ export default function TimelineLayout() {
       <main className="relative z-10 min-h-screen bg-canvas pt-[var(--timeline-header-height)]">
         <div className="relative mx-auto max-w-[1600px] lg:pl-[var(--timeline-sidebar-width)]">
           <TimelineStats filter={filter} />
-          <section id="timeline-feed" aria-label="Historical timeline entries" className="min-w-0 px-4 pb-28 pt-4 sm:px-6 sm:pb-20 lg:px-7 lg:pt-6">
+          <section id="timeline-feed" aria-label="Historical timeline entries" className="min-w-0 px-4 pb-40 sm:px-6 lg:px-7 lg:pb-20">
             <TimelineToolbar onOpenDrawer={() => setDrawerOpen(true)} />
             <Outlet />
           </section>

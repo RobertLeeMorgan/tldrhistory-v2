@@ -38,14 +38,14 @@ export default function CardFooter({ post }: CardFooterProps) {
     onSuccess: (data) => {
       setLikeOverride({
         postId: post.id,
-        liked: data.likePost.liked,
+        liked: data.likePost.liked ?? false,
         likes: data.likePost.likes,
       });
     },
     onError: () => {
       addToast({ message: "Could not confirm the like change. Refresh before trying again.", type: "error" });
     },
-    onSettled: () => Promise.all(["timeline", "userPosts", "userLikes", "userStats"].map(
+    onSettled: () => Promise.all(["timeline", "significant", "userPosts", "userLikes", "userStats"].map(
       (key) => queryClient.invalidateQueries({ queryKey: [key] }),
     )),
   });

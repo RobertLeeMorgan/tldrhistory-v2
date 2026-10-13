@@ -1,23 +1,14 @@
-import { LuGlobe, LuMapPin } from "react-icons/lu";
+import { LuGlobe } from "react-icons/lu";
 import { useEra } from "../../../context/EraContext";
-import { formatYear } from "../../../utils/formatYear";
 import type { TimelineFilter } from "../../filter/components/TimelineFilter";
 import { themes } from "../../../utils/drawerValues";
 import { VIEW_OPTIONS } from "../../../utils/rangeViews";
-import { AnimatedNumber, ContextSwap, TextSwap } from "../../../components/ui/AnimatedValue";
+import { ContextSwap, TextSwap } from "../../../components/ui/AnimatedValue";
+import AnimatedYear from "../../../components/ui/AnimatedYear";
 import EraStrip from "./EraStrip";
 
-function AnimatedYear({ year, className }: { year: number; className?: string }) {
-  return (
-    <span className={`inline-flex items-baseline gap-1 tabular-nums ${className ?? ""}`}>
-      <AnimatedNumber value={Math.abs(year)} format={(value) => Math.floor(value).toLocaleString()} />
-      <span className="text-[0.7em] font-semibold text-content-muted">{formatYear(year)}</span>
-    </span>
-  );
-}
-
 export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
-  const { startYear, endYear, label, headline, dataStartYear, view, setView } = useEra();
+  const { startYear, endYear, label, headline, view, setView } = useEra();
   const groupMeta = filter.group > 0
     ? themes.options.find((option) => option.value === filter.group)
     : null;
@@ -34,7 +25,7 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
   return (
     <header
       id="timeline-context-header"
-      className="fixed inset-x-0 top-[var(--nav-height)] z-40 h-[var(--timeline-header-height)] overflow-hidden border-b border-divider bg-canvas/97 shadow-xl shadow-black/20 backdrop-blur-xl"
+      className="fixed inset-x-0 z-40 h-[var(--timeline-header-height)] overflow-hidden border-b border-divider bg-canvas/97 shadow-xl shadow-black/20 backdrop-blur-xl"
     >
       <div className="pointer-events-none absolute inset-0 opacity-40 [background:radial-gradient(circle_at_72%_20%,rgba(214,173,104,.14),transparent_33%),linear-gradient(90deg,rgba(16,23,25,1),rgba(24,33,36,.72))]" />
       <div className="relative mx-auto grid h-full max-w-[1600px] grid-cols-[minmax(0,1fr)_minmax(8.5rem,auto)] grid-rows-[minmax(0,1fr)_auto] md:grid-cols-[minmax(17rem,30%)_minmax(0,1fr)]">
@@ -55,17 +46,8 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
           </p>
         </div>
 
-        <div className="grid min-w-0 grid-cols-1 content-center gap-1 border-l border-divider/70 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_minmax(9rem,12rem)] sm:items-center sm:gap-4 sm:px-5 md:border-l-0 lg:px-7">
-          <div className="min-w-0">
-            <p className="flex items-center gap-1.5 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-content-muted sm:text-xs">
-              <LuMapPin aria-hidden="true" /> Timeline year
-            </p>
-            <p className="truncate font-serif text-lg text-content sm:text-2xl">
-              <AnimatedYear year={dataStartYear} />
-            </p>
-          </div>
-
-          <label className="relative min-w-0">
+        <div className="grid min-w-0 content-center border-l border-divider/70 px-3 py-2 sm:px-5 md:border-l-0 lg:px-7">
+          <label className="relative w-full min-w-0 sm:max-w-48 sm:justify-self-end">
             <span className="sr-only sm:not-sr-only sm:mb-1 sm:block sm:text-[0.62rem] sm:font-bold sm:uppercase sm:tracking-[0.12em] sm:text-content-muted">
               Era perspective
             </span>

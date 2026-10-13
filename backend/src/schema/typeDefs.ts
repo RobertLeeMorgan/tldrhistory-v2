@@ -236,11 +236,10 @@ export const typeDefs = gql`
     allGroups: [Group!]!
   }
 
-  type SignificantPost {
-    id: ID!
-    name: String!
-    imageUrl: String
-    cdnId: String
+  type SignificantPosts {
+    person: Post
+    event: Post
+    landmark: Post
   }
 
   type TimelineResponse {
@@ -401,7 +400,7 @@ input DeleteSavedFilterInput {
       startYear: Int!
       endYear: Int!
       filter: FilterInput
-    ): SignificantPost
+    ): SignificantPosts!
     getCivilisation(
       startYear: Int!
       endYear: Int!

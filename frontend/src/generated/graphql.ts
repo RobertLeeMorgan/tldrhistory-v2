@@ -395,7 +395,7 @@ export type Query = {
   getCivilisation: Array<Post>;
   getPopulation: Scalars['BigInt']['output'];
   getPost: Post;
-  getSignificant?: Maybe<SignificantPost>;
+  getSignificant: SignificantPosts;
   pendingCreatedPosts: CreatedPostsResponse;
   pendingEdits: PendingEditsResponse;
   pendingStats: PendingReviewStats;
@@ -521,12 +521,11 @@ export type SavedFilterStateInput = {
   yearStart: Scalars['Int']['input'];
 };
 
-export type SignificantPost = {
-  __typename?: 'SignificantPost';
-  cdnId?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  name: Scalars['String']['output'];
+export type SignificantPosts = {
+  __typename?: 'SignificantPosts';
+  event?: Maybe<Post>;
+  landmark?: Maybe<Post>;
+  person?: Maybe<Post>;
 };
 
 export type Subject = {
@@ -704,6 +703,8 @@ export type GetPopulationQueryVariables = Exact<{
 
 export type GetPopulationQuery = { __typename?: 'Query', getPopulation: any };
 
+export type SignificantPostFieldsFragment = { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, cdnId?: string | null, civilisation?: boolean | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', id: number, name: string, icon: string } | null, user: { __typename?: 'User', id: string, username: string } };
+
 export type GetSignificantQueryVariables = Exact<{
   startYear: Scalars['Int']['input'];
   endYear: Scalars['Int']['input'];
@@ -711,7 +712,7 @@ export type GetSignificantQueryVariables = Exact<{
 }>;
 
 
-export type GetSignificantQuery = { __typename?: 'Query', getSignificant?: { __typename?: 'SignificantPost', id: string, name: string, imageUrl?: string | null, cdnId?: string | null } | null };
+export type GetSignificantQuery = { __typename?: 'Query', getSignificant: { __typename?: 'SignificantPosts', person?: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, cdnId?: string | null, civilisation?: boolean | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', id: number, name: string, icon: string } | null, user: { __typename?: 'User', id: string, username: string } } | null, event?: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, cdnId?: string | null, civilisation?: boolean | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', id: number, name: string, icon: string } | null, user: { __typename?: 'User', id: string, username: string } } | null, landmark?: { __typename?: 'Post', id: string, name: string, type: PostType, startDescription: string, endDescription?: string | null, startYear: number, startMonth: number, startDay: number, endYear: number, endMonth: number, endDay: number, startSignificance: number, endSignificance: number, imageUrl?: string | null, imageCredit?: string | null, sourceUrl?: string | null, cdnId?: string | null, civilisation?: boolean | null, likes: number, liked?: boolean | null, country: { __typename?: 'CountrySummary', name: string, continent: Continent }, subjects: Array<{ __typename?: 'Subject', id: string, name: string }>, group?: { __typename?: 'Group', id: number, name: string, icon: string } | null, user: { __typename?: 'User', id: string, username: string } } | null } };
 
 export type GetCivilisationQueryVariables = Exact<{
   startYear: Scalars['Int']['input'];

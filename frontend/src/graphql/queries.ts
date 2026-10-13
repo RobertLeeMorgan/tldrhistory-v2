@@ -52,12 +52,57 @@ export const POPULATION_QUERY = gql`
 `;
 
 export const SIGNIFICANT_QUERY = gql`
-  query GetSignificant($startYear: Int!, $endYear: Int!, $filter: FilterInput) {
-    getSignificant(startYear: $startYear, endYear: $endYear, filter: $filter) {
+  fragment SignificantPostFields on Post {
+    id
+    name
+    type
+    startDescription
+    endDescription
+    startYear
+    startMonth
+    startDay
+    endYear
+    endMonth
+    endDay
+    startSignificance
+    endSignificance
+    imageUrl
+    imageCredit
+    sourceUrl
+    cdnId
+    civilisation
+    country {
+      name
+      continent
+    }
+    subjects {
       id
       name
-      imageUrl
-      cdnId
+    }
+    group {
+      id
+      name
+      icon
+    }
+    user {
+      id
+      username
+    }
+    likes
+    liked
+  }
+
+  query GetSignificant($startYear: Int!, $endYear: Int!, $filter: FilterInput) {
+    getSignificant(startYear: $startYear, endYear: $endYear, filter: $filter) {
+      person {
+        ...SignificantPostFields
+      }
+      event {
+        ...SignificantPostFields
+      }
+      landmark {
+        ...SignificantPostFields
+      }
     }
   }
 `;

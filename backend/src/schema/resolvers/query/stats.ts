@@ -1,6 +1,8 @@
 import { GraphQLError } from "graphql";
 import prisma from "../../../server/client";
 import { queryFilters } from "../../../utils/filters/queryFilters";
+import { timelinePostSelect } from "../../../utils/timelineSelect";
+import { Context } from "./user";
 
 type PopulationArgs = {
   start: number;
@@ -22,6 +24,29 @@ function buildRangeWhere(startYear: number, endYear: number, filter?: any) {
   return queryFilters(filter, {
     startYear: { gte: startYear, lte: endYear },
     OR: [{ startSignificance: { gt: 0 } }, { endSignificance: { gt: 0 } }],
+  });
+}
+
+const SIGNIFICANT_POST_TYPES = ["person", "event", "landmark"] as const;
+
+async function findMostSignificantPost(
+  type: (typeof SIGNIFICANT_POST_TYPES)[number],
+  baseWhere: ReturnType<typeof buildRangeWhere>,
+) {
+  const typedWhere = { AND: [baseWhere, { type }] };
+
+  const endingPost = await prisma.post.findFirst({
+    where: {
+      AND: [typedWhere, { startSignificance: 1 }],
+    },
+    orderBy: { endSignificance: "desc" },
+    select: timelinePostSelect,
+  });
+
+  return endingPost ?? prisma.post.findFirst({
+    where: typedWhere,
+    orderBy: { startSignificance: "desc" },
+    select: timelinePostSelect,
   });
 }
 
@@ -50,6 +75,7 @@ export async function getPopulation(_: unknown, { start }: PopulationArgs) {
 export async function getSignificant(
   _: unknown,
   { startYear, endYear, filter }: SignificantArgs,
+  ctx: Context,
 ) {
   const parsedStart = Number(startYear);
   const parsedEnd = Number(endYear);
@@ -61,39 +87,30 @@ export async function getSignificant(
   }
 
   const baseWhere = buildRangeWhere(parsedStart, parsedEnd, filter);
-
-  // Try highest endSignificance first
-  let post = await prisma.post.findFirst({
-    where: {
-      ...baseWhere,
-      startSignificance: 1,
-    },
-    orderBy: { endSignificance: "desc" },
-    select: {
-      id: true,
-      name: true,
-      imageUrl: true,
-      cdnId: true,
-    },
+  const posts = await Promise.all(
+    SIGNIFICANT_POST_TYPES.map((type) => findMostSignificantPost(type, baseWhere)),
+  );
+  const postIds = posts.flatMap((post) => post ? [post.id] : []);
+  const likedPosts = ctx.user?.id && postIds.length > 0
+    ? await prisma.like.findMany({
+        where: { userId: ctx.user.id, postId: { in: postIds } },
+        select: { postId: true },
+      })
+    : [];
+  const likedIds = new Set(likedPosts.map(({ postId }) => postId));
+  const normalizedPosts = posts.map((post) => {
+    if (!post) return null;
+    const { _count, ...article } = post;
+    return {
+      ...article,
+      likes: _count.likes,
+      liked: likedIds.has(post.id),
+    };
   });
 
-  // Fallback to highest startSignificance
-  if (!post) {
-    post = await prisma.post.findFirst({
-      where: baseWhere,
-      orderBy: { startSignificance: "desc" },
-      select: {
-        id: true,
-        name: true,
-        imageUrl: true,
-        cdnId: true,
-        civilisation: true,
-        imageStatus: true,
-      },
-    });
-  }
-
-  return post ?? null;
+  return Object.fromEntries(
+    SIGNIFICANT_POST_TYPES.map((type, index) => [type, normalizedPosts[index]]),
+  );
 }
 
 export async function getCivilisation(

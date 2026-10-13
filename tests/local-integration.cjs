@@ -160,8 +160,22 @@ async function run() {
   assert.ok(europe.posts.every(p => p.country.continent === 'Europe'));
   const search = data(await gql(timeline, { filter: { search: `Founding ${nonce}` } }), 'timeline');
   assert.deepEqual(search.posts.map(p => p.id), [String(post.id)]);
-  const significant = data(await gql('query($a:Int!,$b:Int!,$f:FilterInput){getSignificant(startYear:$a,endYear:$b,filter:$f){id name}}', { a: 100, b: 100, f: { search: `Founding ${nonce}` } }), 'getSignificant');
-  assert.equal(significant.id, String(post.id));
+  const [significantPerson, significantLandmark] = await Promise.all([
+    prisma.post.create({ data: {
+      name: `Founding ${nonce} person`, type: 'person', startDescription: 'Significant person fixture.',
+      startYear: 100, endYear: 0, startSignificance: .9, endSignificance: 0,
+      countryId: country, userId: author.id, groupId: group.id,
+    } }),
+    prisma.post.create({ data: {
+      name: `Founding ${nonce} landmark`, type: 'landmark', startDescription: 'Significant landmark fixture.',
+      startYear: 100, endYear: 0, startSignificance: .7, endSignificance: 0,
+      countryId: country, userId: author.id, groupId: group.id,
+    } }),
+  ]);
+  const significant = data(await gql('query($a:Int!,$b:Int!,$f:FilterInput){getSignificant(startYear:$a,endYear:$b,filter:$f){person{id name} event{id name} landmark{id name}}}', { a: 100, b: 100, f: { search: `Founding ${nonce}` } }), 'getSignificant');
+  assert.equal(significant.event.id, String(post.id));
+  assert.equal(significant.person.id, String(significantPerson.id));
+  assert.equal(significant.landmark.id, String(significantLandmark.id));
   const civilisations = data(await gql('query($a:Int!,$b:Int!){getCivilisation(startYear:$a,endYear:$b){id name country{name}}}', { a: 100, b: 100 }), 'getCivilisation');
   assert.ok(civilisations.some(p => p.id === String(post.id)));
   console.log('PASS timeline pages, filters, sort and era/map GraphQL data');
