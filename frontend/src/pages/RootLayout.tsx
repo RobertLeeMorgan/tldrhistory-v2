@@ -13,7 +13,7 @@ export default function RootLayout() {
       </a>
       <Background />
       <Nav />
-      <div id="main-content" className="relative z-10 w-full">
+      <div id="main-content" className="relative z-10 w-full pt-[var(--nav-height)]">
         <Outlet />
       </div>
     </div>

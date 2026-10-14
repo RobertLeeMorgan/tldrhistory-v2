@@ -118,7 +118,7 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
   const toolButton = "inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-divider bg-surface px-2.5 text-content-muted transition-colors hover:border-accent hover:text-content";
 
   return (
-    <div className="sticky top-[var(--timeline-header-height)] z-30 -mx-4 mb-4 border-b border-divider bg-canvas/95 px-4 py-2 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-7 lg:px-7">
+    <div className="sticky top-[calc(var(--nav-height)+var(--timeline-header-height))] z-30 -mx-4 mb-4 border-b border-divider bg-canvas/95 px-4 py-2 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-7 lg:px-7">
       <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-1.5">
         <TimelineSearchField compact value={search.value} onChange={search.setValue} onSubmit={search.submit} label="Search timeline" className="min-w-0 flex-1 border-divider bg-cream-raised shadow-none sm:min-w-56 md:max-w-xs" />
 

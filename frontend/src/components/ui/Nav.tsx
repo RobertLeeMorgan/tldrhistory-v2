@@ -25,7 +25,7 @@ export default function Nav() {
   const navigate = useNavigate();
   const location = useLocation();
   const locationKey = `${location.pathname}${location.search}`;
-  const isTimeline = location.pathname === "/timeline" || location.pathname.startsWith("/timeline/");
+  const isHome = location.pathname === "/";
   const navRef = useRef<HTMLElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuLocation, setMobileMenuLocation] = useState<string | null>(null);
@@ -100,23 +100,19 @@ export default function Nav() {
     <nav
       ref={navRef}
       aria-label="Primary navigation"
-      data-scrolled={!isTimeline && scrolled ? "true" : "false"}
+      data-scrolled={isHome && scrolled ? "true" : "false"}
       className={`fixed inset-x-0 top-0 z-50 h-[var(--nav-height)] border-b transition-[background-color,border-color,box-shadow] duration-300 ease-out ${
-        !isTimeline && scrolled
+        !isHome || scrolled
           ? "border-divider/70 bg-canvas/95 shadow-lg shadow-black/15 backdrop-blur-xl"
           : "border-transparent bg-transparent shadow-none"
       }`}
     >
-      <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-4 sm:gap-4 sm:px-6 lg:px-8">
-        <div className="min-w-0 justify-self-start">
-          {!isTimeline && (
-            <Link to="/timeline" aria-label="TL;DR History timeline" className="flex min-w-0 shrink-0 items-center justify-self-start rounded-sm">
-              <img src="/tldr-history-logo.svg" alt="TL;DR History" className="h-8 w-auto max-w-[170px] sm:h-9 sm:max-w-[220px]" />
-            </Link>
-          )}
-        </div>
+      <div className="mx-auto flex h-full max-w-[1600px] items-center gap-8 px-4 sm:px-6 lg:gap-12 lg:px-8">
+        <Link to="/timeline" aria-label="TL;DR History timeline" className="flex min-w-0 shrink-0 items-center rounded-sm">
+          <img src="/tldr-history-logo.svg" alt="TL;DR History" className="h-8 w-auto max-w-[170px] sm:h-9 sm:max-w-[220px]" />
+        </Link>
 
-        <div data-nav-links className="hidden h-full items-center gap-5 justify-self-center md:flex lg:gap-7">
+        <div data-nav-links className="hidden h-full items-center gap-7 md:flex">
           {publicLinks.map((item) => (
             <NavLink key={item.to} to={item.to} end={item.to === "/"} className={({ isActive }) => `${item.to === "/articles/create" ? "hidden lg:inline-flex" : ""} ${navLinkClass({ isActive })}`}>
               {item.label}
@@ -124,7 +120,7 @@ export default function Nav() {
           ))}
         </div>
 
-        <div className="flex items-center gap-2 justify-self-end">
+        <div className="ml-auto flex items-center gap-2">
           <button
             type="button"
             aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}

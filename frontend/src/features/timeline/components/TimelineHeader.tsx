@@ -46,7 +46,7 @@ function EraPerspectiveMenu({ view, setView }: { view: EraView; setView: (view: 
   };
 
   return (
-    <div ref={rootRef} className="relative h-full w-12 shrink-0 border-l border-divider/70 sm:w-44 md:border-r">
+    <div ref={rootRef} className="relative h-full w-12 shrink-0 border-l border-divider/70 sm:w-44">
       <button
         type="button"
         aria-expanded={open}
@@ -70,7 +70,7 @@ function EraPerspectiveMenu({ view, setView }: { view: EraView; setView: (view: 
           role="menu"
           aria-label="Era perspective"
           onKeyDown={moveFocus}
-          className="absolute right-0 top-[calc(100%+.5rem)] z-50 max-h-[min(24rem,60dvh)] w-[min(17rem,calc(100vw-1rem))] overflow-y-auto rounded-xl border border-divider bg-surface-raised p-2 shadow-2xl shadow-black/50 md:left-3 md:right-auto"
+          className="absolute right-0 top-[calc(100%+.5rem)] z-50 max-h-[min(24rem,60dvh)] w-[min(17rem,calc(100vw-1rem))] overflow-y-auto rounded-xl border border-divider bg-surface-raised p-2 shadow-2xl shadow-black/50"
         >
           {VIEW_OPTIONS.map((option, index) => {
             const active = option.value === view;
@@ -117,11 +117,11 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
   return (
     <header
       id="timeline-context-header"
-      className="fixed inset-x-0 top-0 z-40 h-[var(--timeline-header-height)] border-b border-divider bg-canvas/97 shadow-xl shadow-black/20 backdrop-blur-xl"
+      className="fixed inset-x-0 top-[var(--nav-height)] z-40 h-[var(--timeline-header-height)] border-b border-divider bg-canvas/97 shadow-xl shadow-black/20 backdrop-blur-xl"
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-40 [background:radial-gradient(circle_at_72%_20%,rgba(214,173,104,.14),transparent_33%),linear-gradient(90deg,rgba(16,23,25,1),rgba(24,33,36,.72))]" />
-      <div className="relative mx-auto flex h-full max-w-[1600px] items-stretch px-4 pt-[var(--nav-height)] sm:px-6 lg:px-8">
-        <div className="flex min-w-0 shrink-0 flex-col justify-center py-1 pr-2 sm:pr-4 md:py-1.5">
+      <div className="relative mx-auto flex h-full max-w-[1600px] items-center px-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 shrink-0 flex-col justify-center py-2 pr-2 sm:pr-4">
           <p className="atlas-eyebrow hidden md:block">Current era</p>
           <h1 className="w-max whitespace-nowrap font-serif text-[clamp(.625rem,3.35vw,1.25rem)] font-semibold leading-none text-content sm:text-[clamp(.9rem,2.75vw,1.5rem)] md:text-[clamp(1rem,2.1vw,2rem)]">
             {groupMeta ? title : <TextSwap text={title} className="block w-max whitespace-nowrap" />}
@@ -138,9 +138,9 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
           </p>
         </div>
 
-        <div className="flex min-w-0 flex-1 justify-end bg-canvas/20 md:justify-start">
-          <EraPerspectiveMenu view={view} setView={setView} />
+        <div className="flex h-16 min-w-0 flex-1 items-stretch justify-end bg-canvas/20">
           <EraStrip className="hidden min-w-0 flex-1 md:block" />
+          <EraPerspectiveMenu view={view} setView={setView} />
         </div>
       </div>
     </header>

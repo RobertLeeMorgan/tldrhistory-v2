@@ -107,7 +107,7 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
     <>
       <aside
         aria-label="Timeline context"
-        className="fixed inset-x-0 bottom-0 z-30 h-40 border-t border-divider bg-surface/98 shadow-[0_-12px_36px_rgba(0,0,0,.28)] backdrop-blur-xl lg:inset-x-auto lg:left-0 lg:top-[var(--timeline-header-height)] lg:h-auto lg:w-[var(--timeline-sidebar-width)] lg:overflow-y-auto lg:border-r lg:border-t-0 lg:shadow-xl"
+        className="fixed inset-x-0 bottom-0 z-30 h-40 border-t border-divider bg-surface/98 shadow-[0_-12px_36px_rgba(0,0,0,.28)] backdrop-blur-xl lg:inset-x-auto lg:left-0 lg:top-[calc(var(--nav-height)+var(--timeline-header-height))] lg:h-auto lg:w-[var(--timeline-sidebar-width)] lg:overflow-y-auto lg:border-r lg:border-t-0 lg:shadow-xl"
       >
         <div className="grid h-full min-w-0 grid-cols-[minmax(0,1fr)_clamp(5.25rem,25vw,7rem)] grid-rows-[3.5rem_minmax(0,1fr)] lg:flex lg:h-auto lg:flex-col">
           <section aria-label="Timeline facts" className="grid min-w-0 grid-cols-2 border-b border-divider/70 lg:shrink-0">

@@ -94,10 +94,10 @@ export default function HomeRoute() {
 
   return (
     <PageContainer variant="discovery">
-      <section className="relative isolate min-h-[min(780px,100dvh)] overflow-hidden border-b border-divider">
+      <section className="relative isolate min-h-[min(780px,calc(100dvh-var(--nav-height)))] overflow-hidden border-b border-divider">
         <img src={heroImage} alt="" aria-hidden="true" fetchPriority="high" className="absolute inset-0 -z-20 size-full object-cover object-center" />
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(7,14,17,.96)_0%,rgba(7,14,17,.56)_5%)]" />
-        <div className="mx-auto flex min-h-[min(780px,100dvh)] w-full flex-col items-center justify-center px-4 pb-12 pt-[calc(var(--nav-height)+2rem)] text-center sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-[min(780px,calc(100dvh-var(--nav-height)))] w-full flex-col items-center justify-center px-4 py-12 text-center sm:px-6 lg:px-8">
             <h1 className="mt-5 max-w-3xl font-serif text-5xl font-semibold leading-[1.02] text-content sm:text-6xl lg:text-7xl">
               Explore history <span className="text-accent">as a connected timeline.</span>
             </h1>

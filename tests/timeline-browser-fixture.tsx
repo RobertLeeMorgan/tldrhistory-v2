@@ -26,7 +26,7 @@ function App() {
     <button id="reset" className="sr-only" onClick={() => resetFilter({ replace: false })}>Reset</button>
     <button id="reverse" className="sr-only" onClick={() => navigate('/timeline?o=desc')}>Reverse</button>
     <button id="region" className="sr-only" onClick={() => era.setView(era.view === 'global' ? 'europe' : 'global')}>Region</button>
-    <div className="relative z-10 w-full">
+    <div className="relative z-10 w-full pt-[var(--nav-height)]">
       <TimelineHeader filter={filter} />
       <main className="relative z-10 min-h-screen bg-canvas pt-[var(--timeline-header-height)]">
         <div className="relative mx-auto max-w-[1600px] lg:pl-[var(--timeline-sidebar-width)]">
