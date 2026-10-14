@@ -46,7 +46,7 @@ function EraPerspectiveMenu({ view, setView }: { view: EraView; setView: (view: 
   };
 
   return (
-    <div ref={rootRef} className="relative h-full w-12 shrink-0 border-l border-divider/70 sm:w-44">
+    <div ref={rootRef} className="relative h-full w-12 shrink-0 border-l border-divider/70 md:w-44">
       <button
         type="button"
         aria-expanded={open}
@@ -54,14 +54,14 @@ function EraPerspectiveMenu({ view, setView }: { view: EraView; setView: (view: 
         aria-controls="era-perspective-menu"
         onClick={() => setOpen((current) => !current)}
         aria-label={`Era perspective: ${selected.label}`}
-        className={`flex h-full w-full items-center justify-center gap-1 px-1.5 text-left transition-colors hover:bg-surface-raised focus-visible:outline-offset-[-3px] sm:justify-start sm:gap-2 sm:px-4 ${open ? "bg-surface-raised text-content" : "bg-surface/85 text-content-muted"}`}
+        className={`flex h-full w-full items-center justify-center gap-1 px-1.5 text-left transition-colors hover:bg-surface-raised focus-visible:outline-offset-[-3px] md:justify-start md:gap-2 md:px-4 ${open ? "bg-surface-raised text-content" : "bg-surface/85 text-content-muted"}`}
       >
         <LuGlobe aria-hidden="true" className="size-4 shrink-0 text-accent" />
-        <span className="hidden min-w-0 flex-1 sm:block">
-          <span className="hidden text-[0.58rem] font-bold uppercase tracking-[0.12em] text-content-muted sm:block">Perspective</span>
+        <span className="hidden min-w-0 flex-1 md:block">
+          <span className="block text-[0.58rem] font-bold uppercase tracking-[0.12em] text-content-muted">Perspective</span>
           <span className="block truncate text-xs font-semibold text-content">{selected.label}</span>
         </span>
-        <LuChevronDown aria-hidden="true" className={`size-3 shrink-0 transition-transform duration-200 sm:size-4 ${open ? "rotate-180" : ""}`} />
+        <LuChevronDown aria-hidden="true" className={`size-3 shrink-0 transition-transform duration-200 md:size-4 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
@@ -120,14 +120,14 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
       className="fixed inset-x-0 top-[var(--nav-height)] z-40 h-[var(--timeline-header-height)] border-b border-divider bg-canvas/97 shadow-xl shadow-black/20 backdrop-blur-xl"
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-40 [background:radial-gradient(circle_at_72%_20%,rgba(214,173,104,.14),transparent_33%),linear-gradient(90deg,rgba(16,23,25,1),rgba(24,33,36,.72))]" />
-      <div className="relative mx-auto flex h-full max-w-[1600px] items-center px-4 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 shrink-0 flex-col justify-center py-2 pr-2 sm:pr-4">
+      <div className="relative mx-auto grid h-full max-w-[1600px] grid-cols-[minmax(0,1fr)_3rem] items-stretch px-4 sm:px-6 md:grid-cols-2 lg:px-8">
+        <div data-timeline-header-column="context" className="flex min-w-0 flex-col justify-center py-2 pr-3 md:pr-6">
           <p className="atlas-eyebrow hidden md:block">Current era</p>
-          <h1 className="w-max whitespace-nowrap font-serif text-[clamp(.625rem,3.35vw,1.25rem)] font-semibold leading-none text-content sm:text-[clamp(.9rem,2.75vw,1.5rem)] md:text-[clamp(1rem,2.1vw,2rem)]">
-            {groupMeta ? title : <TextSwap text={title} className="block w-max whitespace-nowrap" />}
+          <h1 className="max-w-full whitespace-normal font-serif text-[clamp(.9rem,4.5vw,1.35rem)] font-semibold leading-tight text-content [overflow-wrap:anywhere] sm:text-[clamp(1.05rem,3vw,1.55rem)] md:text-[clamp(1.1rem,2.25vw,2rem)]">
+            {groupMeta ? title : <TextSwap text={title} className="block max-w-full whitespace-normal [overflow-wrap:anywhere]" />}
           </h1>
           {subheadline && (
-            <p className="mt-0.5 hidden max-w-[min(32rem,42vw)] truncate text-[0.68rem] text-content-muted lg:block">
+            <p className="mt-0.5 max-w-full text-[0.65rem] leading-snug text-content-muted sm:text-[0.68rem]">
               <ContextSwap transitionKey={subheadline}>{subheadline}</ContextSwap>
             </p>
           )}
@@ -138,7 +138,7 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
           </p>
         </div>
 
-        <div className="flex h-16 min-w-0 flex-1 items-stretch justify-end bg-canvas/20">
+        <div data-timeline-header-column="eras" className="flex min-w-0 items-stretch justify-end bg-canvas/20">
           <EraStrip className="hidden min-w-0 flex-1 md:block" />
           <EraPerspectiveMenu view={view} setView={setView} />
         </div>

@@ -41,8 +41,9 @@
   --color-primary-content: #151a1b;
   --color-error: #ffb4ab;
   --color-success: #a6d6b4;
-  --nav-height: 4rem;
-  --timeline-header-height: 12rem;
+  --nav-height: 3.5rem;
+  --timeline-header-height: 10rem;
+  --timeline-toolbar-height: 3.75rem;
   --timeline-sidebar-width: 18rem;
   --header-height-sm: 5.8rem;
   --header-height-md: 7.6rem;
@@ -57,12 +58,24 @@
   :root { --page-gutter: 1.5rem; }
 }
 
+@media (min-width: 768px) {
+  :root { --timeline-header-height: 9rem; }
+}
+
 @media (min-width: 1024px) {
-  :root { --page-gutter: 2rem; }
+  :root {
+    --page-gutter: 2rem;
+    --timeline-header-height: 8rem;
+    --timeline-toolbar-height: 6rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root { --timeline-toolbar-height: 3.75rem; }
 }
 
 @media (max-height: 650px) {
-  :root { --timeline-header-height: 9.5rem; }
+  :root { --timeline-header-height: 8rem; }
 }
 
 html {

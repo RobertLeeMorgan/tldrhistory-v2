@@ -15,21 +15,40 @@ export default function EraStrip({ className = "" }: { className?: string }) {
   const scrollFrameRef = useRef(0);
 
   useEffect(() => {
-    window.cancelAnimationFrame(scrollFrameRef.current);
-    scrollFrameRef.current = window.requestAnimationFrame(() => {
-      const scroller = scrollerRef.current;
-      const active = activeRef.current;
-      if (!scroller || !active) return;
+    const centerActiveEra = () => {
+      window.cancelAnimationFrame(scrollFrameRef.current);
+      scrollFrameRef.current = window.requestAnimationFrame(() => {
+        const scroller = scrollerRef.current;
+        const active = activeRef.current;
+        if (!scroller || !active) return;
 
-      const target = active.offsetLeft - (scroller.clientWidth - active.clientWidth) / 2;
-      const boundedTarget = Math.max(0, Math.min(target, scroller.scrollWidth - scroller.clientWidth));
-      if (Math.abs(scroller.scrollLeft - boundedTarget) < 1) return;
+        const scrollerRect = scroller.getBoundingClientRect();
+        const activeRect = active.getBoundingClientRect();
+        const target = scroller.scrollLeft
+          + activeRect.left
+          + activeRect.width / 2
+          - scrollerRect.left
+          - scrollerRect.width / 2;
+        const boundedTarget = Math.max(0, Math.min(target, scroller.scrollWidth - scroller.clientWidth));
+        if (Math.abs(scroller.scrollLeft - boundedTarget) < 1) return;
 
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      scroller.scrollTo({ left: boundedTarget, behavior: reduced ? "auto" : "smooth" });
-    });
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        scroller.scrollTo({ left: boundedTarget, behavior: reduced ? "auto" : "smooth" });
+      });
+    };
 
-    return () => window.cancelAnimationFrame(scrollFrameRef.current);
+    centerActiveEra();
+    const resizeObserver = typeof ResizeObserver === "undefined"
+      ? null
+      : new ResizeObserver(centerActiveEra);
+    if (scrollerRef.current) resizeObserver?.observe(scrollerRef.current);
+    window.addEventListener("resize", centerActiveEra);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", centerActiveEra);
+      window.cancelAnimationFrame(scrollFrameRef.current);
+    };
   }, [eraIndex, view]);
 
   return (

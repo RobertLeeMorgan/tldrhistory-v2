@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoMdShare } from "react-icons/io";
 import { LuChevronDown } from "react-icons/lu";
 import { CloseIcon, FilterIcon, SortIcon } from "../../../icons/icons";
@@ -34,7 +34,7 @@ function ToolbarMenu({
   const menuId = `toolbar-menu-${label.toLowerCase().replace(/\s+/g, "-")}`;
 
   return (
-    <div className="relative hidden md:block" data-toolbar-menu={label}>
+    <div className="relative hidden lg:block" data-toolbar-menu={label}>
       <button
         type="button"
         aria-expanded={open}
@@ -57,6 +57,9 @@ function ToolbarMenu({
 
 export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [hidden, setHidden] = useState(false);
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const interactionLockedRef = useRef(false);
   const { filter, patchFilter, resetFilter } = useTimelineFilter();
   const { view, setView } = useEra();
   const { addToast } = useToast();
@@ -82,6 +85,61 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [openMenu]);
+
+  useEffect(() => {
+    interactionLockedRef.current = Boolean(openMenu);
+  }, [openMenu]);
+
+  useEffect(() => {
+    const hideDistance = 40;
+    const revealDistance = 24;
+    const topGuard = 96;
+    let lastY = window.scrollY;
+    let accumulatedDistance = 0;
+    let direction = 0;
+    let frame = 0;
+
+    const updateVisibility = () => {
+      frame = 0;
+      const nextY = window.scrollY;
+      const delta = nextY - lastY;
+      lastY = nextY;
+
+      const focusIsWithin = toolbarRef.current?.contains(document.activeElement) ?? false;
+      if (nextY <= topGuard || interactionLockedRef.current || focusIsWithin) {
+        accumulatedDistance = 0;
+        direction = 0;
+        setHidden(false);
+        return;
+      }
+
+      const nextDirection = Math.sign(delta);
+      if (nextDirection === 0) return;
+      if (nextDirection !== direction) {
+        accumulatedDistance = 0;
+        direction = nextDirection;
+      }
+      accumulatedDistance += delta;
+
+      if (accumulatedDistance >= hideDistance) {
+        setHidden(true);
+        accumulatedDistance = 0;
+      } else if (accumulatedDistance <= -revealDistance) {
+        setHidden(false);
+        accumulatedDistance = 0;
+      }
+    };
+
+    const handleScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateVisibility);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
 
   const menuProps = (label: string) => ({
     open: openMenu === label,
@@ -118,11 +176,21 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
   const toolButton = "inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-divider bg-surface px-2.5 text-content-muted transition-colors hover:border-accent hover:text-content";
 
   return (
-    <div className="sticky top-[calc(var(--nav-height)+var(--timeline-header-height))] z-30 -mx-4 mb-4 border-b border-divider bg-canvas/95 px-4 py-2 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-7 lg:px-7">
-      <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-1.5">
+    <>
+      <div data-timeline-toolbar-spacer aria-hidden="true" className="h-[calc(var(--timeline-toolbar-height)+1rem)]" />
+      <div
+        ref={toolbarRef}
+        data-timeline-toolbar
+        data-hidden={hidden ? "true" : "false"}
+        onFocusCapture={() => setHidden(false)}
+        className={`pointer-events-none fixed inset-x-0 top-[calc(var(--nav-height)+var(--timeline-header-height))] z-30 transform-gpu transition-transform duration-200 ease-out motion-reduce:transition-none ${hidden ? "-translate-y-full" : "translate-y-0"}`}
+      >
+        <div className="mx-auto max-w-[1600px] lg:pl-[var(--timeline-sidebar-width)]">
+          <div data-timeline-toolbar-frame className={`${hidden ? "pointer-events-none" : "pointer-events-auto"} h-[var(--timeline-toolbar-height)] border-b border-divider bg-canvas/95 px-4 backdrop-blur-xl sm:px-6 lg:px-7`}>
+            <div data-timeline-toolbar-content className="mx-auto flex h-full max-w-[1280px] flex-wrap content-center items-center gap-1.5">
         <TimelineSearchField compact value={search.value} onChange={search.setValue} onSubmit={search.submit} label="Search timeline" className="min-w-0 flex-1 border-divider bg-cream-raised shadow-none sm:min-w-56 md:max-w-xs" />
 
-        <button type="button" className={`${toolButton} gap-2 md:hidden`} onClick={onOpenDrawer} aria-label={`Open filters${filterCount ? `, ${filterCount} active` : ""}`}>
+        <button type="button" className={`${toolButton} gap-2 lg:hidden`} onClick={onOpenDrawer} aria-label={`Open filters${filterCount ? `, ${filterCount} active` : ""}`}>
           <FilterIcon /> <span className="hidden xs:inline">Filters</span>
           {filterCount > 0 && <span className="rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-bold text-on-accent">{filterCount}</span>}
         </button>
@@ -169,7 +237,10 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
         <button type="button" className={toolButton} onClick={() => patchFilter({ sortBy: !filter.sortBy }, { replace: true })} aria-label={filter.sortBy ? "Sort newest first" : "Sort oldest first"} title={filter.sortBy ? "Oldest first" : "Newest first"}><SortIcon /></button>
         <button type="button" className={toolButton} onClick={handleShare} aria-label="Copy share link" title="Copy share link"><IoMdShare className="h-5 w-5" /></button>
         {hasActiveFilters && <button type="button" className={`${toolButton} gap-2 text-accent`} onClick={() => { setOpenMenu(null); setView("global"); resetFilter({ replace: true }); search.clear(); }} aria-label="Reset filters"><CloseIcon /><span className="hidden xl:inline">Reset</span></button>}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
