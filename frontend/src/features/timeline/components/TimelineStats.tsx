@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo, useState, type ComponentType } from "react";
-import { LuCalendarDays, LuMap } from "react-icons/lu";
+import { LuMap } from "react-icons/lu";
 import { useEra } from "../../../context/EraContext";
 import { useCivilisationQuery, usePopulationQuery, useSignificantQuery } from "../../stats/hooks/useStats";
 import { formatPopulation } from "../../../utils/formatPopulation";
@@ -8,7 +8,6 @@ import type { TimelineFilter } from "../../filter/components/TimelineFilter";
 import WorldMap from "../../../components/map/WorldMap";
 import groupColor, { type Continent } from "../../../components/map/MapColour";
 import { AnimatedNumber, ContextSwap } from "../../../components/ui/AnimatedValue";
-import AnimatedYear from "../../../components/ui/AnimatedYear";
 import { ICON_MAP } from "../../../icons/iconMap";
 import type { Post } from "../../../generated/graphql";
 
@@ -43,7 +42,7 @@ function SignificantStat({
         type="button"
         onClick={() => post && onOpen(post)}
         disabled={!post || isLoading || isError}
-        className="timeline-significant-item flex h-full w-full min-w-0 flex-col items-start gap-1 px-1.5 py-1 text-left transition-colors hover:bg-canvas/45 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent disabled:cursor-default disabled:hover:bg-transparent md:flex-row md:items-center md:gap-2.5 md:px-[var(--timeline-stats-padding)] md:py-[var(--timeline-stats-item-padding)]"
+        className="flex h-full w-full min-w-0 flex-col items-start gap-1 px-1.5 py-1 text-left transition-colors hover:bg-canvas/45 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent disabled:cursor-default disabled:hover:bg-transparent md:flex-row md:items-center md:gap-2.5 md:px-[var(--timeline-stats-padding)] md:py-[var(--timeline-stats-item-padding)]"
         aria-label={post ? `Open most significant ${label.toLowerCase()} article: ${cleanName(post.name)}` : `Most significant ${label.toLowerCase()}`}
         title={label}
       >
@@ -107,20 +106,10 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
     <>
       <aside
         aria-label="Timeline context"
-        className="timeline-stats-shell relative z-20 w-full border-b border-divider bg-surface/98 shadow-xl backdrop-blur-xl md:fixed md:bottom-0 md:left-0 md:top-[calc(var(--nav-height)+var(--timeline-header-height))] md:w-[var(--timeline-sidebar-width)] md:overflow-hidden md:border-b-0 md:border-r"
+        className="timeline-stats-shell relative z-20 w-full border-b border-divider bg-surface/98 shadow-xl backdrop-blur-xl md:fixed md:bottom-0 md:left-0 md:top-[calc(var(--nav-height)+var(--timeline-header-height))] md:w-[var(--timeline-sidebar-width)] md:overflow-y-auto md:border-b-0 md:border-r"
       >
-        <div className="timeline-stats-inner grid min-w-0 grid-cols-[minmax(0,1fr)_clamp(6.5rem,28vw,8rem)] grid-rows-[3.5rem_minmax(5.5rem,auto)] md:flex md:h-full md:flex-col">
-          <section aria-label="Timeline facts" className="col-span-2 grid min-w-0 grid-cols-2 border-b border-divider/70 md:col-auto md:shrink-0">
-            <div className="flex min-w-0 items-center gap-1.5 border-r border-divider/70 px-2 py-1 md:gap-2 md:px-[var(--timeline-stats-padding)] md:py-[var(--timeline-stats-item-padding)]">
-              <LuCalendarDays aria-hidden="true" className="size-5 shrink-0 text-accent md:size-7" />
-              <div className="min-w-0">
-                <p className="truncate text-[0.52rem] font-bold uppercase tracking-[0.08em] text-content-muted md:text-[0.6rem]">Timeline year</p>
-                <p className="truncate font-serif text-xs font-semibold text-content sm:text-sm md:text-lg" aria-live="polite">
-                  <AnimatedYear year={dataStartYear} />
-                </p>
-              </div>
-            </div>
-
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_clamp(6.5rem,28vw,8rem)] grid-rows-[3.5rem_minmax(5.5rem,auto)] md:flex md:h-full md:flex-col">
+          <section aria-label="Timeline facts" className="min-w-0 border-b border-divider/70 md:shrink-0">
             <div className="flex min-w-0 items-center gap-1.5 px-2 py-1 md:gap-2 md:px-[var(--timeline-stats-padding)] md:py-[var(--timeline-stats-item-padding)]">
               <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5 shrink-0 fill-none stroke-accent md:size-7" strokeWidth="1.6">
                 <circle cx="12" cy="8" r="3" />
@@ -143,14 +132,14 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
             <h2 id="most-significant-heading" className="px-1.5 pt-1 text-[0.55rem] font-bold uppercase tracking-[0.11em] text-content-muted md:px-[var(--timeline-stats-padding)] md:pb-0.5 md:pt-[var(--timeline-stats-item-padding)]">
               Most Significant
             </h2>
-            <div className="timeline-significant-list grid min-w-0 grid-cols-3 divide-x divide-divider/70 md:block md:divide-x-0 md:divide-y">
+            <div className="grid min-w-0 grid-cols-3 divide-x divide-divider/70 md:block md:divide-x-0 md:divide-y">
               <SignificantStat label="Person" post={person} isLoading={significant.isLoading} isError={significant.isError} fallbackIcon={Icon} onOpen={setOpenPost} />
               <SignificantStat label="Event" post={event} isLoading={significant.isLoading} isError={significant.isError} fallbackIcon={Icon} onOpen={setOpenPost} />
               <SignificantStat label="Landmark" post={landmark} isLoading={significant.isLoading} isError={significant.isError} fallbackIcon={Icon} onOpen={setOpenPost} />
             </div>
           </section>
 
-          <section className="col-start-2 row-start-2 flex min-w-0 flex-col border-l border-divider/70 px-1.5 py-1.5 md:col-auto md:min-h-0 md:flex-1 md:border-l-0 md:px-[var(--timeline-stats-padding)] md:py-[var(--timeline-stats-padding)]">
+          <section className="col-start-2 row-span-2 row-start-1 flex min-w-0 flex-col border-l border-divider/70 px-1.5 py-1.5 md:col-auto md:min-h-0 md:flex-1 md:border-l-0 md:px-[var(--timeline-stats-padding)] md:py-[var(--timeline-stats-padding)]">
             <div className="flex items-center justify-between gap-1">
               <p className="truncate text-[0.52rem] font-bold uppercase tracking-[0.08em] text-content-muted md:text-[0.62rem] md:tracking-[0.11em]">Civilisations</p>
               <span className="flex shrink-0 items-center gap-1">
@@ -162,7 +151,7 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
               type="button"
               onClick={() => setMapOpen(true)}
               disabled={civilisationQuery.isLoading || civilisationQuery.isError}
-              className="timeline-stats-map mt-1 grid h-16 min-h-0 w-full place-items-center overflow-hidden rounded-md border border-divider/70 bg-canvas/25 transition-colors hover:bg-canvas/45 disabled:opacity-50 md:h-[var(--timeline-stats-map-height)] md:flex-none"
+              className="mt-1 grid min-h-0 flex-1 place-items-center overflow-hidden rounded-md border border-divider/70 bg-canvas/25 transition-colors hover:bg-canvas/45 disabled:opacity-50 md:h-[var(--timeline-stats-map-height)] md:flex-none"
               aria-label={remainingCivilisations > 0 ? `Open civilisation map and see ${remainingCivilisations} more` : "Open civilisation map"}
             >
               {civilisationQuery.isLoading ? (
@@ -174,7 +163,7 @@ export default function TimelineStats({ filter }: { filter: TimelineFilter }) {
               )}
             </button>
 
-            <div className="timeline-stats-legend hidden grid-cols-[minmax(0,1fr)_auto] gap-2 md:grid">
+            <div className="hidden grid-cols-[minmax(0,1fr)_auto] gap-2 md:grid">
               {legend.length > 0 && (
                 <ol className="mt-2 space-y-1" aria-label="Most significant civilisations in this era">
                   {legend.map((civilisation) => (

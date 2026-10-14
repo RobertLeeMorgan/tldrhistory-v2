@@ -45,7 +45,7 @@
   --timeline-header-height: 10rem;
   --timeline-toolbar-height: 3.75rem;
   --timeline-sidebar-width: 18rem;
-  --timeline-stats-map-height: clamp(6.5rem, 20dvh, 11rem);
+  --timeline-stats-map-height: 7.5rem;
   --timeline-stats-padding: 0.75rem;
   --timeline-stats-item-padding: 0.625rem;
   --header-height-sm: 5.8rem;
@@ -153,36 +153,10 @@ body {
 
 @media (min-width: 768px) and (min-height: 900px) {
   .timeline-stats-shell {
-    --timeline-stats-map-height: clamp(11rem, 24dvh, 15rem);
+    --timeline-stats-map-height: clamp(9rem, 20dvh, 13rem);
     --timeline-stats-padding: 1rem;
     --timeline-stats-item-padding: 0.75rem;
   }
-}
-
-@media (min-width: 768px) and (max-height: 650px) {
-  .timeline-stats-shell {
-    --timeline-stats-map-height: 4.5rem;
-    --timeline-stats-padding: 0.5rem;
-    --timeline-stats-item-padding: 0.3rem;
-  }
-
-  .timeline-significant-list {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .timeline-significant-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.2rem;
-  }
-
-  .timeline-significant-item :is(img, svg) {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
-  .timeline-stats-legend { display: none; }
 }
 
 @keyframes atlas-context-in {

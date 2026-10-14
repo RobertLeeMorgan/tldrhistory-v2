@@ -121,29 +121,29 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-40 [background:radial-gradient(circle_at_72%_20%,rgba(214,173,104,.14),transparent_33%),linear-gradient(90deg,rgba(16,23,25,1),rgba(24,33,36,.72))]" />
       <div className="relative mx-auto h-full max-w-[1600px] px-4 sm:px-6 lg:px-8">
-        <EraStrip
-          activeContent={(
-            <div className="relative h-full">
-              <div data-era-title-block className="absolute bottom-[3.35rem] left-1/2 top-1 flex w-[min(100vw,100rem)] -translate-x-1/2 flex-col items-center justify-center px-14 sm:px-20 md:px-48">
-                <p className="atlas-eyebrow">Current era</p>
-                <h1 className="max-w-full whitespace-normal font-serif text-[clamp(.9rem,4.5vw,1.35rem)] font-semibold leading-tight text-content [overflow-wrap:anywhere] sm:text-[clamp(1.05rem,3vw,1.55rem)] md:text-[clamp(1.1rem,2.25vw,2rem)]">
-                  {groupMeta ? title : <TextSwap text={title} className="block max-w-full whitespace-normal [overflow-wrap:anywhere]" />}
-                </h1>
-              </div>
+        <div data-era-title-block className="absolute inset-x-0 bottom-[3.8rem] top-0 flex flex-col items-center justify-center px-14 text-center sm:px-20 md:px-48">
+          <p className="atlas-eyebrow hidden leading-none md:block">Current era</p>
+          <h1 className="max-w-full whitespace-normal font-serif text-[clamp(.9rem,4.5vw,1.35rem)] font-semibold leading-tight text-content [overflow-wrap:anywhere] sm:text-[clamp(1.05rem,3vw,1.55rem)] md:text-[clamp(1.1rem,2.25vw,2rem)]">
+            {groupMeta ? title : <TextSwap text={title} className="block max-w-full whitespace-normal [overflow-wrap:anywhere]" />}
+          </h1>
+        </div>
 
-              <div className="absolute inset-x-0 bottom-[0.55rem]">
-                <p data-era-active-subtitle className="mx-auto w-fit max-w-full whitespace-normal bg-canvas/95 px-3 text-[0.65rem] font-medium leading-tight text-content-muted sm:text-[0.68rem]">
+        <div className="absolute inset-x-0 bottom-1 h-[3.3rem]">
+          <EraStrip
+            activeContent={(
+              <>
+                <p data-era-active-subtitle className="mx-auto min-h-6 max-w-full px-1 text-[0.65rem] font-medium leading-tight text-content-muted sm:text-[0.68rem]">
                   {subheadline ? <ContextSwap transitionKey={subheadline}>{subheadline}</ContextSwap> : <span aria-hidden="true">&nbsp;</span>}
                 </p>
-                <p className="mt-0.5 whitespace-nowrap text-[0.62rem] font-semibold text-accent sm:text-[0.68rem] md:text-xs">
+                <p className="whitespace-nowrap text-[0.62rem] font-semibold text-accent sm:text-[0.68rem] md:text-xs">
                   <AnimatedYear year={orderedYears[0] ?? 0} />
                   <span className="mx-1.5 text-content-muted">–</span>
                   <AnimatedYear year={orderedYears[1] ?? 0} />
                 </p>
-              </div>
-            </div>
-          )}
-        />
+              </>
+            )}
+          />
+        </div>
 
         <div className="absolute right-4 top-2 z-20 sm:right-6 lg:right-8">
           <EraPerspectiveMenu view={view} setView={setView} />
