@@ -29,7 +29,7 @@ function StaticTimelineGrid({
 }) {
   return (
     <div>
-      <div className="columns-1 gap-6 md:columns-2 min-[1440px]:columns-3">
+      <div className="timeline-static-grid grid gap-6">
         {posts.map((post) => (
           <div key={post.id} className="mb-6 break-inside-avoid">
             {renderStaticCard(post)}
@@ -124,7 +124,7 @@ export default function Timeline({ filter }: { filter: TimelineFilter }) {
   );
 
   return (
-    <div className="relative pb-20">
+    <div className="timeline-grid-container relative pb-20">
       {!isLoading && !error && safePosts.length === 0 && (
         <div className="rounded-2xl border border-divider bg-surface p-8 text-center sm:p-12">
           <p className="atlas-eyebrow">No matches</p>

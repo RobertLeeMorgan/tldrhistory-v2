@@ -29,9 +29,9 @@ function App() {
     <div className="relative z-10 w-full pt-[var(--nav-height)]">
       <TimelineHeader filter={filter} />
       <main className="relative z-10 min-h-screen bg-canvas pt-[var(--timeline-header-height)]">
-        <div className="relative mx-auto max-w-[1600px] lg:pl-[var(--timeline-sidebar-width)]">
+        <div className="relative mx-auto max-w-[1600px] pt-[var(--timeline-toolbar-height)] md:pl-[var(--timeline-sidebar-width)] md:pt-0">
           <TimelineStats filter={filter} />
-          <section id="timeline-feed" className="min-w-0 px-4 pb-40 sm:px-6 lg:px-7 lg:pb-20">
+          <section id="timeline-feed" className="min-w-0 px-4 pb-20 sm:px-6 lg:px-7">
             <TimelineToolbar onOpenDrawer={() => setDrawerOpen(true)} />
             <Timeline filter={filter} />
           </section>

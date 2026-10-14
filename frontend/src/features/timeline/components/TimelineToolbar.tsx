@@ -20,12 +20,14 @@ type ArrayFilterKey = "type" | "subject" | "continent";
 
 function ToolbarMenu({
   label,
+  shortLabel = label,
   count = 0,
   open,
   onToggle,
   children,
 }: {
   label: string;
+  shortLabel?: string;
   count?: number;
   open: boolean;
   onToggle: () => void;
@@ -34,15 +36,16 @@ function ToolbarMenu({
   const menuId = `toolbar-menu-${label.toLowerCase().replace(/\s+/g, "-")}`;
 
   return (
-    <div className="relative hidden lg:block" data-toolbar-menu={label}>
+    <div className="timeline-toolbar-menu relative" data-toolbar-menu={label}>
       <button
         type="button"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={onToggle}
-        className={`flex min-h-9 items-center gap-1.5 rounded-lg border bg-surface px-2.5 text-xs font-bold transition-colors ${open ? "border-accent text-content" : "border-divider text-content-muted hover:border-accent hover:text-content"}`}
+        className={`timeline-toolbar-menu-button flex min-h-9 items-center gap-1.5 rounded-lg border bg-surface px-2 text-xs font-bold transition-colors ${open ? "border-accent text-content" : "border-divider text-content-muted hover:border-accent hover:text-content"}`}
       >
-        {label}
+        <span className="timeline-toolbar-label-full">{label}</span>
+        <span className="timeline-toolbar-label-short">{shortLabel}</span>
         {count > 0 && <span className="rounded-full bg-accent px-1.5 py-0.5 text-[11px] text-on-accent">{count}</span>}
         <LuChevronDown aria-hidden="true" className={`size-3.5 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
@@ -177,7 +180,7 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
 
   return (
     <>
-      <div data-timeline-toolbar-spacer aria-hidden="true" className="h-[calc(var(--timeline-toolbar-height)+1rem)]" />
+      <div data-timeline-toolbar-spacer aria-hidden="true" className="h-0 md:h-[calc(var(--timeline-toolbar-height)+1rem)]" />
       <div
         ref={toolbarRef}
         data-timeline-toolbar
@@ -185,13 +188,13 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
         onFocusCapture={() => setHidden(false)}
         className={`pointer-events-none fixed inset-x-0 top-[calc(var(--nav-height)+var(--timeline-header-height))] z-30 transform-gpu transition-transform duration-200 ease-out motion-reduce:transition-none ${hidden ? "-translate-y-full" : "translate-y-0"}`}
       >
-        <div className="mx-auto max-w-[1600px] lg:pl-[var(--timeline-sidebar-width)]">
+        <div className="mx-auto max-w-[1600px] md:pl-[var(--timeline-sidebar-width)]">
           <div data-timeline-toolbar-frame className={`${hidden ? "pointer-events-none" : "pointer-events-auto"} h-[var(--timeline-toolbar-height)] border-b border-divider bg-canvas/95 px-4 backdrop-blur-xl sm:px-6 lg:px-7`}>
-            <div data-timeline-toolbar-content className="mx-auto flex h-full max-w-[1280px] flex-wrap content-center items-center gap-1.5">
-        <TimelineSearchField compact value={search.value} onChange={search.setValue} onSubmit={search.submit} label="Search timeline" className="min-w-0 flex-1 border-divider bg-cream-raised shadow-none sm:min-w-56 md:max-w-xs" />
+            <div data-timeline-toolbar-content className="timeline-toolbar-content mx-auto flex h-full max-w-[1280px] flex-nowrap items-center gap-1.5">
+        <TimelineSearchField compact value={search.value} onChange={search.setValue} onSubmit={search.submit} label="Search timeline" className="timeline-toolbar-search min-w-0 flex-1 border-divider bg-cream-raised shadow-none" />
 
-        <button type="button" className={`${toolButton} gap-2 lg:hidden`} onClick={onOpenDrawer} aria-label={`Open filters${filterCount ? `, ${filterCount} active` : ""}`}>
-          <FilterIcon /> <span className="hidden xs:inline">Filters</span>
+        <button type="button" className={`timeline-toolbar-drawer ${toolButton} gap-2`} onClick={onOpenDrawer} aria-label={`Open filters${filterCount ? `, ${filterCount} active` : ""}`}>
+          <FilterIcon /> <span className="timeline-toolbar-drawer-label">Filters</span>
           {filterCount > 0 && <span className="rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-bold text-on-accent">{filterCount}</span>}
         </button>
 
@@ -206,7 +209,7 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
         {collapseData.map((section) => {
           const key = section.options[0]?.name as ArrayFilterKey;
           return (
-            <ToolbarMenu key={section.title} label={section.title} count={arrayCount(key)} {...menuProps(section.title)}>
+            <ToolbarMenu key={section.title} label={section.title} shortLabel={section.title === "Continents" ? "Regions" : section.title === "Subjects" ? "Topics" : section.title} count={arrayCount(key)} {...menuProps(section.title)}>
               <fieldset className="grid gap-1.5">
                 <legend className="sr-only">{section.title}</legend>
                 {section.options.map((option) => (
@@ -235,8 +238,8 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
         <ToolbarMenu label="Saved" {...menuProps("Saved")}><SavedFilters /></ToolbarMenu>
 
         <button type="button" className={toolButton} onClick={() => patchFilter({ sortBy: !filter.sortBy }, { replace: true })} aria-label={filter.sortBy ? "Sort newest first" : "Sort oldest first"} title={filter.sortBy ? "Oldest first" : "Newest first"}><SortIcon /></button>
-        <button type="button" className={toolButton} onClick={handleShare} aria-label="Copy share link" title="Copy share link"><IoMdShare className="h-5 w-5" /></button>
-        {hasActiveFilters && <button type="button" className={`${toolButton} gap-2 text-accent`} onClick={() => { setOpenMenu(null); setView("global"); resetFilter({ replace: true }); search.clear(); }} aria-label="Reset filters"><CloseIcon /><span className="hidden xl:inline">Reset</span></button>}
+        <button type="button" className={`timeline-toolbar-share ${toolButton}`} onClick={handleShare} aria-label="Copy share link" title="Copy share link"><IoMdShare className="h-5 w-5" /></button>
+        {hasActiveFilters && <button type="button" className={`timeline-toolbar-reset ${toolButton} gap-2 text-accent`} onClick={() => { setOpenMenu(null); setView("global"); resetFilter({ replace: true }); search.clear(); }} aria-label="Reset filters"><CloseIcon /><span className="timeline-toolbar-reset-label">Reset</span></button>}
             </div>
           </div>
         </div>
