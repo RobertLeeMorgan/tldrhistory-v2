@@ -20,6 +20,20 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
+      - name: Capture staging readiness rejection metadata
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          status="$(curl --silent --show-error --max-time 20 \
+            --dump-header "$RUNNER_TEMP/staging-readiness-headers.txt" \
+            --output "$RUNNER_TEMP/staging-readiness-body.txt" \
+            --write-out '%{http_code}' \
+            "https://staging.tldrhistory.xyz/health/ready?diagnostic=$GITHUB_RUN_ID")"
+          echo "HTTP status: $status"
+          echo 'Response headers:'
+          cat "$RUNNER_TEMP/staging-readiness-headers.txt"
+          echo 'Response body:'
+          head --bytes=4096 "$RUNNER_TEMP/staging-readiness-body.txt"
       - name: Build frontend image
         run: docker build --pull -f frontend/Dockerfile -t tldr-history-frontend:ci ./frontend
       - name: Build backend image
