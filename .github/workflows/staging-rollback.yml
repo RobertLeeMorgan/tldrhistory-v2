@@ -44,11 +44,19 @@ jobs:
             -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
             -o UserKnownHostsFile="$RUNNER_TEMP/tldr-deploy/known_hosts" \
             -o ConnectTimeout=15 "$DEPLOY_USER@$DEPLOY_HOST" "$OPERATION"
-      - name: Verify staging readiness
+      - name: Verify staging readiness through VPS
         env:
+          DEPLOY_HOST: ${{ secrets.STAGING_DEPLOY_HOST }}
           STAGING_URL: ${{ vars.STAGING_URL }}
         shell: bash
         run: |
-          response="$(curl --fail --silent --show-error --retry 12 --retry-connrefused \
-            --retry-delay 5 --retry-all-errors --max-time 20 "$STAGING_URL/health/ready?recovery=$GITHUB_RUN_ID")"
+          readiness_host="${STAGING_URL#https://}"
+          readiness_host="${readiness_host%%/*}"
+          readiness_host="${readiness_host%%:*}"
+          [[ -n "$readiness_host" ]]
+          response="$(curl --proto '=https' --noproxy '*' \
+            --resolve "$readiness_host:443:$DEPLOY_HOST" \
+            --fail --silent --show-error --retry 12 --retry-connrefused \
+            --retry-delay 5 --retry-all-errors --max-time 20 \
+            "$STAGING_URL/health/ready?recovery=$GITHUB_RUN_ID")"
           [[ "$response" == "tldr-history-ready" ]]

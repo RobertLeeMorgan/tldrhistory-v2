@@ -35,10 +35,19 @@ jobs:
           ssh -i "$RUNNER_TEMP/deploy/key" -o BatchMode=yes -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$RUNNER_TEMP/deploy/known_hosts" \
             -o ConnectTimeout=15 "$DEPLOY_USER@$DEPLOY_HOST" "$OPERATION"
-      - name: Verify external readiness
+      - name: Verify production readiness through VPS
         env:
+          DEPLOY_HOST: ${{ secrets.PRODUCTION_DEPLOY_HOST }}
           PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+        shell: bash
         run: |
-          response="$(curl --proto '=https' --fail --silent --show-error --max-time 20 \
-            --retry 6 --retry-all-errors "$PRODUCTION_URL/health/ready?recovery=$GITHUB_RUN_ID")"
+          readiness_host="${PRODUCTION_URL#https://}"
+          readiness_host="${readiness_host%%/*}"
+          readiness_host="${readiness_host%%:*}"
+          [[ -n "$readiness_host" ]]
+          response="$(curl --proto '=https' --noproxy '*' \
+            --resolve "$readiness_host:443:$DEPLOY_HOST" \
+            --fail --silent --show-error --max-time 20 \
+            --retry 6 --retry-connrefused --retry-all-errors \
+            "$PRODUCTION_URL/health/ready?recovery=$GITHUB_RUN_ID")"
           [[ "$response" == tldr-history-ready ]]
