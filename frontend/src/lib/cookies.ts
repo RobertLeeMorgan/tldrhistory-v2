@@ -9,7 +9,7 @@ export const cookies = {
     });
     return cookies;
   },
-  serialize: (name: string, value: string, options?: any) => {
+  serialize: (name: string, value: string) => {
     return `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; Secure; SameSite=Lax`;
   },
 };

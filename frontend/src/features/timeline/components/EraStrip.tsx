@@ -18,8 +18,8 @@ function eraTransform(offset: number) {
   if (offset === 0) return "translateX(-50%)";
   const additionalDistance = (Math.abs(offset) - 1) * 10;
   return offset < 0
-    ? `translateX(calc(-50% - var(--era-center-width) / 2 - 4.5rem - ${additionalDistance}rem))`
-    : `translateX(calc(-50% + var(--era-center-width) / 2 + 4.5rem + ${additionalDistance}rem))`;
+    ? `translateX(calc(-50% - var(--era-center-width) / 2 - 6rem - ${additionalDistance}rem))`
+    : `translateX(calc(-50% + var(--era-center-width) / 2 + 6rem + ${additionalDistance}rem))`;
 }
 
 export default function EraStrip({
@@ -35,19 +35,31 @@ export default function EraStrip({
   return (
     <div
       aria-label="Historical eras, shown as equal-width periods rather than to scale"
-      className={`relative isolate h-full min-w-0 overflow-hidden [--era-center-width:clamp(14rem,34vw,30rem)] ${className}`}
+      className={`relative isolate h-full min-w-0 overflow-hidden items-center [--era-center-width:clamp(14rem,30vw,30rem)] ${className}`}
     >
       <span
         aria-hidden="true"
-        className="absolute left-4 top-3 h-px bg-divider sm:left-8"
+        className="absolute left-4 top-1.5 h-px bg-divider [mask-image:linear-gradient(to_right,transparent,black_25%)] sm:left-8"
         style={{ right: "calc(50% + var(--era-center-width) / 2 + 0.75rem)" }}
       />
       <span
         aria-hidden="true"
-        className="absolute right-4 top-3 h-px bg-divider sm:right-8"
+        className="absolute right-4 top-1.5 h-px bg-divider [mask-image:linear-gradient(to_left,transparent,black_25%)] sm:right-8"
         style={{ left: "calc(50% + var(--era-center-width) / 2 + 0.75rem)" }}
       />
-
+      <div
+  className="pointer-events-none absolute inset-0"
+  style={{
+    maskImage: `linear-gradient(
+      to right,
+      black 0%,
+      black calc(50% - var(--era-center-width) / 2 - 0.75rem),
+      transparent calc(50% - var(--era-center-width) / 2),
+      transparent calc(50% + var(--era-center-width) / 2),
+      black calc(50% + var(--era-center-width) / 2 + 0.75rem),
+      black 100%
+    )`
+  }}>
       {ranges.map((range, index) => {
         const offset = index - eraIndex;
         const active = offset === 0;
@@ -73,7 +85,7 @@ export default function EraStrip({
           </div>
         );
       })}
-
+    </div>
       <div
         aria-current="step"
         data-era-active-slot

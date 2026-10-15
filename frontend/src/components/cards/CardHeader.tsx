@@ -33,7 +33,7 @@ export default function CardHeader({ post, onOpen }: { post: Post; onOpen?: () =
           </button>
         ) : post.name}
       </h2>
-      <p className="text-sm font-medium leading-5 text-content-muted sm:text-base">{metadata}</p>
+      <p className="text-sm font-medium leading-5 text-accent">{metadata}</p>
     </header>
   );
 }

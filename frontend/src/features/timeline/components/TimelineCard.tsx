@@ -17,7 +17,7 @@ export default function ArticleCard({ post, onOpen }: ArticleCardProps) {
     <CardContainer flush {...(post.startSignificance === 1 && { significant: true })}>
       <CardMedia post={post} />
       <span
-        className="absolute right-3 top-3 z-30 inline-flex size-9 items-center justify-center rounded-full border border-divider/70 bg-canvas/85 text-content-muted shadow-lg backdrop-blur-sm"
+        className="absolute right-3 top-3 inline-flex size-9 items-center justify-center text-accent"
         title="Saved timelines coming soon"
         aria-label="Saved timelines coming soon"
       >
@@ -28,7 +28,7 @@ export default function ArticleCard({ post, onOpen }: ArticleCardProps) {
         <div className="pr-8"><CardHeader post={post} onOpen={onOpen} /></div>
         <CardDescriptions post={post} />
 
-        <div className="relative z-20 mt-auto flex items-center gap-2 border-t border-divider/70 pt-3">
+        <div className="relative z-20 mt-auto flex items-center gap-2">
           <CardSubjects subjects={post.subjects} />
           <CardFooter post={post} />
         </div>

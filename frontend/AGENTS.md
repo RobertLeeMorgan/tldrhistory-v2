@@ -11,7 +11,7 @@ The product's purpose is to let users understand history through short, intercon
 3. Create `docs/redesign/design-spec.md` with the proposed design system, page layouts, responsive states, interactions, accessibility, animation, and edge cases.
 4. Create `docs/redesign/implementation-plan.md` with small, independently verifiable phases, affected files, risk, acceptance criteria, and rollback notes.
 5. **Stop after producing these documents and request approval before implementation.** Do not modify application code in the planning pass.
-6. After approval, implement one approved phase at a time. Summarise files changed, tests run, remaining issues, and any deviation from the plan. Do not silently broaden scope.
+6. Summarise files changed, tests run, remaining issues, and any deviation from the plan. Do not silently broaden scope.
 
 The supplied four mockups are **visual references, not literal functional specifications**. Where a mockup conflicts with existing UI implementation, favour the redesigned experience while preserving functional outcomes. Where it conflicts with a real product capability or backend contract, adapt the design and document the trade-off. Do not invent data or imply that static mockup figures are real.
 
@@ -26,6 +26,7 @@ The supplied four mockups are **visual references, not literal functional specif
 - Preserve existing functional routes and flows, including login, registration, user profiles, article creation/editing, suggested edits, review/moderation, privacy, and terms.
 - Preserve permission checks, validation, form submissions, error handling, keyboard interactions and other functional behaviour, even when visually restyling controls.
 - Freely refactor or replace presentation components when that improves the design and maintainability. Avoid unnecessary changes to domain logic, query semantics, backend services, and authentication. Add dependencies only with a clear justification.
+- Continue to use Tailwind, and maintain a tokenized system especially around color.
 
 If a visual request genuinely requires changing a functional or backend invariant, document the conflict and request approval. Do not treat existing component boundaries, DOM structure, drawer placement, or CSS layout as invariants.
 
@@ -102,6 +103,8 @@ Design and verify at narrow mobile, larger mobile, tablet, laptop and wide deskt
 Inventory existing animations, then freely refine, replace or remove them to suit the new design. Ensure transitions do not interfere with scroll position, intersection observers, masonry measurement or infinite loading.
 
 Use restrained transitions for hover, focus, drawers, modals, and contextual updates. Respect `prefers-reduced-motion`. Do not animate card dimensions in ways that repeatedly reflow masonry or cause scroll jumps. Make loading, empty, error, focus, selected and disabled states explicit in the design specification.
+
+Currently the app uses framer, decide whether this is necessary, remove it and use css if Framer is overkill/ not performant.
 
 ## Secondary routes and shared components
 Apply the same tokens and shared UI patterns to authentication, registration, user profiles, create/edit article forms, suggested-edit review, moderation, privacy, terms, and all other existing routes found during the audit.

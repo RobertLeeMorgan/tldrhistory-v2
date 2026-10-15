@@ -42,7 +42,7 @@ function ToolbarMenu({
         aria-expanded={open}
         aria-controls={menuId}
         onClick={onToggle}
-        className={`timeline-toolbar-menu-button flex min-h-9 items-center gap-1.5 rounded-lg border bg-surface px-2 text-xs font-bold transition-colors ${open ? "border-accent text-content" : "border-divider text-content-muted hover:border-accent hover:text-content"}`}
+        className={`timeline-toolbar-menu-button flex md:min-h-9 min-h-7 items-center gap-1.5 rounded-lg border bg-surface px-2 text-xs font-bold transition-colors ${open ? "border-accent text-content" : "border-divider text-content-muted hover:border-accent hover:text-content"}`}
       >
         <span className="timeline-toolbar-label-full">{label}</span>
         <span className="timeline-toolbar-label-short">{shortLabel}</span>
@@ -176,11 +176,11 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
     }
   }
 
-  const toolButton = "inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border border-divider bg-surface px-2.5 text-content-muted transition-colors hover:border-accent hover:text-content";
+  const toolButton = "inline-flex min-h-7 md:min-h-9 min-w-9 items-center justify-center rounded-lg border border-divider bg-surface px-2.5 text-content-muted transition-colors hover:border-accent hover:text-content";
 
   return (
     <>
-      <div data-timeline-toolbar-spacer aria-hidden="true" className="h-0 md:h-[calc(var(--timeline-toolbar-height)+1rem)]" />
+      <div data-timeline-toolbar-spacer aria-hidden="true" className="h-[calc(var(--timeline-toolbar-height)+1rem)]" />
       <div
         ref={toolbarRef}
         data-timeline-toolbar
@@ -188,7 +188,7 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
         onFocusCapture={() => setHidden(false)}
         className={`pointer-events-none fixed inset-x-0 top-[calc(var(--nav-height)+var(--timeline-header-height))] z-30 transform-gpu transition-transform duration-200 ease-out motion-reduce:transition-none ${hidden ? "-translate-y-full" : "translate-y-0"}`}
       >
-        <div className="mx-auto max-w-[1600px] md:pl-[var(--timeline-sidebar-width)]">
+        <div className="mx-auto max-w-[1600px] sm:pl-[var(--timeline-sidebar-width)]">
           <div data-timeline-toolbar-frame className={`${hidden ? "pointer-events-none" : "pointer-events-auto"} h-[var(--timeline-toolbar-height)] border-b border-divider bg-canvas/95 px-4 backdrop-blur-xl sm:px-6 lg:px-7`}>
             <div data-timeline-toolbar-content className="timeline-toolbar-content mx-auto flex h-full max-w-[1280px] flex-nowrap items-center gap-1.5">
         <TimelineSearchField compact value={search.value} onChange={search.setValue} onSubmit={search.submit} label="Search timeline" className="timeline-toolbar-search min-w-0 flex-1 border-divider bg-cream-raised shadow-none" />
@@ -213,7 +213,7 @@ export default function TimelineToolbar({ onOpenDrawer }: TimelineToolbarProps) 
               <fieldset className="grid gap-1.5">
                 <legend className="sr-only">{section.title}</legend>
                 {section.options.map((option) => (
-                  <label key={option.value} className="flex min-h-10 cursor-pointer items-center gap-3 rounded-lg px-2 text-sm text-content-muted hover:bg-canvas/55 hover:text-content">
+                  <label key={option.value} className="flex min-h-8 md:min-h-10 cursor-pointer items-center gap-3 rounded-lg px-2 text-sm text-content-muted hover:bg-canvas/55 hover:text-content">
                     <input type="checkbox" className="checkbox checkbox-sm border-control [--chkbg:var(--color-accent)] [--chkfg:var(--color-on-accent)]" checked={(filter[key] as string[]).includes(option.value)} onChange={(event) => updateArrayFilter(key, option.value, event.target.checked)} />
                     {option.labelText}
                   </label>

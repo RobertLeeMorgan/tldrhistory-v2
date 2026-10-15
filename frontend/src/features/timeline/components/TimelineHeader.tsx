@@ -46,7 +46,7 @@ function EraPerspectiveMenu({ view, setView }: { view: EraView; setView: (view: 
   };
 
   return (
-    <div ref={rootRef} className="relative h-11 w-12 shrink-0 rounded-xl border border-divider bg-surface/95 shadow-lg shadow-black/20 md:w-44">
+    <div ref={rootRef} className="relative h-8 w-10 sm:h-11 sm:w-12 shrink-0 rounded-xl border border-divider bg-surface/95 shadow-lg shadow-black/20 md:w-44">
       <button
         type="button"
         aria-expanded={open}
@@ -121,31 +121,33 @@ export default function TimelineHeader({ filter }: { filter: TimelineFilter }) {
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-40 [background:radial-gradient(circle_at_72%_20%,rgba(214,173,104,.14),transparent_33%),linear-gradient(90deg,rgba(16,23,25,1),rgba(24,33,36,.72))]" />
       <div className="relative mx-auto h-full max-w-[1600px] px-4 sm:px-6 lg:px-8">
-        <div data-era-title-block className="absolute inset-x-0 bottom-[3.8rem] top-0 flex flex-col items-center justify-center px-14 text-center sm:px-20 md:px-48">
-          <p className="atlas-eyebrow hidden leading-none md:block">Current era</p>
-          <h1 className="max-w-full whitespace-normal font-serif text-[clamp(.9rem,4.5vw,1.35rem)] font-semibold leading-tight text-content [overflow-wrap:anywhere] sm:text-[clamp(1.05rem,3vw,1.55rem)] md:text-[clamp(1.1rem,2.25vw,2rem)]">
-            {groupMeta ? title : <TextSwap text={title} className="block max-w-full whitespace-normal [overflow-wrap:anywhere]" />}
-          </h1>
+        <div className="flex h-full flex-col items-center justify-center">
+          <div data-era-title-block className="flex flex-col items-center text-center px-14 sm:px-20 md:px-48">
+            <p className="atlas-eyebrow leading-none">Current era</p>
+            <h1 className="max-w-full truncate font-serif text-[clamp(.9rem,4.5vw,1.35rem)] font-semibold leading-tight text-content sm:text-[clamp(1.05rem,3vw,1.55rem)] md:text-[clamp(1.1rem,2.25vw,2rem)] pb-1">
+              {groupMeta ? title : <TextSwap text={title} className="block max-w-full truncate" />}
+            </h1>
+          </div>
+
+          <div className="relative h-[2.8rem] sm:h-[3.3rem] lg:h-[2.8rem] w-full shrink-0 self-center">
+            <EraStrip
+              activeContent={(
+                <>
+                  <p data-era-active-subtitle className="mx-auto min-h-6 max-w-full px-1 text-[0.65rem] font-medium leading-tight text-content-muted sm:text-[0.68rem] pb-2 lg:pb-0">
+                    {subheadline ? <ContextSwap transitionKey={subheadline}>{subheadline}</ContextSwap> : <span aria-hidden="true">&nbsp;</span>}
+                  </p>
+                  <p className="whitespace-nowrap text-[0.62rem] font-semibold text-accent sm:text-[0.68rem] md:text-xs">
+                    <AnimatedYear year={orderedYears[0] ?? 0} />
+                    <span className="mx-1.5 text-content-muted">–</span>
+                    <AnimatedYear year={orderedYears[1] ?? 0} />
+                  </p>
+                </>
+              )}
+            />
+          </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-1 h-[3.3rem]">
-          <EraStrip
-            activeContent={(
-              <>
-                <p data-era-active-subtitle className="mx-auto min-h-6 max-w-full px-1 text-[0.65rem] font-medium leading-tight text-content-muted sm:text-[0.68rem]">
-                  {subheadline ? <ContextSwap transitionKey={subheadline}>{subheadline}</ContextSwap> : <span aria-hidden="true">&nbsp;</span>}
-                </p>
-                <p className="whitespace-nowrap text-[0.62rem] font-semibold text-accent sm:text-[0.68rem] md:text-xs">
-                  <AnimatedYear year={orderedYears[0] ?? 0} />
-                  <span className="mx-1.5 text-content-muted">–</span>
-                  <AnimatedYear year={orderedYears[1] ?? 0} />
-                </p>
-              </>
-            )}
-          />
-        </div>
-
-        <div className="absolute right-4 top-2 z-20 sm:right-6 lg:right-8">
+        <div className="absolute right-4 bottom-2 sm:top-2 z-20 sm:right-6 lg:right-8">
           <EraPerspectiveMenu view={view} setView={setView} />
         </div>
       </div>

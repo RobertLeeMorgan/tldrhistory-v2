@@ -101,7 +101,7 @@ export default function HomeRoute() {
             <h1 className="mt-5 max-w-3xl font-serif text-5xl font-semibold leading-[1.02] text-content sm:text-6xl lg:text-7xl">
               Explore history <span className="text-accent">as a connected timeline.</span>
             </h1>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-content-muted sm:text-lg">
+            <p className="mt-6 max-w-2xl text-base leading-7 text-content-muted sm:text-lg hidden sm:block">
               Follow people, events, cultures, and empires across eras. Move through time visually, compare what was happening at once, and jump into the parts of history that interest you most.
             </p>
             <TimelineSearchField value={search} onChange={setSearch} onSubmit={openSearch} label="Search history from the homepage" placeholder="Search for an event, person, place, or topic…" className="mt-8 max-w-2xl" />

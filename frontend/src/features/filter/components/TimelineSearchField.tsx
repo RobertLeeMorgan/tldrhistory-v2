@@ -24,7 +24,7 @@ export default function TimelineSearchField({
   return (
     <form
       role="search"
-      className={`flex min-w-0 items-center rounded-full border border-control bg-cream-raised text-ink shadow-lg shadow-black/15 focus-within:border-accent ${compact ? "min-h-10 gap-1.5 px-3" : "min-h-12 gap-2 px-4"} ${className}`}
+      className={`flex min-w-0 items-center rounded-full border border-control bg-cream-raised text-ink shadow-lg shadow-black/15 focus-within:border-accent ${compact ? "min-h-7 md:min-h-10 gap-1.5 px-3" : "min-h-12 gap-2 px-4"} ${className}`}
       onSubmit={(event) => {
         event.preventDefault();
         onSubmit();
@@ -45,7 +45,7 @@ export default function TimelineSearchField({
       <button
         type="submit"
         aria-label={buttonLabel}
-        className={`inline-flex shrink-0 items-center justify-center rounded-full bg-accent text-on-accent transition-colors hover:bg-accent-strong ${compact ? "size-8" : "size-9"}`}
+        className={`inline-flex shrink-0 items-center justify-center rounded-full bg-accent text-on-accent transition-colors hover:bg-accent-strong ${compact ? "size-6 md:size-8" : "size-9"}`}
       >
         <LuArrowRight aria-hidden="true" />
       </button>

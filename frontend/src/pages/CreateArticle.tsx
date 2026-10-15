@@ -14,7 +14,14 @@ export default function CreatePost() {
 
   const handleSubmit = (data: PostFormData) => {
     mutation.mutate(
-      { input: data },
+      {
+        input: {
+          ...data,
+          group: data.group
+            ? { ...data.group, id: String(data.group.id) }
+            : data.group,
+        },
+      },
       {
         onSuccess: () => {
           navigate("/");

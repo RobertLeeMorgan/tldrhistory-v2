@@ -1,7 +1,4 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: false;
-}
 
 @theme {
   --breakpoint-xs: 30rem;
@@ -14,6 +11,7 @@
   --color-content: #f3eee4;
   --color-content-muted: #b8beb9;
   --color-accent: #d6ad68;
+  --color-accent-muted: #a88b5a;
   --color-accent-strong: #b98539;
   --color-on-accent: #151a1b;
   --color-divider: #354044;
@@ -43,7 +41,7 @@
   --color-success: #a6d6b4;
   --nav-height: 3.5rem;
   --timeline-header-height: 10rem;
-  --timeline-toolbar-height: 3.75rem;
+  --timeline-toolbar-height: 3.5rem;
   --timeline-sidebar-width: 18rem;
   --timeline-stats-map-height: 7.5rem;
   --timeline-stats-padding: 0.75rem;
@@ -60,11 +58,18 @@
 @media (min-width: 640px) {
   :root { --page-gutter: 1.5rem; }
 }
-
-@media (min-width: 768px) {
-  :root { --timeline-header-height: 9rem; }
+:root {
+  --timeline-header-height: 7rem;
 }
 
+/* Tablet */
+@media (min-width: 768px) {
+  :root {
+    --timeline-header-height: 10rem;
+  }
+}
+
+/* Desktop */
 @media (min-width: 1024px) {
   :root {
     --page-gutter: 2rem;
@@ -72,8 +77,27 @@
   }
 }
 
-@media (max-height: 650px) {
-  :root { --timeline-header-height: 8rem; }
+/* Short desktop/tablet viewports */
+@media (min-width: 650px) {
+  :root {
+    --timeline-header-height: 8rem;
+  }
+}
+
+:root {
+  --timeline-toolbar-height: 3rem; /* Mobile */
+}
+
+@media (min-width: 640px) {
+  :root {
+    --timeline-toolbar-height: 3rem; /* Tablet */
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --timeline-toolbar-height: 3.5rem; /* Desktop */
+  }
 }
 
 html {
@@ -220,6 +244,12 @@ button, a, input, select, textarea, [tabindex]:not([tabindex="-1"]) {
     letter-spacing: 0.18em;
     text-transform: uppercase;
   }
+
+  @media (max-width: 767px) {
+  .atlas-eyebrow {
+    font-size: 0.5rem;
+  }
+}
 
   .atlas-control {
     min-height: 2.75rem;
